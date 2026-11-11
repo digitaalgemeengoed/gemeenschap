@@ -111,9 +111,11 @@ Een intentie is niet bindend. De kerngroep zet hem in WordPress onder
 is, met het kenmerk van de overeenkomst. De getekende overeenkomst zelf hoort
 in het archief, niet in WordPress.
 
-De balk toont bevestigde bedragen vol en intenties gestreept. Op de site staat
-bij elke gemeente of het een intentie of bevestigd is; het bedrag staat er
-alleen bij als het bevestigd is.
+Wie niet is ingelogd, ziet alleen het streefbedrag en het totaal dat is
+toegezegd (intenties en bevestigd samen). Leden zien daarnaast welke gemeenten
+meedoen en of dat een intentie is of bevestigd; het bedrag per gemeente staat
+er alleen bij als het bevestigd is. De balk toont voor leden bevestigde
+bedragen vol en intenties gestreept.
 
 De naam van de campagne (`campagne:`) bestaat uit kleine letters, cijfers en
 streepjes en verander je niet meer als er toezeggingen zijn.

@@ -37,7 +37,7 @@ Wij gebruiken je gegevens niet voor iets anders, verkopen ze niet en gebruiken g
 - Je **profiel** (naam, organisatie, functie, werkveld) is zichtbaar voor ingelogde leden. Je **e-mailadres** niet.
 - **Berichten in de fora** zijn zichtbaar voor ingelogde leden.
 - **Meldingen en reacties in Redmine** zijn openbaar, met je naam erbij.
-- Bij **crowdfunding** zien bezoekers welke gemeenten een toezegging deden, en het bedrag zodra die bevestigd is. Naam en functie van wie mag tekenen en wie de toezegging opgaf, zien alleen de kerngroep en de beheerders.
+- Bij **crowdfunding** zien bezoekers alleen het totaalbedrag. Ingelogde leden zien welke gemeenten een toezegging deden, en het bedrag zodra die bevestigd is. Naam en functie van wie mag tekenen en wie de toezegging opgaf, zien alleen de kerngroep en de beheerders.
 - De **kerngroep** en de beheerders zien je gegevens voor zover nodig voor hun taak.
 
 ## Wie helpt ons

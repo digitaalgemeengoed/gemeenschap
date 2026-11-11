@@ -5,7 +5,7 @@
 **Toezeggingen voor crowdfunding per gemeente** (`wordpress/dg-crowdfunding.php`):
 - Een ingelogd lid dat via zijn e-maildomein aan een gemeente gekoppeld is, geeft op de site een **intentie** op namens die gemeente: bedrag (veelvoud van € 500), wie mag tekenen (naam en functie), en eventueel de voorwaarde dat het streefbedrag gehaald wordt. Hij vinkt aan dat de intentie niet bindend is en dat er een samenwerkingsovereenkomst volgt. Eén toezegging per gemeente per campagne; collega's kunnen hem wijzigen of intrekken.
 - De kerngroep zet een intentie in WordPress onder **Toezeggingen** op *bevestigd* als de overeenkomst getekend is (met kenmerk en datum), of op *vervallen*. Een bevestigde toezegging kan het lid niet meer wijzigen.
-- Op de kaart: een balk met bevestigd (vol) en intentie (gestreept), de einddatum, en welke gemeenten meedoen; het bedrag alleen als het bevestigd is.
+- Op de kaart ziet een bezoeker alleen het streefbedrag en het totaal dat is toegezegd. Een ingelogd lid ziet ook welke gemeenten meedoen, met een balk voor bevestigd (vol) en intentie (gestreept); het bedrag per gemeente alleen als het bevestigd is.
 - Elke wijziging komt als activiteit bij de gemeente in CiviCRM (als CiviCRM draait) en per mail bij de beheerder; wie toezegt, krijgt een bevestiging.
 - In Markdown: `campagne:` en `einddatum:` op een kaart. Zie `inhoud/README.md`.
 - `wp dg toezeggingen` toont de stand.

@@ -193,16 +193,29 @@ function dg_campagne( $attr ): string {
 
 	$html  = '<div class="dg-cf" id="campagne-' . esc_attr( $id ) . '">';
 	$html .= dg_cf_melding( $id );
-	$html .= '<span class="dg-balk" role="img" aria-label="' . esc_attr( "$p_b procent bevestigd, $p_i procent intentie" ) . '"><span class="dg-balk-vul" style="width:' . $p_b . '%"></span><span class="dg-balk-intentie" style="width:' . $p_i . '%"></span></span>';
+	$lid   = is_user_logged_in();
+	if ( $lid ) {
+		$html .= '<span class="dg-balk" role="img" aria-label="' . esc_attr( "$p_b procent bevestigd, $p_i procent intentie" ) . '"><span class="dg-balk-vul" style="width:' . $p_b . '%"></span><span class="dg-balk-intentie" style="width:' . $p_i . '%"></span></span>';
+	} else {
+		$p_t   = min( 100, (int) round( 100 * ( $bevestigd + $intentie ) / $doel ) );
+		$html .= '<span class="dg-balk" role="img" aria-label="' . esc_attr( "$p_t procent toegezegd" ) . '"><span class="dg-balk-vul" style="width:' . $p_t . '%"></span></span>';
+	}
+	$tot   = '';
+	if ( $einde ) {
+		$tot = $open ? ' · tot ' . esc_html( wp_date( 'j F Y', strtotime( $einde ) ) ) : ' · gesloten';
+	}
+	if ( ! $lid ) {
+		// Bezoekers zien alleen het totaal en het doel; welke gemeenten meedoen, zien leden.
+		$html .= '<span class="dg-bedragen"><strong>' . esc_html( dg_cf_euro( $bevestigd + $intentie ) ) . '</strong> toegezegd'
+			. ' · doel ' . esc_html( dg_cf_euro( $doel ) ) . $tot . '</span>';
+		$html .= dg_cf_formulier( $id, $open );
+		return $html . '</div>';
+	}
 	$html .= '<span class="dg-bedragen"><strong>' . esc_html( dg_cf_euro( $bevestigd ) ) . '</strong> bevestigd';
 	$html .= $intentie ? ' · ' . esc_html( dg_cf_euro( $intentie ) ) . ' intentie' : '';
-	$html .= ' · doel ' . esc_html( dg_cf_euro( $doel ) );
-	if ( $einde ) {
-		$html .= $open ? ' · tot ' . esc_html( wp_date( 'j F Y', strtotime( $einde ) ) ) : ' · gesloten';
-	}
-	$html .= '</span>';
+	$html .= ' · doel ' . esc_html( dg_cf_euro( $doel ) ) . $tot . '</span>';
 	if ( $rijen ) {
-		$html .= '<ul class="dg-cf-gemeenten">';
+		$html .= '<ul class="dg-cf-gemeenten" aria-label="Gemeenten die meedoen">';
 		foreach ( $rijen as $r ) {
 			$html .= '<li><span>' . esc_html( $r['organisatie_naam'] ) . '</span>'
 				. ( 'bevestigd' === $r['status'] ? '<span class="dg-db-status dg-db-status-actief">Bevestigd · ' . esc_html( dg_cf_euro( (int) $r['bedrag'] ) ) . '</span>' : '<span class="dg-db-status dg-db-status-in-verkenning">Intentie</span>' )
