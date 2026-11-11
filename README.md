@@ -92,7 +92,7 @@ wordpress/dg-inhoud.php       mu-plugin: pagina's uit inhoud/, op slot
 wordpress/thema/            kindthema van BuddyX: logo, kleuren, voet
 wordpress/inrichten.sh      wp-cli: WordPress, plugins, CiviCRM
 redmine/                    image met redmine_oauth, inrichten, groepssync
-wiki/                       de kennisbank: image (vertalingen, logo, offline) en inrichten.py
+wiki/                       de kennisbank: image (vertalingen, logo, offline), inrichten.py, startinhoud/
 architectuur/repos.txt      de architectuurmodellen (één repo per project)
 caddy/Caddyfile             de adressen, certificaten, afscherming
 compose.yml                 alle containers
@@ -109,6 +109,12 @@ login uit Keycloak. Het noodaccount `beheer@<domein>` (wachtwoord
 
 De wiki draait offline: de Nederlandse en Engelse teksten zitten in de image,
 hij haalt niets op bij de dienst van Wiki.js.
+
+**Startinhoud.** `wiki/startinhoud/` bevat de eerste pagina's: een algemene
+sectie (werkwijze, rollen, meldingen, bijdragen, crowdfunding, privacy, FAQ),
+de projecten en de demo's. `wiki/inrichten.py` zet een bestand alleen in de
+wiki als die pagina er nog niet is; daarna wijzig je hem in de wiki (of in de
+repo `kennisbank`). Een nieuw bestand hier komt er bij de volgende versie bij.
 
 **Pagina's ook in GitHub.** Eenmalig:
 

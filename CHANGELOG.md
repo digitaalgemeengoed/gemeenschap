@@ -8,6 +8,8 @@
 - Draait offline: de Nederlandse en Engelse teksten zitten in de image (`wiki/Dockerfile`).
 - **Pagina's ook in GitHub**, in beide richtingen, zodra de repo `kennisbank` en de deploy key er zijn (zie README, Kennisbank).
 - In het menu en op het dashboard wijst *Kennisbank* nu naar de wiki; in Redmine staat de wiki per project uit (een projectwiki waarin al iets staat, blijft).
+- **Startinhoud** (29 pagina's, `wiki/startinhoud/`): een algemene sectie over hoe Digitaal GemeenGoed werkt (werkwijze, platform, lid worden en rollen, meldingen, bijdragen, crowdfunding, werken in de kennisbank, privacy en beveiliging, veelgestelde vragen), een pagina per project (de Office Assistent uitgebreid, met het prototype), en een pagina per demo (XENA, MIRA, TINA, ELSA, MAIA, VERA, IRIS, LISA) met de weergaven, uitgangspunten, vragen en begrippen uit de demo zelf. Alleen pagina's die nog niet bestaan; wat leden wijzigen, blijft. Plus een navigatie links.
+- De pagina *Het platform* op de site wijst naar de kennisbank en de architectuurmodellen.
 
 **Architectuurmodellen** op `architectuur.<domein>`, alleen voor leden.
 - Eén repo per project of domein (coArchi); de lijst staat in `architectuur/repos.txt` en werkt na samenvoegen op `main`, zonder versie.

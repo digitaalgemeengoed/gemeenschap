@@ -238,7 +238,8 @@ resultaat(r, "inloggen via Keycloak")
 meld(f"Inloggen via Keycloak (terugkeeradres {BASIS}/login/{STRATEGIE}/callback)")
 
 # --- Nederlands ----------------------------------------------------------------
-# De vertaling komt van de vertaaldienst van Wiki.js (internet nodig).
+# De vertalingen zitten in de image (wiki/Dockerfile); downloadLocale is alleen
+# voor het geval de wiki ooit online draait.
 try:
     gq('mutation { localization { downloadLocale(locale: "nl") { responseResult { succeeded message } } } }', JWT)
     talen = [t["code"] for t in gq("{ localization { locales { code isInstalled } } }", JWT)["localization"]["locales"] if t["isInstalled"]]
@@ -251,33 +252,79 @@ try:
 except SystemExit:
     meld("Taal: Nederlands ophalen lukte niet; de wiki blijft voorlopig Engels")
 
-# --- Startpagina (alleen als er nog geen is) ---------------------------------------
+# --- Startinhoud: pagina's die er nog niet zijn ---------------------------------------
+# wiki/startinhoud/<pad>.md wordt de pagina <pad>, maar alleen als die nog niet
+# bestaat. Wat leden daarna in de wiki wijzigen, blijft dus staan; de bestanden
+# hier zijn alleen het begin.
+START = os.environ.get("WIKI_STARTINHOUD", "/opt/startinhoud")
+
+
+def lees_pagina(bestand):
+    tekst = open(bestand, encoding="utf-8").read()
+    kop = {}
+    if tekst.startswith("---\n"):
+        einde = tekst.index("\n---\n", 4)
+        for regel in tekst[4:einde].splitlines():
+            if ":" in regel:
+                k, v = regel.split(":", 1)
+                kop[k.strip()] = v.strip()
+        tekst = tekst[einde + 5:]
+    return kop, tekst.lstrip("\n")
+
+
 taal = gq("{ localization { config { locale } } }", JWT)["localization"]["config"]["locale"]
 paden = {(x["path"], x["locale"]) for x in gq("{ pages { list(limit: 5000) { path locale } } }", JWT)["pages"]["list"]}
-if ("home", taal) not in paden:
-    START = """# Kennisbank
+NIEUWE_PAGINA = """mutation($c: String!, $d: String!, $l: String!, $p: String!, $t: [String]!, $ti: String!) {
+  pages { create(content: $c, description: $d, editor: "markdown", isPublished: true, isPrivate: false,
+                 locale: $l, path: $p, tags: $t, title: $ti) { responseResult { succeeded message } } } }"""
+gemaakt = 0
+if os.path.isdir(START):
+    for map_, _, bestanden in sorted(os.walk(START)):
+        for naam in sorted(bestanden):
+            if not naam.endswith(".md"):
+                continue
+            pad = os.path.relpath(os.path.join(map_, naam), START)[:-3].replace(os.sep, "/")
+            if (pad, taal) in paden:
+                continue
+            kop, inhoud = lees_pagina(os.path.join(map_, naam))
+            labels = [x.strip() for x in kop.get("labels", "").split(",") if x.strip()]
+            r = gq(NIEUWE_PAGINA, JWT, {"c": inhoud, "d": kop.get("omschrijving", ""), "l": taal, "p": pad,
+                                        "t": labels, "ti": kop.get("titel", pad)})["pages"]["create"]
+            resultaat(r, f"pagina {pad}")
+            gemaakt += 1
+if gemaakt:
+    # Links naar pagina's die bij het opslaan nog niet bestonden, staan als "ontbreekt"
+    # (rood) in de pagina. Nu ze er allemaal zijn: elke pagina opnieuw opbouwen.
+    for x in gq("{ pages { list(limit: 5000) { id } } }", JWT)["pages"]["list"]:
+        resultaat(gq("mutation($id: Int!) { pages { render(id: $id) { responseResult { succeeded message } } } }",
+                     JWT, {"id": x["id"]})["pages"]["render"], "pagina opnieuw opbouwen")
+    resultaat(gq("mutation { pages { rebuildTree { responseResult { succeeded message } } } }", JWT)["pages"]["rebuildTree"], "paginaboom")
+meld(f"Startinhoud: {gemaakt} nieuwe pagina's" if gemaakt else "Startinhoud: alle pagina's bestaan al")
 
-Welkom in de kennisbank van **Digitaal GemeenGoed**: kennis van en voor gemeenten over open source, Common Ground en de projecten van het netwerk.
-
-Iedereen die lid is, kan hier lezen en schrijven. Klik op het potlood rechtsonder om een pagina te wijzigen, of op *Nieuwe pagina* bovenaan om er een te beginnen.
-
-## Waar je wat vindt
-
-- **Projecten**: per project een eigen deel, met de werkwijze, besluiten en handleidingen.
-- **Implementatie**: ervaringen en handleidingen bij invoering en beheer.
-- **Architectuur**: de modellen staan op [architectuur.%s](https://architectuur.%s); hier de uitleg erbij.
-
-## Spelregels
-
-- Schrijf voor een collega bij een andere gemeente: geen afkortingen zonder uitleg.
-- Geen persoonsgegevens, wachtwoorden of de technische inrichting van een gemeente (netwerk, beveiliging).
-- Elke wijziging wordt bewaard; je kunt altijd terug naar een eerdere versie.
-""" % (DOMEIN, DOMEIN)
-    r = gq("""mutation($c: String!, $l: String!) { pages { create(content: $c, description: "Startpagina van de kennisbank",
-             editor: "markdown", isPublished: true, isPrivate: false, locale: $l, path: "home", tags: [], title: "Kennisbank")
-             { responseResult { succeeded message } } } }""", JWT, {"c": START, "l": taal})["pages"]["create"]
-    resultaat(r, "startpagina")
-    meld("Startpagina gemaakt")
+# --- Navigatie links -------------------------------------------------------------------
+NAV = [
+    ("link", "Start", "mdi-home", "home", ""),
+    ("link", "Algemeen", "mdi-information-outline", "page", "algemeen"),
+    ("link", "Projecten", "mdi-folder-multiple-outline", "page", "projecten"),
+    ("link", "Demo's", "mdi-play-box-multiple-outline", "page", "demos"),
+    ("link", "Veelgestelde vragen", "mdi-frequently-asked-questions", "page", "algemeen/faq"),
+    ("divider", "", "", "", ""),
+    ("link", "Architectuurmodellen", "mdi-sitemap", "externalblank", f"https://architectuur.{DOMEIN}/"),
+    ("link", "Fora", "mdi-forum-outline", "externalblank", f"https://{DOMEIN}/forum/"),
+    ("link", "Meldingen (Redmine)", "mdi-bug-outline", "externalblank", f"https://projecten.{DOMEIN}/"),
+    ("link", "Naar de site", "mdi-web", "externalblank", f"https://{DOMEIN}/"),
+]
+items = []
+for i, (soort, label, icoon, doelsoort, doel) in enumerate(NAV):
+    item = {"id": f"dgg-{i}", "kind": soort, "visibilityMode": "all", "visibilityGroups": []}
+    if soort == "link":
+        item.update({"label": label, "icon": icoon, "targetType": doelsoort,
+                     "target": f"/{taal}/{doel}" if doelsoort == "page" else doel})
+    items.append(item)
+resultaat(gq("""mutation($t: [NavigationTreeInput]!) { navigation { updateTree(tree: $t) { responseResult { succeeded message } } } }""",
+             JWT, {"t": [{"locale": t, "items": items} for t in sorted({taal, "en"})]})["navigation"]["updateTree"], "navigatie")
+resultaat(gq('mutation { navigation { updateConfig(mode: MIXED) { responseResult { succeeded message } } } }', JWT)["navigation"]["updateConfig"], "navigatie")
+meld("Navigatie links: Start, Algemeen, Projecten, Demo's, FAQ en de andere onderdelen van het platform")
 
 # --- Pagina's ook in GitHub -----------------------------------------------------
 if REPO and os.path.isfile(SLEUTEL):

@@ -313,6 +313,8 @@ services:
       KENNISBANK_SLEUTEL: /geheimen/kennisbank
     volumes:
       - ./wiki/inrichten.py:/opt/inrichten.py:ro
+      # De eerste pagina's (alleen pagina's die nog niet bestaan).
+      - ./wiki/startinhoud:/opt/startinhoud:ro
       - ./geheimen:/geheimen:ro
     read_only: true
     cap_drop: [ALL]

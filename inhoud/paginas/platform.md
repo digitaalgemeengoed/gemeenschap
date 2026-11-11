@@ -16,15 +16,15 @@ Overzicht van projecten, taken, voortgang en prioriteiten. Hier meld je ook fout
 
 [[Naar Redmine]](https://projecten.digitaalgemeengoed.nl)
 
-### Kennis- en ervaringsbank
-Best practices, handleidingen en technische documentatie, aangevuld door de leden.
+### Kennisbank
+Hoe het netwerk werkt, de projecten, de demo's, handleidingen en ervaringen, aangevuld door de leden. Alleen voor leden.
 
-*In opbouw, als wiki bij de projecten.*
+[[Naar de kennisbank]](https://kennis.digitaalgemeengoed.nl)
 
 ### Architectuur
-Architectuurmodellen (ArchiMate, in Archi) onder versiebeheer, gekoppeld aan de bouwstenen en hun documentatie.
+Architectuurmodellen (ArchiMate, in Archi) per project, onder versiebeheer in GitHub en als doorklikbaar rapport. Alleen voor leden.
 
-*In voorbereiding.*
+[[Naar de modellen]](https://architectuur.digitaalgemeengoed.nl)
 
 ### Open source catalogus
 Een actueel overzicht van de beschikbare open source componenten, met een link naar hun broncode.
@@ -39,6 +39,6 @@ Inzicht in de status van hosting, onderhoud, ondersteuning en prestaties van de 
 
 ## Wie ziet wat
 
-De fora en het ledenoverzicht zijn alleen zichtbaar voor leden die zijn ingelogd. Meldingen en de planning in Redmine zijn openbaar, zodat iedereen kan zien waar we aan werken.
+De fora, het ledenoverzicht, de kennisbank en de architectuurmodellen zijn alleen zichtbaar voor leden die zijn ingelogd. Meldingen en de planning in Redmine zijn openbaar, zodat iedereen kan zien waar we aan werken.
 
 [dg_lid_worden]
