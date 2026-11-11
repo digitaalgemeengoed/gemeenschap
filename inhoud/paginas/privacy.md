@@ -47,7 +47,7 @@ Wij gebruiken je gegevens niet voor iets anders, verkopen ze niet en gebruiken g
 Wij gebruiken deze verwerkers, met wie we een verwerkersovereenkomst hebben:
 
 - [IN TE VULLEN: hostingpartij en land van de server]
-- [IN TE VULLEN: aanbieder van de e-maildienst]
+- Migadu (Zwitserland): de mail van het platform, zoals de bevestiging bij het aanmelden. [IN TE VULLEN: verwerkersovereenkomst nagaan.]
 - GitHub (Microsoft): de besloten kopie van de kennisbank en de architectuurmodellen. [IN TE VULLEN: doorgifte buiten de EER (Data Privacy Framework of modelcontractbepalingen) laten toetsen.]
 
 Je gegevens blijven in de Europese Economische Ruimte. [IN TE VULLEN: controleren voor elke verwerker.]
@@ -67,7 +67,7 @@ Wij gebruiken alleen cookies die nodig zijn om in te loggen en ingelogd te blijv
 
 ## Je rechten
 
-Je kunt je gegevens inzien, laten verbeteren of laten verwijderen, en je kunt bezwaar maken of vragen je gegevens over te dragen. Je naam, organisatie, functie, werkveld en toestemming voor de nieuwsbrief wijzig je zelf via *Mijn account*. Voor de rest: mail [IN TE VULLEN: e-mailadres]. We reageren binnen een maand.
+Je kunt je gegevens inzien, laten verbeteren of laten verwijderen, en je kunt bezwaar maken of vragen je gegevens over te dragen. Je naam, organisatie, functie, werkveld en toestemming voor de nieuwsbrief wijzig je zelf via *Mijn account*. Voor de rest: mail [info@digitaalgemeengoed.nl](mailto:info@digitaalgemeengoed.nl). We reageren binnen een maand.
 
 Ben je het niet eens met hoe we met je gegevens omgaan, dan kun je een klacht indienen bij de [Autoriteit Persoonsgegevens](https://autoriteitpersoonsgegevens.nl).
 
