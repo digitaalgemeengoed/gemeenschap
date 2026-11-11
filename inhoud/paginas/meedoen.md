@@ -3,7 +3,7 @@ titel: Meedoen
 volgorde: 5
 ---
 ::: held
-beeld: media/meedoen-ai.jpg
+beeld: media/community-ai.jpg
 label: Word onderdeel van DGG
 # Meedoen
 Werk je bij of voor een gemeente aan informatiebeheer, architectuur, beheer of besluitvorming? Doe mee als persoon, of laat je gemeente aansluiten.

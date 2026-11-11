@@ -3,6 +3,7 @@ titel: Werkwijze
 volgorde: 2
 ---
 ::: held
+beeld: media/werkwijze-ai.jpg
 label: Van idee tot beheer
 # Werkwijze
 Van idee naar structurele oplossing, in vier stappen. Elke stap is gezamenlijk, behalve de invoering: die doet elke gemeente in haar eigen tempo, met hulp van de anderen.

@@ -19,7 +19,8 @@ gebruikt hem niet zelf.
 | `inhoud/media/projecten-mizuno-kozuki.jpg` | foto in de opening van *Projecten* | foto van **Mizuno Kozuki** via Unsplash, aangeleverd door Erik Hoekstra; middensectie uitgesneden (16:10) | Unsplash License, zie hieronder. [IN TE VULLEN: link naar de foto op unsplash.com] |
 | `inhoud/media/photo-1556761175-b413da4baf72.avif` | foto in de opening van *Over ons* | foto van **Austin Distel** via Unsplash | Unsplash License, zie hieronder |
 | `inhoud/media/photo-1552664730-d307ca884978.avif` | foto in de opening van *Het platform* | foto van **Annie Spratt** via Unsplash | Unsplash License, zie hieronder |
-| `inhoud/media/meedoen-ai.jpg` | foto in de opening van *Meedoen* | **AI-beeld**, aangeleverd door Erik Hoekstra (november 2026); de mensen erop bestaan niet | [IN TE VULLEN: met welke dienst gemaakt, en of de voorwaarden gebruik op de site toestaan] |
+| `inhoud/media/community-ai.jpg` | foto in de opening van *Meedoen* (Community) | **AI-beeld**, gemaakt met ChatGPT (OpenAI) door Erik Hoekstra, november 2026; de mensen erop bestaan niet | volgens de voorwaarden van OpenAI is de uitvoer van wie hem liet maken. Vervangen door foto's van echte bijeenkomsten zodra die er zijn. |
+| `inhoud/media/werkwijze-ai.jpg` | foto in de opening van *Werkwijze* | **AI-beeld**, gemaakt met ChatGPT (OpenAI) door Erik Hoekstra, november 2026; de mensen erop bestaan niet | als hierboven |
 | `inhoud/media/held-voorlopig.jpg` | foto in de opening van de startpagina | **voorlopig**: uitsnede van de AI-visualisatie `ontwerp/visualisaties/startpagina-2.png` | zie *Ontwerpvisualisaties*. Vervangen door een echte foto voordat de site openbaar wordt. |
 
 ## Ontwerpvisualisaties (`ontwerp/visualisaties/`)
