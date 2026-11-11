@@ -171,6 +171,7 @@ services:
       DOMEIN: ${DOMEIN}
       WP_BEHEER_WACHTWOORD: ${WP_BEHEER_WACHTWOORD:?}
       CIVICRM_VERSIE: ${CIVICRM_VERSIE:-6.20.0}
+      BUDDYX_VERSIE: ${BUDDYX_VERSIE:-5.2.0}
       HOME: /tmp
     volumes:
       - wphtml:/var/www/html

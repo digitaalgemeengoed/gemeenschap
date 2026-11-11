@@ -473,6 +473,23 @@ function dg_keycloak(): string {
 	return rtrim( (string) getenv( 'DG_KEYCLOAK_URL' ), '/' );
 }
 
+/**
+ * Geen Gravatar: dat zou bij elke ledenlijst een versleuteld e-mailadres van
+ * elk lid naar een dienst buiten de EU sturen. Wie geen eigen foto heeft,
+ * krijgt het standaardplaatje.
+ */
+add_filter( 'bp_core_fetch_avatar_no_grav', '__return_true' );
+add_filter( 'pre_option_show_avatars', static fn() => '1' );
+add_filter( 'pre_option_avatar_default', static fn() => 'blank' );
+add_filter(
+	'pre_get_avatar_data',
+	static function ( $args ) {
+		$args['url']          = function_exists( 'bp_core_avatar_default' ) ? bp_core_avatar_default( 'local', array( 'type' => 'full' ) ) : includes_url( 'images/blank.gif' );
+		$args['found_avatar'] = true;
+		return $args;
+	}
+);
+
 /** Registreren in WordPress zelf staat uit; aanmelden gaat via Keycloak. */
 add_filter( 'option_users_can_register', '__return_zero' );
 add_filter( 'pre_option_users_can_register', '__return_zero' );
@@ -556,6 +573,9 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
 					WP_CLI::log( "Voorbeeld /$slug/ verwijderd." );
 				}
 			}
+			// Logo en sitepictogram uit het thema (wordpress/thema/…/assets/).
+			dg_thema_beeld( 'uil.png', static fn( $id ) => set_theme_mod( 'custom_logo', $id ) );
+			dg_thema_beeld( 'icoon.png', static fn( $id ) => update_option( 'site_icon', $id ) );
 			// De adressen van BuddyPress in het Nederlands.
 			if ( function_exists( 'bp_core_get_directory_page_ids' ) ) {
 				$adressen = array( 'members' => 'leden', 'groups' => 'groepen', 'activity' => 'activiteit' );
@@ -594,6 +614,41 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			WP_CLI::success( 'Ingericht.' );
 		}
 	);
+
+	/**
+	 * Zet een afbeelding uit de map assets/ van het thema in de mediabibliotheek
+	 * (alleen als die nieuw of veranderd is) en geeft het nummer door.
+	 */
+	function dg_thema_beeld( string $naam, callable $gebruik ): void {
+		require_once ABSPATH . 'wp-admin/includes/file.php';
+		require_once ABSPATH . 'wp-admin/includes/media.php';
+		require_once ABSPATH . 'wp-admin/includes/image.php';
+		$bestand = get_stylesheet_directory() . "/assets/$naam";
+		if ( ! is_file( $bestand ) ) {
+			return;
+		}
+		$hash  = hash_file( 'sha256', $bestand );
+		$bron  = "thema/$naam";
+		$oud   = get_posts( array( 'post_type' => 'attachment', 'post_status' => 'any', 'meta_key' => '_dg_bron', 'meta_value' => $bron, 'numberposts' => 1, 'fields' => 'ids' ) );
+		$id    = $oud[0] ?? 0;
+		if ( ! $id || get_post_meta( $id, '_dg_hash', true ) !== $hash ) {
+			$tijdelijk = wp_tempnam( $naam );
+			copy( $bestand, $tijdelijk );
+			$nieuw = media_handle_sideload( array( 'name' => $naam, 'tmp_name' => $tijdelijk ), 0 );
+			if ( is_wp_error( $nieuw ) ) {
+				WP_CLI::warning( "$naam: " . $nieuw->get_error_message() );
+				return;
+			}
+			update_post_meta( $nieuw, '_dg_bron', $bron );
+			update_post_meta( $nieuw, '_dg_hash', $hash );
+			if ( $id ) {
+				wp_delete_attachment( $id, true );
+			}
+			$id = $nieuw;
+			WP_CLI::log( "Thema: $naam." );
+		}
+		$gebruik( $id );
+	}
 
 	/** Laat zien wat er van iemand uit Keycloak is overgenomen: wp dg toon <gebruiker>. */
 	WP_CLI::add_command(

@@ -67,10 +67,13 @@ fi
 if wp plugin is-installed civicrm-wp-profile-sync; then wp plugin update civicrm-wp-profile-sync >/dev/null 2>&1 || true; else wp plugin install civicrm-wp-profile-sync >/dev/null 2>&1 || true; fi
 wp plugin activate civicrm-wp-profile-sync >/dev/null 2>&1 || true
 
-# --- Thema: Twenty Twenty-Five met onze kop, voet en kleuren (wordpress/thema/) --
-wp theme is-installed twentytwentyfive || wp theme install twentytwentyfive >/dev/null
+# --- Thema: BuddyX met ons kindthema (wordpress/thema/) ------------------------
+# Een vaste versie; een nieuwe kies je met BUDDYX_VERSIE in compose.yml.
+if [ "$(wp theme get buddyx --field=version 2>/dev/null || true)" != "$BUDDYX_VERSIE" ]; then
+  wp theme install buddyx --version="$BUDDYX_VERSIE" --force >/dev/null
+fi
 wp theme activate digitaalgemeengoed >/dev/null
-log "Thema Digitaal Gemeengoed"
+log "Thema Digitaal Gemeengoed (BuddyX $BUDDYX_VERSIE)"
 
 # --- Onze inrichting: fora, profielvelden, adressen ----------------------------
 wp dg inrichten

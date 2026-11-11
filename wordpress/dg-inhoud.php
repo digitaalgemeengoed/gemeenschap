@@ -103,21 +103,6 @@ add_action(
 	81
 );
 
-// De menu's uit inhoud/menu.md: een navigatieblok met de klasse dg-menu-<naam>
-// (in het thema, wordpress/thema/) toont het menu met die naam.
-add_filter(
-	'render_block_data',
-	static function ( $blok ) {
-		if ( 'core/navigation' === ( $blok['blockName'] ?? '' ) && preg_match( '/\bdg-menu-([a-z]+)\b/', $blok['attrs']['className'] ?? '', $m ) ) {
-			$id = (int) get_option( 'dg_menu_' . $m[1] );
-			if ( $id && 'publish' === get_post_status( $id ) ) {
-				$blok['attrs']['ref'] = $id;
-			}
-		}
-		return $blok;
-	}
-);
-
 // ---------------------------------------------------------------------------
 // Markdown lezen
 // ---------------------------------------------------------------------------
@@ -304,6 +289,22 @@ function dg_inhoud_menus( string $md ): array {
 		}
 	}
 	return $menus;
+}
+
+/**
+ * Zet een menu op zijn plek in het thema: het hoofdmenu bovenaan (plek
+ * "primary"). Andere menu's (zoals "voet") gebruikt het thema bij naam.
+ */
+function dg_inhoud_menuplek( string $naam, int $menu_id, bool $droog ): void {
+	$plekken = array( 'hoofdmenu' => 'primary' );
+	if ( $droog || ! isset( $plekken[ $naam ] ) ) {
+		return;
+	}
+	$nu = get_theme_mod( 'nav_menu_locations', array() );
+	if ( (int) ( $nu[ $plekken[ $naam ] ] ?? 0 ) !== $menu_id ) {
+		$nu[ $plekken[ $naam ] ] = $menu_id;
+		set_theme_mod( 'nav_menu_locations', $nu );
+	}
 }
 
 // ---------------------------------------------------------------------------
@@ -536,13 +537,10 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			if ( is_file( "$map/menu.md" ) ) {
 				$menus = dg_inhoud_menus( (string) file_get_contents( "$map/menu.md" ) );
 				foreach ( $menus as $naam => $items ) {
-					$blokken = array();
+					$links = array();
 					foreach ( $items as [ $label, $doel ] ) {
 						if ( preg_match( '#^([^:/]+\.md)$#', $doel, $m ) ) {
-							$adres = $per_bestand[ $m[1] ] ?? null;
-							if ( null === $adres ) {
-								WP_CLI::error( "menu.md: link naar $doel, maar die pagina bestaat niet; menu's niet bijgewerkt." );
-							}
+							$adres = $per_bestand[ $m[1] ];
 							if ( 'publish' !== $paginas[ $adres ]['status'] ) {
 								continue;
 							}
@@ -552,27 +550,31 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
 						} else {
 							$url = $doel;
 						}
-						$blokken[] = '<!-- wp:navigation-link ' . wp_json_encode( array( 'label' => $label, 'url' => $url, 'kind' => 'custom', 'isTopLevelLink' => true ), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . ' /-->';
+						$links[] = array( $label, $url );
 					}
-					$inhoud = implode( "\n", $blokken );
-					$id     = (int) get_option( "dg_menu_$naam" );
-					if ( $id && get_post_type( $id ) === 'wp_navigation' && get_post_field( 'post_content', $id ) === $inhoud ) {
+					$hash = hash( 'sha256', (string) wp_json_encode( $links ) );
+					$menu = wp_get_nav_menu_object( (int) get_option( "dg_menu_$naam" ) );
+					if ( $menu && get_term_meta( $menu->term_id, '_dg_hash', true ) === $hash ) {
+						dg_inhoud_menuplek( $naam, $menu->term_id, $droog );
 						continue;
 					}
 					WP_CLI::log( "  menu $naam" );
 					if ( $droog ) {
 						continue;
 					}
-					$nav = array( 'post_type' => 'wp_navigation', 'post_title' => ucfirst( $naam ), 'post_status' => 'publish', 'post_content' => $inhoud );
-					if ( $id && get_post_type( $id ) === 'wp_navigation' ) {
-						$nav['ID'] = $id;
+					$menu_id = $menu ? $menu->term_id : wp_create_nav_menu( ucfirst( $naam ) );
+					if ( is_wp_error( $menu_id ) ) {
+						WP_CLI::error( "menu $naam: " . $menu_id->get_error_message() );
 					}
-					$id = wp_insert_post( wp_slash( $nav ), true );
-					if ( is_wp_error( $id ) ) {
-						WP_CLI::error( "menu $naam: " . $id->get_error_message() );
+					foreach ( (array) wp_get_nav_menu_items( $menu_id, array( 'post_status' => 'any' ) ) as $oud ) {
+						wp_delete_post( $oud->ID, true );
 					}
-					update_post_meta( $id, '_dg_bron', "menu.md#$naam" );
-					update_option( "dg_menu_$naam", $id );
+					foreach ( $links as $volgorde => [ $label, $url ] ) {
+						wp_update_nav_menu_item( $menu_id, 0, array( 'menu-item-title' => $label, 'menu-item-url' => $url, 'menu-item-type' => 'custom', 'menu-item-status' => 'publish', 'menu-item-position' => $volgorde + 1 ) );
+					}
+					update_term_meta( $menu_id, '_dg_hash', $hash );
+					update_option( "dg_menu_$naam", $menu_id );
+					dg_inhoud_menuplek( $naam, $menu_id, false );
 				}
 			}
 

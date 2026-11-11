@@ -54,7 +54,7 @@ alleen beheerders tags `v*` mogen maken.
 | Nieuws, fora, berichten | WordPress | WordPress |
 | Groepen, profielvelden, clients, mailinstellingen van Keycloak | `keycloak/realm/gemeenschap.json` | GitHub (bij elke versie gelijkgetrokken met [keycloak-config-cli](https://github.com/adorsys/keycloak-config-cli)) |
 | Leden, organisaties, wie in welke groep | Keycloak | Keycloak-beheer |
-| Thema, plugins, instellingen van WordPress, CiviCRM en Redmine | `wordpress/`, `redmine/` | GitHub |
+| Thema (BuddyX met ons kindthema: logo, kleuren, voet), plugins, instellingen van WordPress, CiviCRM en Redmine | `wordpress/`, `redmine/` | GitHub. Kleuren en voet staan vast in `wordpress/thema/digitaalgemeengoed/functions.php`; wat in de Customizer staat, telt daarvoor niet. |
 | Wachtwoorden en geheimen | `/opt/gemeenschap/.env` op de server | alleen op de server, nooit in deze repo |
 
 Keycloak is de bron voor wie lid is. WordPress, CiviCRM en Redmine nemen
@@ -82,7 +82,7 @@ keycloak/realm/             de realm gemeenschap (keycloak-config-cli)
 keycloak/themes/            kleuren van het aanmeld- en inlogscherm
 wordpress/dg-gemeenschap.php  mu-plugin: inloggen, rollen, profiel, CiviCRM
 wordpress/dg-inhoud.php       mu-plugin: pagina's uit inhoud/, op slot
-wordpress/thema/            thema (Twenty Twenty-Five met eigen kop en voet)
+wordpress/thema/            kindthema van BuddyX: logo, kleuren, voet
 wordpress/inrichten.sh      wp-cli: WordPress, plugins, CiviCRM
 redmine/                    image met redmine_oauth, inrichten, groepssync
 caddy/Caddyfile             de vier adressen, certificaten

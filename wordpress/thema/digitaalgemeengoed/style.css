@@ -1,8 +1,30 @@
 /*
 Theme Name: Digitaal Gemeengoed
-Template: twentytwentyfive
-Description: Het thema van digitaalgemeengoed.nl: Twenty Twenty-Five met eigen kleuren, kop en voet. De menu's komen uit inhoud/menu.md in de repo digitaalgemeengoed/gemeenschap.
+Template: buddyx
+Description: Het thema van digitaalgemeengoed.nl: BuddyX (voor BuddyPress en bbPress) met het logo, de kleuren en de voet van Digitaal Gemeengoed. Kleuren en voet staan vast in functions.php; de menu's komen uit inhoud/menu.md in de repo digitaalgemeengoed/gemeenschap.
 Version: 1.0.0
 License: EUPL-1.2
 Text Domain: digitaalgemeengoed
 */
+
+/* Het logo: een staande uil, dus hoog en smal. */
+.site-branding .custom-logo { height: 64px; width: auto; max-width: none; }
+.site-branding .site-logo-wrapper { flex-shrink: 0; }
+@media (max-width: 960px) { .site-branding .custom-logo { height: 44px; } }
+
+/* De voet: de links uit het menu "Voet" op één regel. */
+.dg-voet { list-style: none; margin: 0 0 .5em; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: .25em 1.5em; }
+.dg-voet li { margin: 0; }
+
+/* De knop "Lid worden" in de tekst van een pagina. */
+.entry-content .wp-block-buttons { margin: 1.5em 0; }
+
+/* De naam naast de uil wat kleiner, zodat het hele menu naast de naam past. */
+.site-branding .site-title, .site-branding .site-title a { font-size: 1.5rem !important; line-height: 1.2; }
+
+/* Startpagina: de eerste alinea als inleiding. */
+.home .entry-content > p:first-of-type { font-size: 1.3em; line-height: 1.55; color: var(--bx-color-fg, #1c1c1a); max-width: 46em; }
+
+/* Knoppen in de tekst in de kleur van het logo (BuddyX geeft blokken een eigen accentkleur). */
+.entry-content .wp-element-button, .entry-content .wp-block-button__link { background-color: var(--bx-color-button-bg, #0066cc); color: #fff; }
+.entry-content .wp-element-button:hover, .entry-content .wp-block-button__link:hover { background-color: var(--bx-color-button-bg-hover, #003c7a); color: #fff; }

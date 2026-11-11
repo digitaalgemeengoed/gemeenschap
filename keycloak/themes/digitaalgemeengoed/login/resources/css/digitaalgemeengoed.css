@@ -1,16 +1,25 @@
-/* Digitaal Gemeengoed: de kleuren over het standaardthema van Keycloak (PatternFly 5). */
+/* Digitaal Gemeengoed: logo en kleuren over het standaardthema van Keycloak (PatternFly 5).
+   De kleuren komen uit het logo en zijn dezelfde als op de site (wordpress/thema/). */
 :root {
-  --dg-groen: #0b6e4f;
-  --dg-groen-donker: #08513a;
-  --dg-zand: #f4f1ea;
-  --pf-v5-global--primary-color--100: var(--dg-groen);
-  --pf-v5-global--primary-color--200: var(--dg-groen-donker);
-  --pf-v5-global--link--Color: var(--dg-groen);
-  --pf-v5-global--link--Color--hover: var(--dg-groen-donker);
+  --dg-blauw: #0066cc;
+  --dg-blauw-donker: #003c7a;
+  --dg-achtergrond: #f4f7fb;
+  --pf-v5-global--primary-color--100: var(--dg-blauw);
+  --pf-v5-global--primary-color--200: var(--dg-blauw-donker);
+  --pf-v5-global--link--Color: var(--dg-blauw);
+  --pf-v5-global--link--Color--hover: var(--dg-blauw-donker);
 }
-.pf-v5-c-login { background: var(--dg-zand); }
-/* Één groene lijn boven het formulier, in plaats van de blauwe van PatternFly. */
-.pf-v5-c-login__main-header { border-top-color: var(--dg-groen) !important; }
-.pf-v5-c-button.pf-m-primary { --pf-v5-c-button--m-primary--BackgroundColor: var(--dg-groen); --pf-v5-c-button--m-primary--hover--BackgroundColor: var(--dg-groen-donker); }
-/* De naam boven het formulier: het standaardthema maakt die wit (voor een donkere achtergrond). */
-#kc-header-wrapper, #kc-header-wrapper * { font-weight: 700; letter-spacing: 0.01em; color: var(--dg-groen-donker) !important; }
+.pf-v5-c-login { background: var(--dg-achtergrond); }
+/* Eén lijn in de kleur van het logo boven het formulier, in plaats van die van PatternFly. */
+.pf-v5-c-login__main-header { border-top-color: var(--dg-blauw) !important; }
+.pf-v5-c-button.pf-m-primary { --pf-v5-c-button--m-primary--BackgroundColor: var(--dg-blauw); --pf-v5-c-button--m-primary--hover--BackgroundColor: var(--dg-blauw-donker); }
+/* De uil boven de naam; het standaardthema maakt de naam wit (voor een donkere achtergrond). */
+#kc-header-wrapper::before {
+  content: "";
+  display: block;
+  width: 56px;
+  height: 110px;
+  margin: 0 auto .5rem;
+  background: url("../img/uil.png") center / contain no-repeat;
+}
+#kc-header-wrapper, #kc-header-wrapper * { font-weight: 700; letter-spacing: 0.01em; color: var(--dg-blauw-donker) !important; }
