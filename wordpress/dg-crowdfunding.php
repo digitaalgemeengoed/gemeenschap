@@ -62,6 +62,10 @@ function dg_cf_installeer(): void {
 add_action(
 	'init',
 	static function () {
+		// Niet tijdens het installeren van WordPress zelf: dan zijn er nog geen tabellen.
+		if ( wp_installing() || ! is_blog_installed() ) {
+			return;
+		}
 		if ( (int) get_option( 'dg_cf_db' ) !== DG_CF_DB_VERSIE ) {
 			dg_cf_installeer();
 		}

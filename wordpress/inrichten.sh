@@ -30,7 +30,8 @@ wp rewrite structure '/%postname%/' >/dev/null
 log "WordPress $(wp core version), Nederlands"
 
 # --- Plugins van wordpress.org ------------------------------------------------
-for p in openid-connect-generic buddypress bbpress; do
+# De OpenID Connect-plugin heet op wordpress.org daggerhart-openid-connect-generic.
+for p in daggerhart-openid-connect-generic buddypress bbpress; do
   if wp plugin is-installed "$p"; then wp plugin update "$p" >/dev/null 2>&1 || true; else wp plugin install "$p" >/dev/null; fi
   wp plugin activate "$p" >/dev/null 2>&1 || true
 done
