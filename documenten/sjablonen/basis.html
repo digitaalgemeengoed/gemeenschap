@@ -1,0 +1,29 @@
+{{define "basis"}}<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{.Titel}} · Digitaal GemeenGoed</title>
+<link rel="icon" href="/statisch/icoon.png">
+<link rel="stylesheet" href="/statisch/stijl.css">
+<script src="/statisch/app.js" defer></script>
+</head>
+<body>
+<header class="kop">
+  <a class="merk" href="/"><img src="/statisch/icoon.png" alt="" width="36" height="36"><span><b>Digitaal GemeenGoed</b><small>Documenten</small></span></a>
+  {{with .Sessie}}
+  <form class="wie" method="post" action="/uitloggen">
+    <span title="{{.Email}}">{{.Naam}}</span>
+    <input type="hidden" name="csrf" value="{{.CSRF}}">
+    <button class="link">Uitloggen</button>
+  </form>
+  {{end}}
+</header>
+<main>
+{{with .Melding}}<p class="melding" role="status">{{.}}</p>{{end}}
+{{with .Fout}}<p class="fout" role="alert">{{.}}</p>{{end}}
+{{template "inhoud" .}}
+</main>
+<footer class="voet">Werkdocumenten van het netwerk. Geen persoonsgegevens of vertrouwelijke stukken.</footer>
+</body>
+</html>{{end}}

@@ -74,6 +74,14 @@ kennis.{$DOMEIN} {
 	reverse_proxy wiki:3000
 }
 
+# Documenten (dg-documenten): bestanden van de coöperatie en per project.
+# Alleen voor leden: dat regelt de dienst zelf (inloggen via Keycloak).
+documenten.{$DOMEIN} {
+	import beveiliging
+	import toegang-{$DG_TOEGANG:open}
+	reverse_proxy documenten:8080
+}
+
 # De architectuurmodellen: de HTML-rapporten van Archi (server/architectuur.sh
 # bouwt ze in /srv/dg-architectuur). Alleen voor leden: oauth2-proxy vraagt
 # Keycloak wie er is; wie niet is ingelogd, gaat eerst naar het inloggen.

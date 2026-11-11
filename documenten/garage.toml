@@ -1,0 +1,20 @@
+# Garage voor dg-documenten: één node, geen replicatie (de back-up is de
+# tweede kopie). Het RPC-geheim, de sleutel en de bucket komen uit de
+# omgeving (compose.yml); er staat hier niets geheims.
+metadata_dir = "/var/lib/garage/meta"
+data_dir = "/var/lib/garage/data"
+db_engine = "lmdb"
+# Elke zes uur een kopie van de metadata naast de database, voor als die beschadigt.
+metadata_auto_snapshot_interval = "6h"
+replication_factor = 1
+
+rpc_bind_addr = "[::]:3901"
+rpc_public_addr = "127.0.0.1:3901"
+
+[s3_api]
+s3_region = "garage"
+api_bind_addr = "[::]:3900"
+
+[admin]
+# Alleen /health (zonder token); de rest van de beheer-API staat uit.
+api_bind_addr = "[::]:3903"

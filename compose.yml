@@ -8,6 +8,9 @@
 #   aanmelden.<domein>    Keycloak, realm "gemeenschap": lid worden, inloggen
 #   projecten.<domein>    Redmine: meldingen, wensen, roadmap, portfolio
 #   forum.<domein>        verwijst naar <domein>/forum/
+#   kennis.<domein>       Wiki.js: de kennisbank, alleen voor leden
+#   architectuur.<domein> de architectuurmodellen (Archi), alleen voor leden
+#   documenten.<domein>   dg-documenten: bestanden van de coöperatie en per project
 #
 # Niet met de hand starten: server/installeer.sh zet alles neer, en daarna
 # rolt server/uitrol.sh (elke vijf minuten, systemd-timer dg-uitrol) uit wat
@@ -74,7 +77,7 @@ services:
       - caddydata:/data
       # De HTML-rapporten van de architectuurmodellen (server/architectuur.sh).
       - /srv/dg-architectuur:/srv/architectuur:ro
-    depends_on: [wordpress, keycloak, redmine, wiki, oauth2-proxy]
+    depends_on: [wordpress, keycloak, redmine, wiki, oauth2-proxy, documenten]
 
   # --- Keycloak: de bron voor leden, organisaties, groepen en toestemmingen ----
   keycloak-db:
@@ -144,6 +147,8 @@ services:
       WIKI_CLIENT_SECRET: ${WIKI_CLIENT_SECRET:?}
       ARCH_BASIS_URL: https://architectuur.${DOMEIN}
       ARCH_CLIENT_SECRET: ${ARCH_CLIENT_SECRET:?}
+      DOC_BASIS_URL: https://documenten.${DOMEIN}
+      DOC_CLIENT_SECRET: ${DOC_CLIENT_SECRET:?}
     volumes:
       - ./keycloak/realm:/config:ro
     depends_on: [keycloak]
@@ -358,6 +363,75 @@ services:
     security_opt: ["no-new-privileges:true"]
     depends_on: [keycloak]
 
+  # --- Documenten (documenten.<domein>): een lichte XENA ------------------------
+  # Een register (documenten-db) naast een objectopslag (Garage, S3). Zie
+  # documenten/ONTWERP.md. Garage is alleen binnen dit netwerk bereikbaar.
+  garage:
+    image: dxflrs/garage:${GARAGE_VERSIE:-v2.5.0}
+    restart: unless-stopped
+    # Eén node zonder replicatie; sleutel en bucket uit de omgeving (blijven bestaan).
+    command: ["/garage", "server", "--single-node", "--default-bucket"]
+    environment:
+      GARAGE_RPC_SECRET: ${GARAGE_RPC_GEHEIM:?}
+      GARAGE_DEFAULT_ACCESS_KEY: ${GARAGE_SLEUTEL:?}
+      GARAGE_DEFAULT_SECRET_KEY: ${GARAGE_GEHEIM:?}
+      GARAGE_DEFAULT_BUCKET: documenten
+    volumes:
+      - ./documenten/garage.toml:/etc/garage.toml:ro
+      - garagemeta:/var/lib/garage/meta
+      - garagedata:/var/lib/garage/data
+
+  documenten-db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: documenten
+      POSTGRES_PASSWORD: ${DOC_DB_WACHTWOORD:?}
+      POSTGRES_DB: documenten
+    volumes:
+      - docdb:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U documenten"]
+      interval: 5s
+      retries: 20
+
+  documenten:
+    build:
+      context: .
+      dockerfile: documenten/Dockerfile
+    image: dg/documenten:latest
+    restart: unless-stopped
+    environment:
+      DOC_BASIS_URL: https://documenten.${DOMEIN}
+      OIDC_UITGEVER: https://aanmelden.${DOMEIN}/realms/gemeenschap
+      OIDC_INTERN: http://keycloak:8080/realms/gemeenschap
+      OIDC_CLIENT_ID: documenten
+      OIDC_CLIENT_GEHEIM: ${DOC_CLIENT_SECRET:?}
+      SESSIE_GEHEIM: ${DOC_SESSIE_GEHEIM:?}
+      DATABASE_URL: postgres://documenten:${DOC_DB_WACHTWOORD:?}@documenten-db:5432/documenten?sslmode=disable
+      S3_EINDPUNT: http://garage:3900
+      S3_BUCKET: documenten
+      S3_SLEUTEL: ${GARAGE_SLEUTEL:?}
+      S3_GEHEIM: ${GARAGE_GEHEIM:?}
+      # Projecten en hun leden (elke vijf minuten), met de API-sleutel van het noodaccount.
+      REDMINE_URL: http://redmine:3000
+      REDMINE_API_KEY: ${REDMINE_API_KEY:?}
+      REDMINE_PUBLIEK: https://projecten.${DOMEIN}
+      MAX_MB: ${DOC_MAX_MB:-500}
+    volumes:
+      # Uploads gaan eerst hierheen (met controlegetal), dan naar de opslag.
+      - doctmp:/tmp
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    healthcheck:
+      test: ["CMD", "dg-documenten", "gezond"]
+      interval: 15s
+      retries: 10
+    depends_on:
+      documenten-db: { condition: service_healthy }
+      garage: { condition: service_started }
+
 volumes:
   wikidb:
   wikidata:
@@ -368,3 +442,7 @@ volumes:
   wphtml:
   rmdata:
   rmfiles:
+  garagemeta:
+  garagedata:
+  docdb:
+  doctmp:

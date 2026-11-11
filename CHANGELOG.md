@@ -1,5 +1,22 @@
 # Wijzigingen
 
+## 0.9.0 — 2026-11-11
+
+**Documenten** op `documenten.<domein>` (nieuw): documenten bewaren en delen, voor de coöperatie en per project. Een lichte XENA: een register naast een objectopslag. Ontwerp in `documenten/ONTWERP.md`.
+- Een ruimte *Coöperatie* (members lezen, de kerngroep schrijft) en een ruimte per project in Redmine (wie lid is van het project); beheerders mogen alles. Projecten en leden komen elke vijf minuten uit Redmine; een gesloten project is alleen-lezen.
+- Mappen, uploaden (slepen, meer bestanden tegelijk, hooguit 500 MB per bestand), downloaden, hernoemen, verwijderen naar de prullenbak.
+- Elk document houdt zijn versies: een bestand met dezelfde naam wordt een nieuwe versie; oude versies blijven te downloaden. Bij elke versie een SHA-256-controlegetal.
+- Lichte metadata: titel, omschrijving, soort document, trefwoorden; auteur en datums vanzelf. Een logboek van elke handeling.
+- Inloggen via Keycloak (client `documenten`).
+- **Garage** (v2.5) als S3-opslag, één node, alleen intern bereikbaar. MinIO valt af: als open source gestopt.
+- **dg-documenten**: een kleine dienst in Go, zonder afhankelijkheden buiten de Postgres-driver (meegeleverd in `vendor/`).
+- Back-up: het register per nacht, de objecten in een spiegel die alleen aangroeit. `herstellen.sh documenten` zet het register terug en vult ontbrekende objecten aan uit de spiegel.
+- Op het dashboard een tegel *Documenten*.
+
+**Controle na een uitrol:** de kennisbank en de documenten tellen pas mee als hun naam in de DNS naar de server wijst. Zonder DNS-record heeft Caddy geen certificaat, en dan zou elke nieuwe versie onterecht teruggedraaid worden. `controleer.sh` meldt welke namen nog ontbreken.
+
+Na het uitrollen: een A-record voor `documenten.<domein>` naar de server.
+
 ## 0.8.1 — 2026-11-11
 
 - **Startinhoud** (29 pagina's, `wiki/startinhoud/`): een algemene sectie over hoe Digitaal GemeenGoed werkt (werkwijze, platform, lid worden en rollen, meldingen, bijdragen, crowdfunding, werken in de kennisbank, privacy en beveiliging, veelgestelde vragen), een pagina per project (de Office Assistent uitgebreid, met het prototype), en een pagina per demo (XENA, MIRA, TINA, ELSA, MAIA, VERA, IRIS, LISA) met de weergaven, uitgangspunten, vragen en begrippen uit de demo zelf. Alleen pagina's die nog niet bestaan; wat leden wijzigen, blijft. Plus een navigatie links.

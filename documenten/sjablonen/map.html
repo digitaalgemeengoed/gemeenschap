@@ -1,0 +1,67 @@
+{{define "inhoud"}}
+{{$d := .Data}}{{$csrf := .Sessie.CSRF}}
+<nav class="kruimels"><a href="/">Documenten</a> › <a href="/r/{{$d.Ruimte.Sleutel}}">{{$d.Ruimte.Naam}}</a>{{range $d.Pad}} › <a href="/r/{{$d.Ruimte.Sleutel}}/m/{{.ID}}">{{.Naam}}</a>{{end}}</nav>
+<div class="titelregel">
+  <h1>{{$d.Kop}}</h1>
+  {{if not $d.Schrijven}}<span class="label">alleen lezen</span>{{end}}
+</div>
+
+{{if $d.Schrijven}}
+<form class="upload" method="post" action="/r/{{$d.Ruimte.Sleutel}}/upload" enctype="multipart/form-data" data-max="{{$d.MaxMB}}">
+  <input type="hidden" name="csrf" value="{{$csrf}}">
+  <input type="hidden" name="ouder" value="{{$d.Ouder}}">
+  <label class="vak">
+    <input type="file" name="bestanden" multiple required>
+    <span><b>Sleep bestanden hierheen</b> of klik om ze te kiezen. Hooguit {{$d.MaxMB}} MB per bestand. Een bestand met een naam die hier al staat, wordt een nieuwe versie.</span>
+  </label>
+  <button>Uploaden</button>
+  <progress hidden max="100" value="0"></progress>
+</form>
+<details class="nieuwemap">
+  <summary>Nieuwe map</summary>
+  <form method="post" action="/r/{{$d.Ruimte.Sleutel}}/map">
+    <input type="hidden" name="csrf" value="{{$csrf}}">
+    <input type="hidden" name="ouder" value="{{$d.Ouder}}">
+    <input name="naam" required maxlength="200" placeholder="Naam van de map" aria-label="Naam van de map">
+    <button>Aanmaken</button>
+  </form>
+</details>
+{{end}}
+
+{{if $d.Inhoud}}
+<table class="lijst">
+<thead><tr><th>Naam</th><th>Gewijzigd</th><th class="r">Grootte</th>{{if $d.Schrijven}}<th></th>{{end}}</tr></thead>
+<tbody>
+{{range $d.Inhoud}}
+<tr>
+  {{if eq .Soort "map"}}
+  <td><a class="naam map" href="/r/{{$d.Ruimte.Sleutel}}/m/{{.ID}}">{{.Naam}}</a></td>
+  <td>{{datum .Gewijzigd}}</td><td class="r">map</td>
+  {{else}}
+  <td><a class="naam {{soortIcoon .Mediatype .Naam}}" href="/r/{{$d.Ruimte.Sleutel}}/d/{{.ID}}">{{.Naam}}</a>{{if gt .HuidigeVersie 1}} <span class="versie">v{{.HuidigeVersie}}</span>{{end}}{{with eigenTitel .}}<small>{{.}}</small>{{end}}</td>
+  <td>{{datum .Gewijzigd}}<small>{{.GewijzigdDoorNaam}}</small></td><td class="r">{{grootte .Grootte}}</td>
+  {{end}}
+  {{if $d.Schrijven}}
+  <td class="acties">
+    {{if eq .Soort "document"}}<a class="knop klein" href="/r/{{$d.Ruimte.Sleutel}}/d/{{.ID}}/download" download>Download</a>{{end}}
+    <details class="menu"><summary aria-label="Meer">⋯</summary>
+      <div class="paneel">
+      <form method="post" action="/r/{{$d.Ruimte.Sleutel}}/i/{{.ID}}/hernoem">
+        <input type="hidden" name="csrf" value="{{$csrf}}"><input type="hidden" name="terug" value="{{$d.Hier}}">
+        <input name="naam" value="{{.Naam}}" required maxlength="200" aria-label="Nieuwe naam"><button>Hernoemen</button>
+      </form>
+      <form method="post" action="/r/{{$d.Ruimte.Sleutel}}/i/{{.ID}}/verwijder" data-bevestig="{{.Naam}}{{if eq .Soort "map"}} en alles erin{{end}} naar de prullenbak?">
+        <input type="hidden" name="csrf" value="{{$csrf}}"><button class="gevaar">Verwijderen</button>
+      </form>
+      </div>
+    </details>
+  </td>
+  {{end}}
+</tr>
+{{end}}
+</tbody>
+</table>
+{{else}}
+<p class="leeg">Hier staat nog niets.</p>
+{{end}}
+{{end}}

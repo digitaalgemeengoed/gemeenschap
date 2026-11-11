@@ -29,6 +29,13 @@ vul_env_aan .env KENNISBANK_REPO ""
 vul_env_aan .env ARCH_CLIENT_SECRET "$(geheim 32)"
 vul_env_aan .env ARCH_COOKIE_SECRET "$(geheim 16)"
 vul_env_aan .env ARCH_GITHUB_TOKEN ""
+# Sinds 0.9.0: documenten (dg-documenten met Garage).
+vul_env_aan .env DOC_DB_WACHTWOORD "$(geheim 24)"
+vul_env_aan .env DOC_CLIENT_SECRET "$(geheim 32)"
+vul_env_aan .env DOC_SESSIE_GEHEIM "$(geheim 32)"
+vul_env_aan .env GARAGE_RPC_GEHEIM "$(geheim 32)"
+vul_env_aan .env GARAGE_SLEUTEL "GK$(geheim 12)"
+vul_env_aan .env GARAGE_GEHEIM "$(geheim 32)"
 # De sleutel waarmee de wiki zijn pagina's naar GitHub schrijft (deploy key).
 install -d -m 700 "$DG_MAP/geheimen"
 if [ ! -f "$DG_MAP/geheimen/kennisbank" ]; then
@@ -69,6 +76,9 @@ wacht "Redmine" 60 redmine_klaar || stop "Redmine start niet. Kijk met: sudo doc
 meld "Redmine bijwerken"
 dc exec -T -u redmine redmine bundle exec rails runner /usr/local/share/dg/inrichten.rb >/dev/null || stop "Redmine inrichten mislukt. Kijk met: sudo docker compose -f $DG_MAP/$COMPOSE logs redmine"
 dc restart redmine-groepen >/dev/null
+
+wacht "Documenten" 30 documenten_klaar || stop "De documentendienst start niet. Kijk met: sudo docker compose -f $DG_MAP/$COMPOSE logs documenten garage"
+ok "Documenten draait"
 
 # Architectuurmodellen: elk kwartier bouwen wat nieuw is (architectuur/repos.txt).
 install -d -m 755 /srv/dg-architectuur

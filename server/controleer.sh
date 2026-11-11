@@ -16,7 +16,10 @@ dc ps --format '  {{.Service}}: {{.Status}}'
 
 meld "Adressen"
 DOMEIN="$(sed -n 's/^DOMEIN=//p' .env)"
-for adres in "$DOMEIN/" "aanmelden.$DOMEIN/realms/gemeenschap/.well-known/openid-configuration" "projecten.$DOMEIN/login" "kennis.$DOMEIN/healthz"; do
+for naam in "kennis.$DOMEIN" "documenten.$DOMEIN" "architectuur.$DOMEIN"; do
+  wijst_hier "$naam" || waarschuw "$naam wijst nog niet naar deze server (DNS); dat deel is nog niet bereikbaar"
+done
+for adres in $(controle_adressen "$DOMEIN"); do
   code="$(curl -s -o /dev/null -w '%{http_code}' --max-time 8 "https://$adres")"
   if [[ "$code" =~ ^[23] ]]; then ok "https://$adres ($code)"
   elif [ "$code" = 401 ] && grep -q '^DG_TOEGANG=dicht' .env; then ok "https://$adres (afgeschermd met wachtwoord)"

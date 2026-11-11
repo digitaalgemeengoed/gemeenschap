@@ -14,6 +14,7 @@ Wat hier op `main` en in versie-tags staat, staat binnen vijf minuten live.
 | `forum.digitaalgemeengoed.nl` | (doorverwijzing) | naar `/forum/` |
 | `kennis.digitaalgemeengoed.nl` | Wiki.js 2 | de kennisbank, alleen voor leden; pagina's ook in de repo `kennisbank` |
 | `architectuur.digitaalgemeengoed.nl` | Archi-rapporten achter oauth2-proxy | de architectuurmodellen, alleen voor leden |
+| `documenten.digitaalgemeengoed.nl` | dg-documenten met Garage (S3) | documenten van de coöperatie en per project, met versies en metadata |
 
 ## Een pagina wijzigen
 
@@ -56,7 +57,7 @@ alleen beheerders tags `v*` mogen maken.
 | Nieuws, fora, berichten | WordPress | WordPress |
 | Groepen, profielvelden, clients, mailinstellingen van Keycloak | `keycloak/realm/gemeenschap.json` | GitHub (bij elke versie gelijkgetrokken met [keycloak-config-cli](https://github.com/adorsys/keycloak-config-cli)) |
 | Leden, organisaties, wie in welke groep | Keycloak | Terug naar een eerdere versie (containers en instellingen, geen databases) | `sudo /opt/gemeenschap/server/terugzetten.sh` (lijst) / `… terugzetten.sh v0.8.0` |
-| Een back-up terugzetten (databases en bestanden) | `sudo /opt/gemeenschap/server/herstellen.sh` (lijst) / `… herstellen.sh --proef <map>` / `… herstellen.sh <map> [keycloak] [wordpress] [redmine] [kennisbank]` |
+| Een back-up terugzetten (databases en bestanden) | `sudo /opt/gemeenschap/server/herstellen.sh` (lijst) / `… herstellen.sh --proef <map>` / `… herstellen.sh <map> [keycloak] [wordpress] [redmine] [kennisbank] [documenten]` |
 | Keycloak-beheer |
 | Thema (BuddyX met ons kindthema: logo, kleuren, voet), plugins, instellingen van WordPress, CiviCRM en Redmine | `wordpress/`, `redmine/` | GitHub. Kleuren en voet staan vast in `wordpress/thema/digitaalgemeengoed/functions.php`; wat in de Customizer staat, telt daarvoor niet. |
 | Pagina's van de kennisbank | Wiki.js (database) | in de wiki; met de Git-opslag ook als Markdown in de repo `kennisbank` (beide richtingen, elke vijf minuten) |
@@ -95,6 +96,7 @@ wordpress/thema/            kindthema van BuddyX: logo, kleuren, voet
 wordpress/inrichten.sh      wp-cli: WordPress, plugins, CiviCRM
 redmine/                    image met redmine_oauth, inrichten, groepssync
 wiki/                       de kennisbank: image (vertalingen, logo, offline), inrichten.py, startinhoud/
+documenten/                 dg-documenten (Go): register, bestandsbeheerder, Garage-instellingen, ONTWERP.md
 architectuur/repos.txt      de architectuurmodellen (één repo per project)
 caddy/Caddyfile             de adressen, certificaten, afscherming
 compose.yml                 alle containers
@@ -151,6 +153,32 @@ alleen *Contents: read* op de modelrepo's. Wat er gebeurde:
 Zet in een model geen netwerkinrichting, beveiligingsmaatregelen of
 leveranciersafspraken van een gemeente (BIO); referentie- en
 oplossingsarchitectuur wel.
+
+## Documenten
+
+`documenten.<domein>`: documenten bewaren en delen, met versies en lichte
+metadata (titel, omschrijving, soort, trefwoorden). Een lichte XENA: een
+register in Postgres naast een objectopslag (Garage, S3); een object wordt
+nooit overschreven. Het ontwerp staat in `documenten/ONTWERP.md`.
+
+| Ruimte | Lezen | Schrijven |
+|---|---|---|
+| Coöperatie | `/netwerk/members`, `/netwerk/kerngroep` | `/netwerk/kerngroep` |
+| Elk project in Redmine | wie lid is van het project (direct of via een groep) | idem, zolang het project niet gesloten is |
+| Alles | `/site/beheer` | `/site/beheer` |
+
+Projecten en hun leden komen elke vijf minuten uit Redmine; een nieuw project
+krijgt vanzelf een ruimte. Zet je iemand in Redmine bij een project, dan ziet
+die de documenten binnen vijf minuten. Hooguit 500 MB per bestand
+(`DOC_MAX_MB` in `.env`).
+
+Verwijderen zet iets in de prullenbak; er verdwijnt niets (in deze versie
+haalt alleen de beheerder het terug, met SQL). Geen persoonsgegevens en geen
+vertrouwelijke stukken: zie de Voorwaarden.
+
+Back-up: het register per nacht (`documenten.dump`), de objecten in één
+spiegel die alleen aangroeit (`/var/backups/dg-gemeenschap-objecten`). Kopieer
+die map ook naar buiten de server.
 
 ## Installeren
 
