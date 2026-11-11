@@ -90,3 +90,14 @@ redmine_klaar()   { dc exec -T redmine ruby -rnet/http -e 'exit Net::HTTP.get_re
 nieuwste_tag() {
   git -C "$DG_MAP" tag -l 'v[0-9]*.[0-9]*.[0-9]*' --merged origin/main | sort -V | tail -1
 }
+
+# Antwoorden de adressen? Via Caddy op deze server, zonder DNS. Gebruikt na een
+# uitrol en na terugzetten.
+gezond() {
+  local domein code adres
+  domein="$(sed -n 's/^DOMEIN=//p' "$DG_MAP/.env")"
+  for adres in "$domein/" "aanmelden.$domein/realms/gemeenschap/.well-known/openid-configuration" "projecten.$domein/login" "kennis.$domein/healthz"; do
+    code="$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 --resolve "${adres%%/*}:443:127.0.0.1" "https://$adres")"
+    [[ "$code" =~ ^[23] ]] || { echo "https://$adres gaf $code"; return 1; }
+  done
+}

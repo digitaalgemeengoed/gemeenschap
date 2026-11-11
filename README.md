@@ -55,7 +55,9 @@ alleen beheerders tags `v*` mogen maken.
 | Pagina's, menu's | `inhoud/` | GitHub (in WordPress op slot) |
 | Nieuws, fora, berichten | WordPress | WordPress |
 | Groepen, profielvelden, clients, mailinstellingen van Keycloak | `keycloak/realm/gemeenschap.json` | GitHub (bij elke versie gelijkgetrokken met [keycloak-config-cli](https://github.com/adorsys/keycloak-config-cli)) |
-| Leden, organisaties, wie in welke groep | Keycloak | Keycloak-beheer |
+| Leden, organisaties, wie in welke groep | Keycloak | Terug naar een eerdere versie (containers en instellingen, geen databases) | `sudo /opt/gemeenschap/server/terugzetten.sh` (lijst) / `… terugzetten.sh v0.8.0` |
+| Een back-up terugzetten (databases en bestanden) | `sudo /opt/gemeenschap/server/herstellen.sh` (lijst) / `… herstellen.sh --proef <map>` / `… herstellen.sh <map> [keycloak] [wordpress] [redmine] [kennisbank]` |
+| Keycloak-beheer |
 | Thema (BuddyX met ons kindthema: logo, kleuren, voet), plugins, instellingen van WordPress, CiviCRM en Redmine | `wordpress/`, `redmine/` | GitHub. Kleuren en voet staan vast in `wordpress/thema/digitaalgemeengoed/functions.php`; wat in de Customizer staat, telt daarvoor niet. |
 | Pagina's van de kennisbank | Wiki.js (database) | in de wiki; met de Git-opslag ook als Markdown in de repo `kennisbank` (beide richtingen, elke vijf minuten) |
 | Instellingen van de kennisbank (inloggen, groepen, kleuren, Git-opslag) | `wiki/inrichten.py` | GitHub; bij elke versie gelijkgetrokken |
@@ -170,6 +172,14 @@ stap 12): `inrichten.sh` (kies 4), `ssh-afsluiten.sh`, `installeer.sh`.
 
 Met `UITROL_MELDEN=<adres>` in `.env` krijg je een mail bij elke nieuwe
 versie en bij elke fout.
+
+**Terugzetten of herstellen?** Na een nieuwe versie gaat er iets mis: eerst
+`terugzetten.sh` naar de vorige versie. De nieuwere versie komt dan niet
+vanzelf terug; een volgende, nieuwe versie rolt gewoon uit. Veranderde de
+nieuwe versie ook iets in een database, of zijn er gegevens kwijt: daarna
+`herstellen.sh` met de back-up van vlak voor die versie (`uitrol.sh` maakt die
+altijd). Beide maken eerst een back-up van nu, dus beide kun je ongedaan maken.
+Pagina's (`inhoud/`) zet je terug met een revert op GitHub.
 
 Back-ups: elke nacht en vlak voor elke nieuwe versie, naar
 `/var/backups/dg-gemeenschap`, 14 dagen. Kopieer die map naar een andere

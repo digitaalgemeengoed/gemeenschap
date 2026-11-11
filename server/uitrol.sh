@@ -73,15 +73,7 @@ PY
   )
 }
 
-# Antwoorden de adressen? Via Caddy op deze server, zonder DNS.
-gezond() {
-  local domein code adres
-  domein="$(sed -n 's/^DOMEIN=//p' .env)"
-  for adres in "$domein/" "aanmelden.$domein/realms/gemeenschap/.well-known/openid-configuration" "projecten.$domein/login" "kennis.$domein/healthz"; do
-    code="$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 --resolve "${adres%%/*}:443:127.0.0.1" "https://$adres")"
-    [[ "$code" =~ ^[23] ]] || { echo "https://$adres gaf $code"; return 1; }
-  done
-}
+# gezond(): in lib.sh (ook gebruikt door terugzetten.sh).
 
 git fetch --quiet --tags --prune --prune-tags origin || stop "GitHub niet bereikbaar."
 

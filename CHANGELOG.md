@@ -6,6 +6,11 @@
 - De kortere startpagina van 0.8.0 wordt vervangen door de nieuwe, maar alleen als niemand haar heeft gewijzigd.
 - De pagina *Het platform* op de site wijst naar de kennisbank en de architectuurmodellen.
 
+**Terugzetten en herstellen** (nieuw, `server/`):
+- `terugzetten.sh [versie]`: terug naar een eerdere versie van de infrastructuur, met een back-up vooraf en de controle achteraf; lukt het niet, dan staat de huidige versie weer. Nieuwere versies worden gemarkeerd als *niet opnieuw proberen*, zodat de automatische uitrol ze niet meteen weer neerzet.
+- `herstellen.sh [--proef] [map] [onderdelen]`: een back-up terugzetten per onderdeel (Keycloak, WordPress, Redmine, kennisbank). Controleert eerst of de bestanden heel zijn, maakt een back-up van nu, pauzeert de uitrol en vraagt om bevestiging. Met `--proef` zie je alleen wat er zou gebeuren.
+- De gezondheidscontrole (`gezond`) staat nu in `lib.sh`, voor `uitrol.sh` en `terugzetten.sh` samen.
+
 **Opmaak:** de hoofdpagina's (Over ons, Werkwijze, Projecten, Het platform, Meedoen, Crowdfunding, Contact) beginnen nu met een opening in de stijl van de startpagina: titel, lint, inleiding, knoppen, stadsgezicht en (waar er een is) een foto. Op zo'n pagina vervalt de titelbalk van BuddyX met het kruimelpad. De opening is daar wat lager dan op de startpagina. Foto's: *Projecten* (Mizuno Kozuki), *Over ons* (Austin Distel), *Het platform* (Annie Spratt). De knoppen in een opening blijven nu zichtbaar voor wie is ingelogd, behalve op de startpagina.
 
 ## 0.8.0 — 2026-11-11
