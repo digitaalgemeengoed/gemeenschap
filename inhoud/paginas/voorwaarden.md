@@ -22,6 +22,7 @@ Versie 1, [IN TE VULLEN: datum].
 3. Zet er geen vertrouwelijke informatie van je organisatie op, zoals beveiligingsproblemen die nog niet zijn opgelost. Meld die rechtstreeks per mail aan [info@digitaalgemeengoed.nl](mailto:info@digitaalgemeengoed.nl).
 4. Geen reclame, geen werving van leden voor een commercieel doel zonder overleg met de kerngroep.
 5. Wat je plaatst, moet van jou zijn of je moet het mogen delen.
+6. **Documenten** is voor werkdocumenten van het netwerk: notities, verslagen, presentaties, ontwerpen. Zet er geen persoonsgegevens, geen vertrouwelijke stukken van je organisatie en geen stukken die onder een geheimhoudingsplicht vallen. Documenten is geen archief: bewaar wat je organisatie moet bewaren in je eigen systemen.
 
 De kerngroep modereert. Een bericht dat in strijd is met deze voorwaarden, kunnen we aanpassen of verwijderen. Bij herhaling of bij ernstige gevallen kunnen we een account blokkeren.
 

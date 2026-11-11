@@ -33,6 +33,7 @@ punten met een link komen in de onderste regel.
   - [Meldingen en wensen](https://projecten.digitaalgemeengoed.nl)
 - [Kennisbank](https://kennis.digitaalgemeengoed.nl)
   - [Naar de kennisbank](https://kennis.digitaalgemeengoed.nl)
+  - [Documenten](https://documenten.digitaalgemeengoed.nl)
   - [Architectuurmodellen](https://architectuur.digitaalgemeengoed.nl)
   - [Het platform](platform.md)
   - [Open source](open-source.md)
@@ -52,6 +53,7 @@ punten met een link komen in de onderste regel.
   - [Fora](/forum/)
   - [Werkgroepen](/groepen/)
   - [Kennisbank](https://kennis.digitaalgemeengoed.nl)
+  - [Documenten](https://documenten.digitaalgemeengoed.nl)
   - [Meldingen en wensen](https://projecten.digitaalgemeengoed.nl)
 - Goed om te weten
   - [Common Ground](common-ground.md)

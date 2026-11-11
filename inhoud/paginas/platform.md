@@ -28,6 +28,11 @@ Hoe het netwerk werkt, de projecten, de demo's, handleidingen en ervaringen, aan
 
 [[Naar de kennisbank]](https://kennis.digitaalgemeengoed.nl)
 
+### Documenten
+Werkdocumenten bewaren en delen: van de coöperatie en per project, met versies en een paar gegevens per document. Openen in Word of LibreOffice, of koppelen als netwerkschijf. Alleen voor leden.
+
+[[Naar Documenten]](https://documenten.digitaalgemeengoed.nl)
+
 ### Architectuur
 Architectuurmodellen (ArchiMate, in Archi) per project, onder versiebeheer in GitHub en als doorklikbaar rapport. Alleen voor leden.
 
@@ -46,6 +51,6 @@ Inzicht in de status van hosting, onderhoud, ondersteuning en prestaties van de 
 
 ## Wie ziet wat
 
-De fora, het ledenoverzicht, de kennisbank en de architectuurmodellen zijn alleen zichtbaar voor leden die zijn ingelogd. Meldingen en de planning in Redmine zijn openbaar, zodat iedereen kan zien waar we aan werken.
+De fora, het ledenoverzicht, de kennisbank, Documenten en de architectuurmodellen zijn alleen zichtbaar voor leden die zijn ingelogd; in Documenten bovendien alleen voor wie toegang heeft tot de ruimte, map of het document. Meldingen en de planning in Redmine zijn openbaar, zodat iedereen kan zien waar we aan werken.
 
 [dg_lid_worden]

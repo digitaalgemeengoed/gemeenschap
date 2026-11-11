@@ -28,6 +28,8 @@ Contact over privacy: [info@digitaalgemeengoed.nl](mailto:info@digitaalgemeengoe
 | Toestemming voor de nieuwsbrief, met datum van geven en intrekken | De nieuwsbrief en uitnodigingen sturen; kunnen aantonen dat je toestemming gaf | Toestemming |
 | Berichten in de fora, meldingen en reacties in Redmine | Het netwerk en de projecten | Overeenkomst |
 | Pagina's en opmerkingen in de kennisbank, met je naam en e-mailadres bij elke wijziging | Kennis delen; kunnen zien wie wat schreef | Overeenkomst |
+| Documenten die je in Documenten zet, met je naam en e-mailadres bij elke versie en elke handeling (logboek); met wie je iets deelt | Samenwerken aan werkdocumenten; kunnen zien wie wat deed | Overeenkomst |
+| App-wachtwoorden voor de netwerkschijf (alleen een versleutelde afdruk), met de naam van het apparaat en wanneer het voor het laatst werd gebruikt | Inloggen vanuit Verkenner, Finder, Word of LibreOffice | Overeenkomst |
 | Tijdstip van inloggen, IP-adres, mislukte inlogpogingen | Beveiliging: misbruik en inbraakpogingen tegengaan | Gerechtvaardigd belang |
 | Bij een toezegging voor crowdfunding: de gemeente, het bedrag, naam en functie van wie mag tekenen, en wie de toezegging opgaf | De inzameling bijhouden en de samenwerkingsovereenkomst voorbereiden | Gerechtvaardigd belang [IN TE VULLEN: juridisch toetsen] |
 
@@ -39,6 +41,7 @@ Wij gebruiken je gegevens niet voor iets anders, verkopen ze niet en gebruiken g
 - **Berichten in de fora** zijn zichtbaar voor ingelogde leden.
 - **Meldingen en reacties in Redmine** zijn openbaar, met je naam erbij.
 - De **kennisbank** en de **architectuurmodellen** zijn alleen zichtbaar voor ingelogde leden, met je naam bij wat je schreef. De pagina's van de kennisbank staan ook in een besloten repository op GitHub, met je naam en e-mailadres bij elke wijziging.
+- In **Documenten** zie je een ruimte, map of document alleen als je er toegang toe hebt (als lid van het project, de coöperatie of omdat iemand het met je deelde). Wie toegang heeft, ziet wie een document toevoegde of wijzigde. Deelt iemand iets met je, dan krijg je een bericht op de site en een e-mail. Documenten staan op onze eigen server, niet bij een andere partij.
 - Bij **crowdfunding** zien bezoekers alleen het totaalbedrag. Ingelogde leden zien welke gemeenten een toezegging deden, en het bedrag zodra die bevestigd is. Naam en functie van wie mag tekenen en wie de toezegging opgaf, zien alleen de kerngroep en de beheerders.
 - De **kerngroep** en de beheerders zien je gegevens voor zover nodig voor hun taak.
 
