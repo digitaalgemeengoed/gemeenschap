@@ -16,7 +16,7 @@ dc ps --format '  {{.Service}}: {{.Status}}'
 
 meld "Adressen"
 DOMEIN="$(sed -n 's/^DOMEIN=//p' .env)"
-for naam in "kennis.$DOMEIN" "documenten.$DOMEIN" "architectuur.$DOMEIN"; do
+for naam in "kennis.$DOMEIN" "documenten.$DOMEIN" "architectuur.$DOMEIN" "beheer.$DOMEIN"; do
   wijst_hier "$naam" || waarschuw "$naam wijst nog niet naar deze server (DNS); dat deel is nog niet bereikbaar"
 done
 for adres in $(controle_adressen "$DOMEIN"); do
@@ -28,6 +28,9 @@ done
 
 meld "Uitrol vanuit GitHub"
 if systemctl is-active -q dg-uitrol.timer; then ok "Timer actief"; else waarschuw "Timer staat uit: sudo systemctl enable --now dg-uitrol.timer"; fi
+
+meld "Stand van de server voor beheer"
+if systemctl is-active -q dg-status.timer; then ok "Timer actief"; else waarschuw "Timer staat uit: sudo systemctl enable --now dg-status.timer"; fi
 
 meld "Architectuurmodellen"
 if systemctl is-active -q dg-architectuur.timer; then ok "Timer actief"; else waarschuw "Timer staat uit: sudo systemctl enable --now dg-architectuur.timer"; fi

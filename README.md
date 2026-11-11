@@ -15,6 +15,7 @@ Wat hier op `main` en in versie-tags staat, staat binnen vijf minuten live.
 | `kennis.digitaalgemeengoed.nl` | Wiki.js 2 | de kennisbank, alleen voor leden; pagina's ook in de repo `kennisbank` |
 | `architectuur.digitaalgemeengoed.nl` | Archi-rapporten achter oauth2-proxy | de architectuurmodellen, alleen voor leden |
 | `documenten.digitaalgemeengoed.nl` | dg-documenten met Garage (S3) | documenten van de coöperatie en per project, met versies en metadata |
+| `beheer.digitaalgemeengoed.nl` | dg-beheer | leden en rollen, organisaties en de stand van de server, voor de beheerders en de kerngroep |
 
 ## Een pagina wijzigen
 
@@ -57,7 +58,7 @@ alleen beheerders tags `v*` mogen maken.
 | Nieuws, fora, berichten | WordPress | WordPress |
 | Groepen, profielvelden, clients, mailinstellingen van Keycloak | `keycloak/realm/gemeenschap.json` | GitHub (bij elke versie gelijkgetrokken met [keycloak-config-cli](https://github.com/adorsys/keycloak-config-cli)) |
 | Leden, organisaties, wie in welke groep | Keycloak | Terug naar een eerdere versie (containers en instellingen, geen databases) | `sudo /opt/gemeenschap/server/terugzetten.sh` (lijst) / `… terugzetten.sh v0.8.0` |
-| Een back-up terugzetten (databases en bestanden) | `sudo /opt/gemeenschap/server/herstellen.sh` (lijst) / `… herstellen.sh --proef <map>` / `… herstellen.sh <map> [keycloak] [wordpress] [redmine] [kennisbank] [documenten]` |
+| Een back-up terugzetten (databases en bestanden) | `sudo /opt/gemeenschap/server/herstellen.sh` (lijst) / `… herstellen.sh --proef <map>` / `… herstellen.sh <map> [keycloak] [wordpress] [redmine] [kennisbank] [documenten] [beheer]` |
 | Keycloak-beheer |
 | Thema (BuddyX met ons kindthema: logo, kleuren, voet), plugins, instellingen van WordPress, CiviCRM en Redmine | `wordpress/`, `redmine/` | GitHub. Kleuren en voet staan vast in `wordpress/thema/digitaalgemeengoed/functions.php`; wat in de Customizer staat, telt daarvoor niet. |
 | Pagina's van de kennisbank | Wiki.js (database) | in de wiki; met de Git-opslag ook als Markdown in de repo `kennisbank` (beide richtingen, elke vijf minuten) |
@@ -97,6 +98,7 @@ wordpress/inrichten.sh      wp-cli: WordPress, plugins, CiviCRM
 redmine/                    image met redmine_oauth, inrichten, groepssync
 wiki/                       de kennisbank: image (vertalingen, logo, offline), inrichten.py, startinhoud/
 documenten/                 dg-documenten (Go): register, bestandsbeheerder, Garage-instellingen, ONTWERP.md
+beheer/                     dg-beheer (Go): leden en rollen, organisaties, platform, ONTWERP.md
 architectuur/repos.txt      de architectuurmodellen (één repo per project)
 caddy/Caddyfile             de adressen, certificaten, afscherming
 compose.yml                 alle containers
@@ -234,6 +236,26 @@ vertrouwelijke stukken: zie de Voorwaarden.
 Back-up: het register per nacht (`documenten.dump`), de objecten in één
 spiegel die alleen aangroeit (`/var/backups/dg-gemeenschap-objecten`). Kopieer
 die map ook naar buiten de server.
+
+## Beheer
+
+`beheer.<domein>` (op de site: *Beheer* op je eigen profiel): voor de
+beheerders van het platform (`/site/beheer`) en de kerngroep
+(`/netwerk/kerngroep`).
+
+- **Leden en rollen**: zoeken (ook per groep), het account bekijken en rollen
+  geven of afnemen. De kerngroep geeft contributor en member; de beheerders
+  alles, en zij kunnen ook accounts blokkeren en iemand overal uitloggen.
+- **Organisaties** (Keycloak Organizations): naam, e-maildomeinen en leden.
+  Wijzigen doen de beheerders.
+- **Platform**: versie, diensten, laatste back-up, schijf, geheugen en de
+  laatste uitrol (uit `server/status.sh`, elke vijf minuten), met links naar
+  het beheer van de andere onderdelen.
+- **Logboek**: elke wijziging met naam en verplichte reden.
+
+De laatste beheerder blijft beheerder. Nog zonder tweede factor (MFA); zie
+`beheer/ONTWERP.md` voor de afwegingen, ook over de rechten van het service
+account in Keycloak.
 
 ## Installeren
 

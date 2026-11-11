@@ -95,6 +95,14 @@ documenten.{$DOMEIN} {
 	}
 }
 
+# Beheer (dg-beheer): voor de beheerders van het platform en de kerngroep.
+# De dienst controleert zelf wie er binnenkomt (Keycloak).
+beheer.{$DOMEIN} {
+	import beveiliging
+	import toegang-{$DG_TOEGANG:open}
+	reverse_proxy beheer:8080
+}
+
 # De architectuurmodellen: de HTML-rapporten van Archi (server/architectuur.sh
 # bouwt ze in /srv/dg-architectuur). Alleen voor leden: oauth2-proxy vraagt
 # Keycloak wie er is; wie niet is ingelogd, gaat eerst naar het inloggen.

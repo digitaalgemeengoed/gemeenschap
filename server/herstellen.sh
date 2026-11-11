@@ -10,7 +10,8 @@
 # Onderdelen: keycloak (leden, groepen, organisaties), wordpress (site, fora,
 # CiviCRM, uploads), redmine (meldingen, bestanden), kennisbank (wiki, bestanden),
 # documenten (het register; ontbrekende objecten komen uit de spiegel in
-# /var/backups/dg-gemeenschap-objecten).
+# /var/backups/dg-gemeenschap-objecten), beheer (het logboek van beheer;
+# samengevoegd, er gaat niets verloren).
 # Zonder onderdelen vraagt het per onderdeel.
 #
 # Eerst maakt het een back-up van nu, zodat ook het herstellen ongedaan kan.
@@ -44,7 +45,7 @@ if [ -z "${1:-}" ]; then
     printf '  %-20s %6s   %s\n' "$(basename "$d")" "$(du -sh "$d" | cut -f1)" "$(cd "$d" && ls | tr '\n' ' ')"
   done
   echo
-  echo "  Terugzetten: sudo $DG_MAP/server/herstellen.sh <map> [keycloak] [wordpress] [redmine] [kennisbank] [documenten]"
+  echo "  Terugzetten: sudo $DG_MAP/server/herstellen.sh <map> [keycloak] [wordpress] [redmine] [kennisbank] [documenten] [beheer]"
   echo "  Eerst kijken wat er zou gebeuren: sudo $DG_MAP/server/herstellen.sh --proef <map>"
   exit 0
 fi
@@ -61,8 +62,9 @@ declare -A BESTANDEN=(
   [redmine]="redmine.dump redmine-bestanden.tar.gz"
   [kennisbank]="kennisbank.dump kennisbank-bestanden.tar.gz"
   [documenten]="documenten.dump"
+  [beheer]="beheer-logboek.jsonl"
 )
-ALLE=(keycloak wordpress redmine kennisbank documenten)
+ALLE=(keycloak wordpress redmine kennisbank documenten beheer)
 GEKOZEN=()
 if [ $# -gt 0 ]; then
   for o in "$@"; do
@@ -147,6 +149,10 @@ for o in "${GEKOZEN[@]}"; do
       pg_terug documenten-db documenten documenten "$MAP/documenten.dump"
       doe "dc run --rm -T --no-deps -u 0 -v '$DOC_SPIEGEL:/spiegel:ro' documenten terugspiegelen /spiegel"
       doe "dc start documenten >/dev/null"
+      ;;
+    beheer)
+      # Samenvoegen: regels die er al staan blijven, ontbrekende komen terug.
+      doe "dc exec -T beheer dg-beheer logboek-terug < '$MAP/beheer-logboek.jsonl'"
       ;;
   esac
   if [ "$PROEF" = 1 ]; then ok "$o zou worden teruggezet"; else ok "$o teruggezet"; fi

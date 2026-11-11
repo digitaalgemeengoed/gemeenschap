@@ -85,6 +85,7 @@ wacht() {
 keycloak_klaar()  { curl -fsS -o /dev/null http://127.0.0.1:8080/realms/master/.well-known/openid-configuration; }
 wordpress_klaar() { dc exec -T wordpress curl -fsS -o /dev/null http://localhost/wp-includes/images/blank.gif; }
 documenten_klaar() { dc exec -T documenten dg-documenten gezond; }
+beheer_klaar()    { dc exec -T beheer dg-beheer gezond; }
 redmine_klaar()   { dc exec -T redmine ruby -rnet/http -e 'exit Net::HTTP.get_response(URI("http://localhost:3000/login")).code.to_i < 400'; }
 
 # De nieuwste versie-tag (vX.Y.Z) die op main staat; leeg als er geen is.
@@ -100,13 +101,14 @@ DOC_SPIEGEL="${DG_DOC_SPIEGEL:-/var/backups/dg-gemeenschap-objecten}"
 # Wijst deze naam al naar deze server? (Zonder DNS heeft Caddy geen certificaat.)
 wijst_hier() { [ "$(getent ahostsv4 "$1" | awk 'NR==1{print $1}')" = "$(publiek_ip)" ]; }
 
-# De adressen om te controleren: altijd de drie basisadressen; de kennisbank
-# en de documenten zodra hun naam naar deze server wijst.
+# De adressen om te controleren: altijd de drie basisadressen; de kennisbank,
+# de documenten en beheer zodra hun naam naar deze server wijst.
 controle_adressen() {
   local domein="$1"
   echo "$domein/" "aanmelden.$domein/realms/gemeenschap/.well-known/openid-configuration" "projecten.$domein/login"
   if wijst_hier "kennis.$domein"; then echo "kennis.$domein/healthz"; fi
   if wijst_hier "documenten.$domein"; then echo "documenten.$domein/healthz"; fi
+  if wijst_hier "beheer.$domein"; then echo "beheer.$domein/healthz"; fi
 }
 
 gezond() {

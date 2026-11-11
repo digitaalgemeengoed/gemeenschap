@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 # Dagelijkse back-up van het gemeenschapsplatform: de vijf databases
 # (Keycloak, WordPress met CiviCRM, Redmine, de kennisbank, de documenten), de
-# uploads van WordPress en de bestanden van Redmine en de kennisbank. Bewaart
-# 14 dagen in /var/backups/dg-gemeenschap. De documenten zelf (de objecten)
-# staan in één spiegel: /var/backups/dg-gemeenschap-objecten.
+# uploads van WordPress, de bestanden van Redmine en de kennisbank en het
+# logboek van beheer. Bewaart 14 dagen in /var/backups/dg-gemeenschap. De
+# documenten zelf (de objecten) staan in één spiegel:
+# /var/backups/dg-gemeenschap-objecten.
 # Draait elke nacht (cron) en vlak voor elke nieuwe versie (uitrol.sh).
 #
 # Kopieer beide mappen ook naar een plek buiten deze server (bijvoorbeeld met
@@ -36,6 +37,10 @@ dc exec -T redmine tar -C /usr/src/redmine -czf - files > "$DOEL/redmine-bestand
 dc exec -T documenten-db pg_dump -U documenten -Fc documenten > "$DOEL/documenten.dump"
 install -d -m 700 "$DOC_SPIEGEL"
 dc run --rm -T --no-deps -u 0 -v "$DOC_SPIEGEL:/spiegel" documenten spiegel /spiegel
+
+# Het logboek van beheer (wie wijzigde welke rol, en waarom).
+dc exec -T beheer dg-beheer logboek > "$DOEL/beheer-logboek.jsonl" || waarschuw "Logboek van beheer: niet gelukt"
+[ -s "$DOEL/beheer-logboek.jsonl" ] || rm -f "$DOEL/beheer-logboek.jsonl"
 
 find /var/backups/dg-gemeenschap -mindepth 1 -maxdepth 1 -type d -mtime +14 -exec rm -rf {} +
 ok "Back-up in $DOEL ($(du -sh "$DOEL" | cut -f1))"

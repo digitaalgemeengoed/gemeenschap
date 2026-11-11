@@ -1,0 +1,10 @@
+[Unit]
+Description=Digitaal GemeenGoed: stand van de server voor het beheerscherm
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/opt/gemeenschap/server/status.sh
+TimeoutStartSec=2min
+Nice=10

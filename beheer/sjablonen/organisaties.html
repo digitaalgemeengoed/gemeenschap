@@ -1,0 +1,24 @@
+{{define "inhoud"}}
+{{$csrf := .Sessie.CSRF}}{{$rol := .Sessie.Rol}}
+<h1>Organisaties</h1>
+<p class="zacht">De deelnemende gemeenten en organisaties. Wie zich aanmeldt met een e-mailadres op een van de domeinen, hoort bij die organisatie (de site gebruikt dat onder meer bij de crowdfunding).</p>
+<table class="lijst">
+<thead><tr><th>Organisatie</th><th>Domeinen</th><th class="r">Leden</th><th>Status</th></tr></thead>
+<tbody>{{range .Data}}
+<tr><td><a href="/organisaties/{{.ID}}">{{.Naam}}</a><small>{{.Alias}}</small></td><td>{{join .DomeinNamen ", "}}</td><td class="r">{{.Leden}}</td><td>{{if .Actief}}actief{{else}}<span class="chip grijs">uit</span>{{end}}</td></tr>
+{{else}}<tr><td colspan="4" class="zacht">Nog geen organisaties.</td></tr>{{end}}
+</tbody></table>
+{{if $rol.MagOrganisaties}}
+<section class="blok smal">
+<h2>Organisatie toevoegen</h2>
+<form method="post" action="/organisaties" class="formulier">
+  <input type="hidden" name="csrf" value="{{$csrf}}">
+  <label>Naam <input name="naam" required maxlength="120" placeholder="Gemeente Zandvoort"></label>
+  <label>Domeinen <input name="domeinen" required placeholder="zandvoort.nl"><small>Meer dan één? Scheid ze met een komma.</small></label>
+  <label>Beschrijving <input name="beschrijving" maxlength="500"></label>
+  <label>Reden <input name="reden" required minlength="5" maxlength="500" placeholder="Bijvoorbeeld: nieuwe deelnemer sinds november"></label>
+  <button>Toevoegen</button>
+</form>
+</section>
+{{end}}
+{{end}}

@@ -1,0 +1,29 @@
+{{define "inhoud"}}
+{{$d := .Data}}
+<h1>Leden en rollen</h1>
+<form class="zoek" method="get" action="/leden">
+  <label class="verborgen" for="zoek">Zoeken</label>
+  <input id="zoek" name="zoek" value="{{$d.Zoek}}" placeholder="Naam, e-mailadres of gebruikersnaam">
+  <label class="verborgen" for="groep">Groep</label>
+  <select id="groep" name="groep">
+    <option value="">Alle leden</option>
+    {{range $d.Groepen}}{{if and (ne .Pad "/netwerk") (ne .Pad "/site")}}<option value="{{.Pad}}"{{if eq .Pad $d.Groep}} selected{{end}}>{{groepNaam .Pad}}</option>{{end}}{{end}}
+  </select>
+  <button>Zoeken</button>
+</form>
+<p class="zacht">{{if ge $d.Totaal 0}}{{$d.Totaal}} {{if eq $d.Totaal 1}}lid{{else}}leden{{end}}{{if $d.Zoek}} gevonden{{end}}.{{else if $d.Groep}}Leden van {{groepNaam $d.Groep}}{{if $d.Zoek}} met “{{$d.Zoek}}”{{end}}.{{end}}</p>
+{{if $d.Lijst}}
+<table class="lijst">
+<thead><tr><th>Naam</th><th>E-mailadres</th><th>Organisatie</th><th>Lid sinds</th><th>Account</th></tr></thead>
+<tbody>{{range $d.Lijst}}
+<tr>
+  <td><a href="/leden/{{.ID}}">{{.Naam}}</a></td>
+  <td>{{.Email}}{{if and .Email (not .EmailBevestigd)}} <span class="chip grijs" title="E-mailadres nog niet bevestigd">niet bevestigd</span>{{end}}</td>
+  <td>{{.Kenmerk "organisatie"}}</td>
+  <td class="nw">{{dag .AangemaaktOp}}</td>
+  <td>{{if .Actief}}actief{{else}}<span class="chip rood">geblokkeerd</span>{{end}}</td>
+</tr>{{end}}
+</tbody></table>
+{{else}}<p>Geen leden gevonden.</p>{{end}}
+<p class="bladeren">{{with $d.Vorige}}<a href="{{.}}">← Vorige</a>{{end}} {{if or $d.Vorige $d.Volgende}}<span class="zacht">pagina {{$d.Pagina}}</span>{{end}} {{with $d.Volgende}}<a href="{{.}}">Volgende →</a>{{end}}</p>
+{{end}}

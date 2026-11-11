@@ -359,6 +359,24 @@ add_action(
 					},
 				)
 			);
+			// Beheer (beheer.<domein>): alleen voor de beheerders van het
+			// platform en de kerngroep. Alleen een link; de beheerdienst
+			// controleert zelf in Keycloak wie er binnenkomt.
+			$groepen = (array) get_user_meta( get_current_user_id(), 'dg_groepen', true );
+			if ( array_intersect( $groepen, array( '/site/beheer', '/netwerk/kerngroep' ) ) ) {
+				bp_core_new_nav_item(
+					array(
+						'name'                    => 'Beheer',
+						'slug'                    => 'beheer',
+						'position'                => 95,
+						'show_for_displayed_user' => false,
+						'screen_function'         => static function () {
+							wp_redirect( 'https://beheer.' . wp_parse_url( home_url(), PHP_URL_HOST ) . '/' );
+							exit;
+						},
+					)
+				);
+			}
 		}
 		if ( function_exists( 'bp_is_group' ) && bp_is_group() ) {
 			$groep = groups_get_current_group();

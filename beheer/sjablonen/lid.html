@@ -1,0 +1,62 @@
+{{define "inhoud"}}
+{{$d := .Data}}{{$l := $d.Lid}}{{$csrf := .Sessie.CSRF}}{{$rol := .Sessie.Rol}}
+<p class="kruimels"><a href="/leden">Leden en rollen</a> ›</p>
+<h1>{{$l.Naam}}{{if not $l.Actief}} <span class="chip rood">geblokkeerd</span>{{end}}{{if $d.Zelf}} <span class="chip grijs">jij</span>{{end}}</h1>
+<div class="twee">
+<section class="blok">
+<h2>Account</h2>
+<dl class="feiten">
+  <dt>E-mailadres</dt><dd>{{$l.Email}} {{if $l.EmailBevestigd}}<span class="zacht">(bevestigd)</span>{{else}}<span class="chip grijs">niet bevestigd</span>{{end}}</dd>
+  <dt>Gebruikersnaam</dt><dd>{{$l.Gebruikersnaam}}</dd>
+  {{with $l.Kenmerk "organisatie"}}<dt>Organisatie (opgegeven)</dt><dd>{{.}}</dd>{{end}}
+  {{with $l.Kenmerk "functie"}}<dt>Functie</dt><dd>{{.}}</dd>{{end}}
+  {{with $l.Kenmerk "werkveld"}}<dt>Werkveld</dt><dd>{{.}}</dd>{{end}}
+  <dt>Gekoppeld aan</dt><dd>{{range $i, $o := $d.Organisaties}}{{if $i}}, {{end}}<a href="/organisaties/{{$o.ID}}">{{$o.Naam}}</a>{{else}}<span class="zacht">geen organisatie</span>{{end}}</dd>
+  <dt>Lid sinds</dt><dd>{{datum $l.AangemaaktOp}}</dd>
+  <dt>Ingelogd</dt><dd>{{with $d.Sessies}}{{.}} actieve sessie(s){{else}}<span class="zacht">nu niet</span>{{end}}</dd>
+</dl>
+{{if $rol.Beheer}}
+<div class="acties">
+{{if not $d.Zelf}}
+<form method="post" action="/leden/{{$l.ID}}/actief">
+  <input type="hidden" name="csrf" value="{{$csrf}}">
+  <input type="hidden" name="actief" value="{{if $l.Actief}}nee{{else}}ja{{end}}">
+  <label>Reden <input name="reden" required minlength="5" maxlength="500" placeholder="{{if $l.Actief}}Waarom blokkeren?{{else}}Waarom weer aanzetten?{{end}}"></label>
+  <button class="{{if $l.Actief}}gevaar{{else}}licht{{end}}">{{if $l.Actief}}Account blokkeren{{else}}Account weer aanzetten{{end}}</button>
+</form>
+{{end}}
+{{if $d.Sessies}}
+<form method="post" action="/leden/{{$l.ID}}/uitloggen">
+  <input type="hidden" name="csrf" value="{{$csrf}}">
+  <label>Reden <input name="reden" required minlength="5" maxlength="500" placeholder="Waarom overal uitloggen?"></label>
+  <button class="licht">Overal uitloggen</button>
+</form>
+{{end}}
+</div>
+{{end}}
+</section>
+
+<section class="blok">
+<h2>Rollen</h2>
+<form method="post" action="/leden/{{$l.ID}}/groepen" class="rollen">
+  <input type="hidden" name="csrf" value="{{$csrf}}">
+  {{range $d.Groepen}}
+  <label class="rol{{if not .Mag}} vast{{end}}">
+    {{if .Mag}}<input type="checkbox" name="groep" value="{{.Pad}}"{{if .Erin}} checked{{end}}>{{else}}<input type="checkbox" value="{{.Pad}}" disabled{{if .Erin}} checked{{end}}>{{end}}
+    <span>{{groepNaam .Pad}}<small>{{.Pad}}</small></span>
+  </label>
+  {{end}}
+  {{if not $rol.Beheer}}<p class="zacht klein">Als kerngroep geef en neem je de rollen contributor en member. De andere rollen regelen de beheerders van het platform.</p>{{end}}
+  <label class="breed">Reden <input name="reden" required minlength="5" maxlength="500" placeholder="Bijvoorbeeld: besluit kerngroep 12 november"></label>
+  <button>Rollen opslaan</button>
+</form>
+</section>
+</div>
+
+{{with $d.Logboek}}
+<section class="blok">
+<h2>In het logboek</h2>
+{{template "regels" .}}
+</section>
+{{end}}
+{{end}}

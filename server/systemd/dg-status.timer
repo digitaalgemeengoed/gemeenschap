@@ -1,0 +1,9 @@
+[Unit]
+Description=Digitaal GemeenGoed: elke vijf minuten de stand van de server bijwerken
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=5min
+
+[Install]
+WantedBy=timers.target

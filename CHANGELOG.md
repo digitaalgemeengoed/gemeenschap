@@ -2,6 +2,19 @@
 
 ## Nog niet uitgebracht
 
+**Beheer: een beheerscherm voor de beheerders van het platform en de kerngroep** (`beheer.<domein>`, op de site *Beheer* op je eigen profiel).
+- **Leden en rollen**: zoeken (ook per groep), account bekijken (organisatie, rollen, sessies, logboek) en rollen geven of afnemen. De kerngroep geeft en neemt contributor en member; de beheerders alle rollen, en zij kunnen ook een account blokkeren en iemand overal uitloggen.
+- **Organisaties**: de deelnemende organisaties met hun e-maildomeinen en leden. Bekijken: beheer en kerngroep; toevoegen, wijzigen en leden koppelen: beheer.
+- **Platform**: versie, diensten, laatste back-up, schijf, geheugen en de laatste uitrol, met links naar het beheer van Documenten, de site, Redmine, de kennisbank en Keycloak. De gegevens komen van `server/status.sh` (systemd-timer `dg-status`, elke vijf minuten).
+- **Logboek**: elke wijziging met wie, wanneer, wat en een verplichte reden. Mee in de back-up (`beheer-logboek.jsonl`); `herstellen.sh <map> beheer` voegt het weer samen.
+- Waarborgen: de laatste beheerder blijft beheerder; je blokkeert jezelf niet. Wie wat mag, wordt bij elk verzoek in Keycloak nagekeken (hooguit een minuut oud).
+- Nieuw in Keycloak: de clients `beheer` (inloggen) en `beheer-keycloak` (service account met `manage-users` en `manage-realm`; dat laatste is nodig voor de organisaties). Zie `beheer/ONTWERP.md` voor het risico.
+- Nieuw in `.env` (vanzelf aangemaakt): `BEHEER_CLIENT_SECRET`, `BEHEER_KEYCLOAK_SECRET`, `BEHEER_SESSIE_GEHEIM`.
+- **Na het uitrollen**: een A-record voor `beheer.<domein>` naar de server. Zolang dat er niet is, heeft Caddy geen certificaat en slaat de controle na de uitrol dit adres over.
+- Nog zonder tweede factor (MFA); dat komt in een volgende fase.
+
+## 0.11.2 — 2026-11-11
+
 - Documenten: **de beheerders van het platform** (`/site/beheer`) hebben nu ook altijd recht op *Mijn documenten*, naast de kerngroep, werkgroepen en projecten. Beide groepen komen rechtstreeks uit Keycloak.
 - Documenten: foutpagina's met een Nederlandse titel (Geen toegang, Niet gevonden …).
 

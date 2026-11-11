@@ -1,0 +1,7 @@
+{{define "inhoud"}}
+{{$d := .Data}}
+<h1>Logboek</h1>
+<p class="zacht">Elke wijziging in beheer, de nieuwste eerst (hooguit 300). Wijzigingen in de console van Keycloak staan hier niet in; die houdt Keycloak zelf bij als de admin-events aan staan.</p>
+<form class="zoek" method="get" action="/logboek"><label class="verborgen" for="zoek">Zoeken</label><input id="zoek" name="zoek" value="{{$d.Zoek}}" placeholder="E-mailadres, organisatie of handeling"><button>Zoeken</button></form>
+{{if $d.Regels}}{{template "regels" $d.Regels}}{{else}}<p class="zacht">Niets gevonden.</p>{{end}}
+{{end}}

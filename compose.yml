@@ -151,6 +151,9 @@ services:
       ARCH_CLIENT_SECRET: ${ARCH_CLIENT_SECRET:?}
       DOC_BASIS_URL: https://documenten.${DOMEIN}
       DOC_CLIENT_SECRET: ${DOC_CLIENT_SECRET:?}
+      BEHEER_BASIS_URL: https://beheer.${DOMEIN}
+      BEHEER_CLIENT_SECRET: ${BEHEER_CLIENT_SECRET:?}
+      BEHEER_KEYCLOAK_SECRET: ${BEHEER_KEYCLOAK_SECRET:?}
     volumes:
       - ./keycloak/realm:/config:ro
     depends_on: [keycloak]
@@ -444,6 +447,41 @@ services:
       documenten-db: { condition: service_healthy }
       garage: { condition: service_started }
 
+  # --- Beheer (beheer.<domein>): voor de beheerders en de kerngroep -----------------
+  # Leden en rollen en organisaties (Keycloak, met het service account
+  # beheer-keycloak) en de stand van de server (het statusbestand van
+  # server/status.sh, alleen-lezen). Zie beheer/ONTWERP.md.
+  beheer:
+    build:
+      context: .
+      dockerfile: beheer/Dockerfile
+    image: dg/beheer:latest
+    restart: unless-stopped
+    environment:
+      BEHEER_BASIS_URL: https://beheer.${DOMEIN}
+      OIDC_UITGEVER: https://aanmelden.${DOMEIN}/realms/gemeenschap
+      OIDC_INTERN: http://keycloak:8080/realms/gemeenschap
+      OIDC_CLIENT_ID: beheer
+      OIDC_CLIENT_GEHEIM: ${BEHEER_CLIENT_SECRET:?}
+      SESSIE_GEHEIM: ${BEHEER_SESSIE_GEHEIM:?}
+      KEYCLOAK_CLIENT_ID: beheer-keycloak
+      KEYCLOAK_GEHEIM: ${BEHEER_KEYCLOAK_SECRET:?}
+      SITE_URL: https://${DOMEIN}
+      PROJECTEN_URL: https://projecten.${DOMEIN}
+      KENNIS_URL: https://kennis.${DOMEIN}
+      DOCUMENTEN_URL: https://documenten.${DOMEIN}
+    volumes:
+      - beheerdata:/data
+      - /var/lib/dg-gemeenschap/status:/status:ro
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    healthcheck:
+      test: ["CMD", "dg-beheer", "gezond"]
+      interval: 15s
+      retries: 10
+    depends_on: [keycloak]
+
 volumes:
   wikidb:
   wikidata:
@@ -458,3 +496,4 @@ volumes:
   garagedata:
   docdb:
   doctmp:
+  beheerdata:

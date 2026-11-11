@@ -529,6 +529,61 @@
       ]
     },
     {
+      "clientId": "beheer",
+      "name": "Beheer",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "$(env:BEHEER_CLIENT_SECRET)",
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "implicitFlowEnabled": false,
+      "serviceAccountsEnabled": false,
+      "frontchannelLogout": true,
+      "rootUrl": "$(env:BEHEER_BASIS_URL)",
+      "baseUrl": "$(env:BEHEER_BASIS_URL)",
+      "redirectUris": [
+        "$(env:BEHEER_BASIS_URL)/oidc/terug"
+      ],
+      "webOrigins": [
+        "+"
+      ],
+      "attributes": {
+        "post.logout.redirect.uris": "$(env:DG_BASIS_URL)/*",
+        "backchannel.logout.session.required": "true",
+        "pkce.code.challenge.method": "S256"
+      },
+      "defaultClientScopes": [
+        "web-origins",
+        "acr",
+        "profile",
+        "roles",
+        "basic",
+        "email"
+      ],
+      "optionalClientScopes": []
+    },
+    {
+      "clientId": "beheer-keycloak",
+      "name": "Beheer: Keycloak bijwerken",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "$(env:BEHEER_KEYCLOAK_SECRET)",
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "defaultClientScopes": [
+        "basic",
+        "roles",
+        "kc-admin-api"
+      ],
+      "optionalClientScopes": [],
+      "fullScopeAllowed": false
+    },
+    {
       "clientId": "architectuur",
       "name": "Architectuurmodellen",
       "enabled": true,
@@ -610,6 +665,20 @@
           "query-users"
         ]
       }
+    },
+    {
+      "username": "service-account-beheer-keycloak",
+      "enabled": true,
+      "serviceAccountClientId": "beheer-keycloak",
+      "clientRoles": {
+        "realm-management": [
+          "view-users",
+          "query-users",
+          "query-groups",
+          "manage-users",
+          "manage-realm"
+        ]
+      }
     }
   ],
   "attributes": {
@@ -668,6 +737,16 @@
           "view-users",
           "query-groups",
           "query-users"
+        ]
+      },
+      {
+        "client": "beheer-keycloak",
+        "roles": [
+          "view-users",
+          "query-users",
+          "query-groups",
+          "manage-users",
+          "manage-realm"
         ]
       }
     ]

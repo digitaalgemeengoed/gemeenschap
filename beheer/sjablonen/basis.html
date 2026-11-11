@@ -1,0 +1,46 @@
+{{define "basis"}}<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>{{.Titel}} · Beheer · Digitaal GemeenGoed</title>
+<link rel="icon" href="/statisch/icoon.png">
+<link rel="stylesheet" href="/statisch/stijl.css">
+</head>
+<body>
+<header class="kop">
+  <a class="merk" href="/"><img src="/statisch/icoon.png" alt="" width="36" height="36"><span><b>Digitaal GemeenGoed</b><small>Beheer</small></span></a>
+  {{with .Sessie}}
+  <form class="wie" method="post" action="/uitloggen">
+    <span title="{{.Email}}">{{.Naam}}{{with .Rol.Naam}} <small>{{.}}</small>{{end}}</span>
+    <input type="hidden" name="csrf" value="{{.CSRF}}">
+    <button class="link">Uitloggen</button>
+  </form>
+  {{end}}
+</header>
+{{if and .Sessie .Sessie.Rol.Naam}}
+<nav class="menu" aria-label="Beheer">
+  <a href="/"{{if eq .Hier "start"}} aria-current="page"{{end}}>Overzicht</a>
+  <a href="/leden"{{if eq .Hier "leden"}} aria-current="page"{{end}}>Leden en rollen</a>
+  <a href="/organisaties"{{if eq .Hier "organisaties"}} aria-current="page"{{end}}>Organisaties</a>
+  <a href="/platform"{{if eq .Hier "platform"}} aria-current="page"{{end}}>Platform</a>
+  <a href="/logboek"{{if eq .Hier "logboek"}} aria-current="page"{{end}}>Logboek</a>
+</nav>
+{{end}}
+<main>
+{{with .Melding}}<p class="melding" role="status">{{.}}</p>{{end}}
+{{with .Fout}}<p class="fout" role="alert">{{.}}</p>{{end}}
+{{template "inhoud" .}}
+</main>
+<footer class="voet">Elke wijziging hier komt met je naam en je reden in het logboek.</footer>
+</body>
+</html>{{end}}
+
+{{define "regels"}}
+<table class="lijst">
+<thead><tr><th>Wanneer</th><th>Wie</th><th>Wat</th><th>Reden</th></tr></thead>
+<tbody>{{range .}}
+<tr><td class="nw">{{datum .Tijd}}</td><td>{{.Naam}}<small>{{.Wie}}</small></td><td><b>{{.Actie}}</b> {{.Onderwerp}}{{with .Details}}<small>{{.}}</small>{{end}}</td><td>{{.Reden}}</td></tr>
+{{end}}</tbody></table>
+{{end}}

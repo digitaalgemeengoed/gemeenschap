@@ -37,6 +37,13 @@ vul_env_aan .env GARAGE_RPC_GEHEIM "$(geheim 32)"
 vul_env_aan .env GARAGE_SLEUTEL "GK$(geheim 12)"
 vul_env_aan .env GARAGE_GEHEIM "$(geheim 32)"
 vul_env_aan .env DOC_BERICHT_GEHEIM "$(geheim 32)"
+# Sinds 0.12.0: beheer (dg-beheer).
+vul_env_aan .env BEHEER_CLIENT_SECRET "$(geheim 32)"
+vul_env_aan .env BEHEER_KEYCLOAK_SECRET "$(geheim 32)"
+vul_env_aan .env BEHEER_SESSIE_GEHEIM "$(geheim 32)"
+# Het statusbestand voor het beheerscherm (server/status.sh); de map moet er
+# zijn voordat de container hem koppelt.
+install -d -m 755 "$DG_STAAT/status"
 # De sleutel waarmee de wiki zijn pagina's naar GitHub schrijft (deploy key).
 install -d -m 700 "$DG_MAP/geheimen"
 if [ ! -f "$DG_MAP/geheimen/kennisbank" ]; then
@@ -86,6 +93,9 @@ meld "Redmine bijwerken"
 dc exec -T -u redmine redmine bundle exec rails runner /usr/local/share/dg/inrichten.rb >/dev/null || stop "Redmine inrichten mislukt. Kijk met: sudo docker compose -f $DG_MAP/$COMPOSE logs redmine"
 dc restart redmine-groepen >/dev/null
 
+wacht "Beheer" 30 beheer_klaar || stop "De beheerdienst start niet. Kijk met: sudo docker compose -f $DG_MAP/$COMPOSE logs beheer"
+ok "Beheer draait"
+
 wacht "Documenten" 30 documenten_klaar || stop "De documentendienst start niet. Kijk met: sudo docker compose -f $DG_MAP/$COMPOSE logs documenten garage"
 ok "Documenten draait"
 
@@ -96,6 +106,12 @@ systemctl daemon-reload
 systemctl enable --now dg-architectuur.timer >/dev/null 2>&1 || waarschuw "Timer dg-architectuur starten lukte niet"
 systemctl start --no-block dg-architectuur.service || true
 ok "Architectuurmodellen: elk kwartier bijwerken (systemd-timer dg-architectuur)"
+# Stand van de server voor het beheerscherm: elke vijf minuten.
+install -m 644 "$DG_MAP/server/systemd/dg-status.service" "$DG_MAP/server/systemd/dg-status.timer" /etc/systemd/system/
+systemctl daemon-reload
+systemctl enable --now dg-status.timer >/dev/null 2>&1 || waarschuw "Timer dg-status starten lukte niet"
+systemctl start --no-block dg-status.service || true
+ok "Stand van de server voor beheer: elke vijf minuten (systemd-timer dg-status)"
 docker image prune -f >/dev/null
 ok "Bijgewerkt"
 echo

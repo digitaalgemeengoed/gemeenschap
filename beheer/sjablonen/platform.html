@@ -1,0 +1,43 @@
+{{define "inhoud"}}
+{{$d := .Data}}{{$l := $d.Links}}
+<h1>Platform</h1>
+{{with $d.Status}}
+<p class="zacht">Stand van {{datum .Tijd}}{{if .Oud}} — <span class="chip rood">verouderd</span> de statustimer op de server loopt niet (<code>systemctl status dg-status.timer</code>){{end}}.</p>
+<div class="tegels">
+  <div class="tegel"><b>Versie</b><span>Infrastructuur {{.Infra}}{{with .Inhoud}}<br>Inhoud {{.}}{{end}}</span>
+    {{if .Pauze}}<span class="chip rood">uitrol gepauzeerd</span>{{end}}
+    {{range .Mislukt}}<span class="chip rood">{{.}} mislukt</span>{{end}}</div>
+  <div class="tegel"><b>Back-up</b>{{if .BackUp.Map}}<span>{{datum .BackUp.Tijd}}, {{grootte .BackUp.Bytes}}{{if .Spiegel}}<br>Documenten (spiegel): {{grootte .Spiegel}}{{end}}</span>{{end}}
+    {{if .BackUpOud}}<span class="chip rood">ouder dan een dag</span>{{end}}</div>
+  <div class="tegel"><b>Schijf</b><span>{{grootte .Schijf.Vrij}} vrij van {{grootte .Schijf.Totaal}}</span>{{if .SchijfVol}}<span class="chip rood">bijna vol</span>{{end}}</div>
+  <div class="tegel"><b>Geheugen</b><span>{{grootte .Geheugen.Beschikbaar}} beschikbaar van {{grootte .Geheugen.Totaal}}</span>{{with .Opgestart}}<span class="zacht klein">server aan sinds {{.}}</span>{{end}}</div>
+</div>
+<section class="blok">
+<h2>Diensten</h2>
+<table class="lijst">
+<thead><tr><th>Dienst</th><th>Stand</th><th>Beeld</th></tr></thead>
+<tbody>{{range .Diensten}}
+<tr><td>{{.Naam}}</td><td>{{if .Goed}}<span class="chip groen">{{.Status}}</span>{{else}}<span class="chip rood">{{.Status}}</span>{{end}}</td><td class="klein zacht">{{.Beeld}}</td></tr>
+{{end}}</tbody></table>
+</section>
+{{with .Uitrol}}
+<section class="blok">
+<h2>Uitrol</h2>
+<pre class="log">{{range .}}{{.}}
+{{end}}</pre>
+</section>
+{{end}}
+{{else}}
+<p class="fout">Er is (nog) geen status van de server: {{$d.Fout}}. Die komt van de timer <code>dg-status</code>, die bij een nieuwe versie wordt ingericht.</p>
+{{end}}
+<section class="blok">
+<h2>Elders beheren</h2>
+<ul class="links">
+  {{with $l.Documenten}}<li><a href="{{.}}/beheer">Documenten</a> — ruimtes, quota en prullenbakken</li>{{end}}
+  <li><a href="{{$l.Site}}/wp-admin/">De site (WordPress)</a> — pagina's, berichten, BuddyPress en CiviCRM</li>
+  {{with $l.Projecten}}<li><a href="{{.}}/admin">Projecten (Redmine)</a> — projecten en rollen per project</li>{{end}}
+  {{with $l.Kennisbank}}<li><a href="{{.}}/a">Kennisbank (Wiki.js)</a></li>{{end}}
+  <li><a href="{{$l.Aanmelden}}/admin/gemeenschap/console/">Keycloak</a> — alles wat hier niet kan (alleen met een beheeraccount van Keycloak)</li>
+</ul>
+</section>
+{{end}}

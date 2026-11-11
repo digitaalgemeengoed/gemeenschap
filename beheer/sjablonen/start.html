@@ -1,0 +1,18 @@
+{{define "inhoud"}}
+{{$d := .Data}}{{$rol := .Sessie.Rol}}
+<h1>Beheer</h1>
+<p class="zacht">Je bent hier als <b>{{$rol.Naam}}</b>.
+{{if $rol.Beheer}}Je kunt alle rollen geven en afnemen, accounts blokkeren en organisaties beheren.
+{{else}}Je kunt leden bekijken en de rollen contributor en member geven en afnemen. Organisaties en het platform kun je bekijken.{{end}}</p>
+<div class="tegels">
+  <a class="tegel" href="/leden"><b>Leden en rollen</b><span>Zoek een lid, bekijk het account en geef of neem rollen.</span></a>
+  <a class="tegel" href="/organisaties"><b>Organisaties</b><span>De deelnemende gemeenten en organisaties, met hun e-maildomeinen.</span></a>
+  <a class="tegel" href="/platform"><b>Platform</b>
+    {{with $d.Status}}{{if .Problemen}}<span class="chip rood">{{.Problemen}} aandachtspunt(en)</span>{{else}}<span class="chip groen">alles in orde</span>{{end}}<span>Versie {{.Infra}}, bijgewerkt {{datum .Tijd}}.</span>
+    {{else}}<span>Hoe de server ervoor staat: diensten, versie, back-up, schijf.</span>{{end}}</a>
+</div>
+<section class="blok">
+<h2>Laatste wijzigingen</h2>
+{{if $d.Recent}}{{template "regels" $d.Recent}}<p><a href="/logboek">Het hele logboek</a></p>{{else}}<p class="zacht">Nog geen wijzigingen.</p>{{end}}
+</section>
+{{end}}

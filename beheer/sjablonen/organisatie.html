@@ -1,0 +1,49 @@
+{{define "inhoud"}}
+{{$d := .Data}}{{$o := $d.Org}}{{$csrf := .Sessie.CSRF}}{{$rol := .Sessie.Rol}}
+<p class="kruimels"><a href="/organisaties">Organisaties</a> ›</p>
+<h1>{{$o.Naam}}{{if not $o.Actief}} <span class="chip grijs">uit</span>{{end}}</h1>
+<div class="twee">
+<section class="blok">
+<h2>Gegevens</h2>
+{{if $rol.MagOrganisaties}}
+<form method="post" action="/organisaties/{{$o.ID}}" class="formulier">
+  <input type="hidden" name="csrf" value="{{$csrf}}">
+  <label>Naam <input name="naam" required maxlength="120" value="{{$o.Naam}}"></label>
+  <label>Domeinen <input name="domeinen" required value="{{join $o.DomeinNamen ", "}}"><small>Scheid ze met een komma.</small></label>
+  <label>Beschrijving <input name="beschrijving" maxlength="500" value="{{$o.Beschrijving}}"></label>
+  <label class="vink"><input type="checkbox" name="actief" value="ja"{{if $o.Actief}} checked{{end}}> Actief</label>
+  <label>Reden <input name="reden" required minlength="5" maxlength="500"></label>
+  <button>Opslaan</button>
+</form>
+{{else}}
+<dl class="feiten">
+  <dt>Domeinen</dt><dd>{{join $o.DomeinNamen ", "}}</dd>
+  {{with $o.Beschrijving}}<dt>Beschrijving</dt><dd>{{.}}</dd>{{end}}
+  <dt>Kenmerk</dt><dd>{{$o.Alias}}</dd>
+</dl>
+<p class="zacht klein">Wijzigen kunnen de beheerders van het platform.</p>
+{{end}}
+</section>
+<section class="blok">
+<h2>Leden ({{len $d.Leden}})</h2>
+{{if $d.Leden}}
+<ul class="ledenlijst">{{range $d.Leden}}
+<li><a href="/leden/{{.ID}}">{{.Naam}}</a> <span class="zacht">{{.Email}}</span>
+{{if $rol.MagOrganisaties}}<details class="weg"><summary>Ontkoppelen</summary>
+<form method="post" action="/organisaties/{{$o.ID}}/leden"><input type="hidden" name="csrf" value="{{$csrf}}"><input type="hidden" name="weg" value="{{.ID}}">
+<input name="reden" required minlength="5" maxlength="500" placeholder="Reden" aria-label="Reden"><button class="klein gevaar">Ontkoppelen</button></form></details>{{end}}
+</li>{{end}}
+</ul>
+{{else}}<p class="zacht">Nog niemand.</p>{{end}}
+{{if $rol.MagOrganisaties}}
+<form method="post" action="/organisaties/{{$o.ID}}/leden" class="formulier">
+  <input type="hidden" name="csrf" value="{{$csrf}}">
+  <label>Lid koppelen (e-mailadres) <input name="email" type="email" required></label>
+  <label>Reden <input name="reden" required minlength="5" maxlength="500"></label>
+  <button class="licht">Koppelen</button>
+</form>
+{{end}}
+</section>
+</div>
+{{with $d.Logboek}}<section class="blok"><h2>In het logboek</h2>{{template "regels" .}}</section>{{end}}
+{{end}}
