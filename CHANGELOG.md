@@ -1,5 +1,9 @@
 # Wijzigingen
 
+## 0.7.4 — 2026-11-11
+
+- De opening staat op een breed scherm in het midden: de foto en de netwerklijnen eindigen bij de rechterkant van de inhoud, met een zachte rand, in plaats van door te lopen tot de rand van het scherm. Daardoor leek de pagina rechts uitgelijnd.
+
 ## 0.7.3 — 2026-11-11
 
 - Oplossing: mail via poort **465** (meteen versleuteld, zoals bij Migadu) werkte niet in Keycloak en Redmine; die gingen altijd uit van STARTTLS op 587. Nu kiezen Keycloak (bij `bijwerken.sh`) en Redmine zelf: poort 465 met SSL, andere poorten met STARTTLS. WordPress deed dit al goed.

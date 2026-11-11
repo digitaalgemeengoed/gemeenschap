@@ -205,6 +205,18 @@ Text Domain: digitaalgemeengoed
           mask-image: linear-gradient(90deg, transparent 0, #000 22%);
 }
 .entry-content .dg-held-beeld img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
+/* Op een breed scherm eindigen foto en netwerklijnen bij de rechterkant van de
+   inhoud (1340 px), met een zachte rand: zo staat de opening even ver van links
+   als van rechts, en loopt niet alleen de rechterkant door tot de rand. */
+@media (min-width: 1400px) {
+  .entry-content .dg-held-beeld {
+    right: calc(50vw - 670px);
+    width: calc(1340px * .62);
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 22%, #000 90%, transparent 100%);
+            mask-image: linear-gradient(90deg, transparent 0, #000 22%, #000 90%, transparent 100%);
+  }
+  .entry-content .dg-held::after { left: calc(50vw - 670px + 1340px * .3); right: calc(50vw - 670px); }
+}
 @media (max-width: 900px) {
   .entry-content .dg-held h2:first-child, .entry-content .dg-lint { white-space: normal; }
   .entry-content .dg-held { padding-top: 2rem; padding-bottom: 0; min-height: 0; }
