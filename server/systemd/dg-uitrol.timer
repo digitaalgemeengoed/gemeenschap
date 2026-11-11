@@ -1,0 +1,10 @@
+[Unit]
+Description=Gemeenschapsplatform: elke vijf minuten kijken of er iets nieuws is op GitHub
+
+[Timer]
+OnBootSec=5min
+OnUnitInactiveSec=5min
+RandomizedDelaySec=30s
+
+[Install]
+WantedBy=timers.target

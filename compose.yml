@@ -1,0 +1,252 @@
+# Het gemeenschapsplatform van Digitaal Gemeengoed en NL-Dit: leden, fora,
+# nieuwsbrief, meldingen en projecten. Draait op een eigen server (VPS 4), los
+# van de Office Assistent: een eigen Keycloak, geen koppeling met het archief.
+#
+#   <domein>              WordPress met BuddyPress (leden, groepen, profielen),
+#                         bbPress (fora onder /forum/) en CiviCRM (netwerk,
+#                         mailings, toestemmingen)
+#   aanmelden.<domein>    Keycloak, realm "gemeenschap": lid worden, inloggen
+#   projecten.<domein>    Redmine: meldingen, wensen, roadmap, portfolio
+#   forum.<domein>        verwijst naar <domein>/forum/
+#
+# Niet met de hand starten: server/installeer.sh zet alles neer, en daarna
+# rolt server/uitrol.sh (elke vijf minuten, systemd-timer dg-uitrol) uit wat
+# er op GitHub verandert. Zie README.md.
+
+name: dg-gemeenschap
+
+x-smtp: &smtp
+  SMTP_HOST: ${SMTP_HOST:-}
+  SMTP_POORT: ${SMTP_POORT:-587}
+  SMTP_GEBRUIKER: ${SMTP_GEBRUIKER:-}
+  SMTP_WACHTWOORD: ${SMTP_WACHTWOORD:-}
+  SMTP_AFZENDER: ${SMTP_AFZENDER:-noreply@${DOMEIN}}
+
+x-wordpress-omgeving: &wordpress-omgeving
+  <<: *smtp
+  WORDPRESS_DB_HOST: wp-db
+  WORDPRESS_DB_NAME: wordpress
+  WORDPRESS_DB_USER: wordpress
+  WORDPRESS_DB_PASSWORD: ${WP_DB_WACHTWOORD:?}
+  # Achter Caddy: de browser praat https, de container http.
+  WORDPRESS_CONFIG_EXTRA: |
+    if ( ( $$_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '' ) === 'https' ) { $$_SERVER['HTTPS'] = 'on'; }
+    define( 'WP_HOME', 'https://${DOMEIN}' );
+    define( 'WP_SITEURL', 'https://${DOMEIN}' );
+    define( 'FORCE_SSL_ADMIN', true );
+    define( 'DISALLOW_FILE_EDIT', true );
+    define( 'WP_AUTO_UPDATE_CORE', 'minor' );
+  # Waar een pagina uit inhoud/ op GitHub staat (link "Bewerken op GitHub").
+  DG_INHOUD_REPO: ${DG_INHOUD_REPO:-https://github.com/digitaalgemeengoed/gemeenschap/blob/main/inhoud}
+  # Inloggen via Keycloak (gelezen door wp-content/mu-plugins/dg-gemeenschap.php).
+  DG_KEYCLOAK_URL: https://aanmelden.${DOMEIN}
+  DG_KEYCLOAK_INTERN: http://keycloak:8080
+  DG_KEYCLOAK_REALM: gemeenschap
+  WP_CLIENT_SECRET: ${WP_CLIENT_SECRET:?}
+
+x-wordpress-mappen: &wordpress-mappen
+  - wphtml:/var/www/html
+  - ./wordpress/dg-gemeenschap.php:/var/www/html/wp-content/mu-plugins/dg-gemeenschap.php:ro
+  - ./wordpress/dg-inhoud.php:/var/www/html/wp-content/mu-plugins/dg-inhoud.php:ro
+  - ./wordpress/thema/digitaalgemeengoed:/var/www/html/wp-content/themes/digitaalgemeengoed:ro
+  - ./wordpress/php.ini:/usr/local/etc/php/conf.d/dg-gemeenschap.ini:ro
+
+services:
+  proxy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMEIN: ${DOMEIN:?}
+    volumes:
+      - ./caddy:/etc/caddy:ro
+      - caddydata:/data
+    depends_on: [wordpress, keycloak, redmine]
+
+  # --- Keycloak: de bron voor leden, organisaties, groepen en toestemmingen ----
+  keycloak-db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: ${KC_DB_WACHTWOORD:?}
+      POSTGRES_DB: keycloak
+    volumes:
+      - kcdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U keycloak"]
+      interval: 5s
+      retries: 20
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:${KEYCLOAK_VERSIE:-26.8.2}
+    restart: unless-stopped
+    # De realm komt uit keycloak/realm/ en wordt bij elke uitrol bijgewerkt
+    # door keycloak-config (hieronder); leden en organisaties staan in de database.
+    command: ["start"]
+    environment:
+      <<: *smtp
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://keycloak-db:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: ${KC_DB_WACHTWOORD}
+      KC_HOSTNAME: https://aanmelden.${DOMEIN}
+      # Het beheerscherm is van buiten afgesloten (Caddyfile); je bereikt het
+      # via een SSH-tunnel op http://localhost:8080/admin (zie README.md).
+      KC_HOSTNAME_ADMIN: http://localhost:8080
+      KC_HOSTNAME_BACKCHANNEL_DYNAMIC: "true"
+      KC_HTTP_ENABLED: "true"
+      KC_PROXY_HEADERS: xforwarded
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_BEHEERDER:-beheer}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_BEHEERDER_WACHTWOORD:?}
+    volumes:
+      - ./keycloak/themes/digitaalgemeengoed:/opt/keycloak/themes/digitaalgemeengoed:ro
+    ports:
+      - "127.0.0.1:8080:8080"
+    depends_on:
+      keycloak-db: { condition: service_healthy }
+
+  # De realm "gemeenschap" gelijk trekken met keycloak/realm/gemeenschap.json.
+  # Draait alleen op verzoek (server/bijwerken.sh). Wat beheerders in Keycloak
+  # zelf aanmaken (leden, organisaties, extra groepen) laat het staan.
+  keycloak-config:
+    image: adorsys/keycloak-config-cli:${KEYCLOAK_CONFIG_VERSIE:-6.5.1}
+    profiles: ["gereedschap"]
+    environment:
+      <<: *smtp
+      KEYCLOAK_URL: http://keycloak:8080
+      KEYCLOAK_USER: ${KC_BEHEERDER:-beheer}
+      KEYCLOAK_PASSWORD: ${KC_BEHEERDER_WACHTWOORD:?}
+      KEYCLOAK_AVAILABILITYCHECK_ENABLED: "true"
+      KEYCLOAK_AVAILABILITYCHECK_TIMEOUT: 180s
+      IMPORT_FILES_LOCATIONS: /config/*.json
+      IMPORT_VARSUBSTITUTION_ENABLED: "true"
+      IMPORT_CACHE_ENABLED: "false"
+      DG_BASIS_URL: https://${DOMEIN}
+      REDMINE_BASIS_URL: https://projecten.${DOMEIN}
+      WP_CLIENT_SECRET: ${WP_CLIENT_SECRET:?}
+      REDMINE_CLIENT_SECRET: ${REDMINE_CLIENT_SECRET:?}
+      REDMINE_SYNC_SECRET: ${REDMINE_SYNC_SECRET:?}
+    volumes:
+      - ./keycloak/realm:/config:ro
+    depends_on: [keycloak]
+
+  # --- WordPress: site, BuddyPress, bbPress, CiviCRM --------------------------
+  wp-db:
+    image: mariadb:${MARIADB_VERSIE:-11.8}
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: wordpress
+      MARIADB_USER: wordpress
+      MARIADB_PASSWORD: ${WP_DB_WACHTWOORD:?}
+      MARIADB_ROOT_PASSWORD: ${WP_DB_ROOT_WACHTWOORD:?}
+    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
+    volumes:
+      - wpdbdata:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      retries: 30
+
+  wordpress:
+    # De image zet WordPress alleen de eerste keer neer; daarna werkt bijwerken.sh
+    # WordPress, de plugins en de vertalingen bij met wp-cli.
+    image: wordpress:${WORDPRESS_IMAGE:-php8.3-apache}
+    restart: unless-stopped
+    environment: *wordpress-omgeving
+    volumes: *wordpress-mappen
+    depends_on:
+      wp-db: { condition: service_healthy }
+
+  # wp-cli, voor installeren en bijwerken (wordpress/inrichten.sh) en voor de
+  # pagina's uit inhoud/ (wp dg inhoud /inhoud). Draait alleen op verzoek.
+  wpcli:
+    image: wordpress:${WPCLI_VERSIE:-cli-php8.3}
+    profiles: ["gereedschap"]
+    user: "33:33"
+    environment:
+      <<: *wordpress-omgeving
+      DOMEIN: ${DOMEIN}
+      WP_BEHEER_WACHTWOORD: ${WP_BEHEER_WACHTWOORD:?}
+      CIVICRM_VERSIE: ${CIVICRM_VERSIE:-6.20.0}
+      HOME: /tmp
+    volumes:
+      - wphtml:/var/www/html
+      - ./wordpress/dg-gemeenschap.php:/var/www/html/wp-content/mu-plugins/dg-gemeenschap.php:ro
+      - ./wordpress/dg-inhoud.php:/var/www/html/wp-content/mu-plugins/dg-inhoud.php:ro
+      - ./wordpress/thema/digitaalgemeengoed:/var/www/html/wp-content/themes/digitaalgemeengoed:ro
+      - ./wordpress/inrichten.sh:/usr/local/bin/dg-inrichten:ro
+      # De pagina's: bij de uitrol de versie van main (zie server/uitrol.sh).
+      - ${DG_INHOUD:-./inhoud}:/inhoud:ro
+    depends_on:
+      wp-db: { condition: service_healthy }
+
+  # --- Redmine: meldingen, wensen, roadmap, portfolio -------------------------
+  redmine-db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: redmine
+      POSTGRES_PASSWORD: ${REDMINE_DB_WACHTWOORD:?}
+      POSTGRES_DB: redmine
+    volumes:
+      - rmdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U redmine"]
+      interval: 5s
+      retries: 20
+
+  redmine:
+    build:
+      context: ./redmine
+      args:
+        REDMINE_VERSIE: ${REDMINE_VERSIE:-6.1.6}
+        REDMINE_OAUTH_VERSIE: ${REDMINE_OAUTH_VERSIE:-v4.2.3}
+    image: dg/redmine:${REDMINE_VERSIE:-6.1.6}
+    restart: unless-stopped
+    environment:
+      <<: *smtp
+      DOMEIN: ${DOMEIN}
+      REDMINE_DB_POSTGRES: redmine-db
+      REDMINE_DB_USERNAME: redmine
+      REDMINE_DB_PASSWORD: ${REDMINE_DB_WACHTWOORD:?}
+      REDMINE_DB_DATABASE: redmine
+      REDMINE_SECRET_KEY_BASE: ${REDMINE_SECRET_KEY_BASE:?}
+      REDMINE_PLUGINS_MIGRATE: "1"
+      # Voor redmine/inrichten.rb:
+      REDMINE_CLIENT_SECRET: ${REDMINE_CLIENT_SECRET:?}
+      REDMINE_API_KEY: ${REDMINE_API_KEY:?}
+      REDMINE_ADMIN_WACHTWOORD: ${REDMINE_ADMIN_WACHTWOORD:?}
+    volumes:
+      - rmfiles:/usr/src/redmine/files
+    depends_on:
+      redmine-db: { condition: service_healthy }
+
+  # De groepen onder /netwerk in Keycloak als groepen in Redmine; elke 10 minuten.
+  redmine-groepen:
+    image: python:3.13-alpine
+    restart: unless-stopped
+    command: ["python", "-I", "/opt/redmine_groepen.py"]
+    environment:
+      KEYCLOAK_URL: http://keycloak:8080
+      KEYCLOAK_REALM: gemeenschap
+      SYNC_CLIENT_SECRET: ${REDMINE_SYNC_SECRET:?}
+      REDMINE_URL: http://redmine:3000
+      REDMINE_API_KEY: ${REDMINE_API_KEY:?}
+      INTERVAL: "600"
+    volumes:
+      - ./redmine/redmine_groepen.py:/opt/redmine_groepen.py:ro
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    depends_on: [keycloak, redmine]
+
+volumes:
+  caddydata:
+  kcdata:
+  wpdbdata:
+  wphtml:
+  rmdata:
+  rmfiles:

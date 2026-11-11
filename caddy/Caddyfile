@@ -1,0 +1,49 @@
+# VPS 4 — gemeenschap. Caddy haalt zelf certificaten op voor alle namen.
+# Nodig in DNS: A-records (of CNAME's) naar deze server voor <domein>,
+# www.<domein>, aanmelden.<domein>, projecten.<domein> en forum.<domein>.
+
+(beveiliging) {
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options nosniff
+		Referrer-Policy strict-origin-when-cross-origin
+		Permissions-Policy "camera=(), microphone=(), geolocation=()"
+		-Server
+	}
+}
+
+{$DOMEIN} {
+	import beveiliging
+	encode zstd gzip
+	# XML-RPC is een bekend doelwit en hier niet nodig.
+	@xmlrpc path /xmlrpc.php
+	respond @xmlrpc 404
+	# Wie WordPress-gebruikers opsomt via de REST-API, krijgt niets (ledenlijsten alleen ingelogd, in BuddyPress).
+	@gebruikers path /wp-json/wp/v2/users*
+	respond @gebruikers 404
+	reverse_proxy wordpress:80
+}
+
+www.{$DOMEIN} {
+	redir https://{$DOMEIN}{uri} permanent
+}
+
+forum.{$DOMEIN} {
+	redir https://{$DOMEIN}/forum{uri} permanent
+}
+
+aanmelden.{$DOMEIN} {
+	import beveiliging
+	# Het beheerscherm van Keycloak niet naar buiten; via de SSH-tunnel (README.md, Beheer op de server).
+	@beheer path /admin*
+	respond @beheer "Niet beschikbaar" 404
+	@root path /
+	redir @root https://{$DOMEIN}/ 302
+	reverse_proxy keycloak:8080
+}
+
+projecten.{$DOMEIN} {
+	import beveiliging
+	encode zstd gzip
+	reverse_proxy redmine:3000
+}

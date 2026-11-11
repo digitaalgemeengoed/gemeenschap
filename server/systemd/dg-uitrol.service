@@ -1,0 +1,11 @@
+[Unit]
+Description=Gemeenschapsplatform: uitrollen wat er op GitHub veranderd is
+After=docker.service network-online.target
+Wants=network-online.target
+Requires=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/opt/gemeenschap/server/uitrol.sh
+TimeoutStartSec=45min
+Nice=5

@@ -1,0 +1,21 @@
+{
+  "$schema": "https://schemas.wp.org/wp/6.8/theme.json",
+  "version": 3,
+  "styles": {
+    "color": { "background": "#f4f1ea", "text": "#1c1c1a" },
+    "elements": {
+      "link": {
+        "color": { "text": "#0b6e4f" },
+        ":hover": { "color": { "text": "#08513a" } }
+      },
+      "button": {
+        "color": { "background": "#0b6e4f", "text": "#ffffff" },
+        ":hover": { "color": { "background": "#08513a", "text": "#ffffff" } }
+      }
+    },
+    "blocks": {
+      "core/site-title": { "color": { "text": "#08513a" } },
+      "core/table": { "color": { "background": "#ffffff" } }
+    }
+  }
+}

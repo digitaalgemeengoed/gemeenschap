@@ -1,0 +1,717 @@
+{
+  "realm": "gemeenschap",
+  "enabled": true,
+  "displayName": "Digitaal Gemeengoed",
+  "displayNameHtml": "<span>Digitaal Gemeengoed</span>",
+  "sslRequired": "external",
+  "registrationAllowed": true,
+  "registrationEmailAsUsername": true,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "verifyEmail": true,
+  "resetPasswordAllowed": true,
+  "rememberMe": true,
+  "editUsernameAllowed": false,
+  "bruteForceProtected": true,
+  "permanentLockout": false,
+  "failureFactor": 10,
+  "maxFailureWaitSeconds": 900,
+  "passwordPolicy": "length(12) and notUsername and notEmail and passwordHistory(3)",
+  "organizationsEnabled": true,
+  "internationalizationEnabled": true,
+  "supportedLocales": [
+    "nl",
+    "en"
+  ],
+  "defaultLocale": "nl",
+  "loginTheme": "digitaalgemeengoed",
+  "accountTheme": "keycloak.v3",
+  "emailTheme": "keycloak",
+  "smtpServer": {
+    "host": "$(env:SMTP_HOST:-)",
+    "port": "$(env:SMTP_POORT:-587)",
+    "from": "$(env:SMTP_AFZENDER:-noreply@digitaalgemeengoed.nl)",
+    "fromDisplayName": "Digitaal Gemeengoed",
+    "replyTo": "$(env:SMTP_AFZENDER:-noreply@digitaalgemeengoed.nl)",
+    "starttls": "true",
+    "ssl": "false",
+    "auth": "true",
+    "user": "$(env:SMTP_GEBRUIKER:-)",
+    "password": "$(env:SMTP_WACHTWOORD:-)"
+  },
+  "defaultGroups": [
+    "/netwerk/gebruikers"
+  ],
+  "groups": [
+    {
+      "name": "netwerk",
+      "subGroups": [
+        {
+          "name": "gebruikers",
+          "attributes": {
+            "omschrijving": [
+              "Melden, reageren, fora. Iedereen die zich aanmeldt."
+            ]
+          }
+        },
+        {
+          "name": "contributors",
+          "attributes": {
+            "omschrijving": [
+              "Issues oppakken, wiki, bijdragen."
+            ]
+          }
+        },
+        {
+          "name": "members",
+          "attributes": {
+            "omschrijving": [
+              "Deelnemende organisaties: roadmap en besloten projecten."
+            ]
+          }
+        },
+        {
+          "name": "kerngroep",
+          "attributes": {
+            "omschrijving": [
+              "Prioriteren, beslissen, versies."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "site",
+      "subGroups": [
+        {
+          "name": "redactie",
+          "attributes": {
+            "omschrijving": [
+              "Redacteur van de WordPress-site."
+            ]
+          }
+        },
+        {
+          "name": "beheer",
+          "attributes": {
+            "omschrijving": [
+              "Beheerder van WordPress en Redmine."
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "requiredActions": [
+    {
+      "alias": "TERMS_AND_CONDITIONS",
+      "name": "Terms and Conditions",
+      "providerId": "TERMS_AND_CONDITIONS",
+      "enabled": true,
+      "defaultAction": true,
+      "priority": 20,
+      "config": {}
+    },
+    {
+      "alias": "VERIFY_EMAIL",
+      "name": "Verify Email",
+      "providerId": "VERIFY_EMAIL",
+      "enabled": true,
+      "defaultAction": false,
+      "priority": 50,
+      "config": {}
+    },
+    {
+      "alias": "UPDATE_PASSWORD",
+      "name": "Update Password",
+      "providerId": "UPDATE_PASSWORD",
+      "enabled": true,
+      "defaultAction": false,
+      "priority": 30,
+      "config": {}
+    },
+    {
+      "alias": "UPDATE_PROFILE",
+      "name": "Update Profile",
+      "providerId": "UPDATE_PROFILE",
+      "enabled": true,
+      "defaultAction": false,
+      "priority": 40,
+      "config": {}
+    },
+    {
+      "alias": "CONFIGURE_TOTP",
+      "name": "Configure OTP",
+      "providerId": "CONFIGURE_TOTP",
+      "enabled": true,
+      "defaultAction": false,
+      "priority": 10,
+      "config": {}
+    }
+  ],
+  "clients": [
+    {
+      "clientId": "wordpress",
+      "name": "Digitaal Gemeengoed (site)",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "$(env:WP_CLIENT_SECRET)",
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "implicitFlowEnabled": false,
+      "serviceAccountsEnabled": false,
+      "frontchannelLogout": true,
+      "rootUrl": "$(env:DG_BASIS_URL)",
+      "baseUrl": "$(env:DG_BASIS_URL)",
+      "redirectUris": [
+        "$(env:DG_BASIS_URL)/wp-admin/admin-ajax.php*"
+      ],
+      "webOrigins": [
+        "+"
+      ],
+      "attributes": {
+        "post.logout.redirect.uris": "$(env:DG_BASIS_URL)/*",
+        "backchannel.logout.session.required": "true"
+      },
+      "defaultClientScopes": [
+        "web-origins",
+        "acr",
+        "profile",
+        "roles",
+        "basic",
+        "email"
+      ],
+      "optionalClientScopes": [
+        "address",
+        "phone",
+        "offline_access",
+        "organization",
+        "microprofile-jwt"
+      ],
+      "protocolMappers": [
+        {
+          "name": "groups",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-group-membership-mapper",
+          "consentRequired": false,
+          "config": {
+            "claim.name": "groups",
+            "full.path": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "introspection.token.claim": "true"
+          }
+        },
+        {
+          "name": "organisatie",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "organisatie",
+            "claim.name": "organisatie",
+            "jsonType.label": "String",
+            "multivalued": "false",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "introspection.token.claim": "true"
+          }
+        },
+        {
+          "name": "functie",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "functie",
+            "claim.name": "functie",
+            "jsonType.label": "String",
+            "multivalued": "false",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "introspection.token.claim": "true"
+          }
+        },
+        {
+          "name": "werkveld",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "werkveld",
+            "claim.name": "werkveld",
+            "jsonType.label": "String",
+            "multivalued": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "introspection.token.claim": "true"
+          }
+        },
+        {
+          "name": "toestemming_mailing",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "toestemming_mailing",
+            "claim.name": "toestemming_mailing",
+            "jsonType.label": "String",
+            "multivalued": "false",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "introspection.token.claim": "true"
+          }
+        }
+      ],
+      "fullScopeAllowed": false
+    },
+    {
+      "clientId": "redmine",
+      "name": "Projecten (Redmine)",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "$(env:REDMINE_CLIENT_SECRET)",
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "implicitFlowEnabled": false,
+      "serviceAccountsEnabled": false,
+      "frontchannelLogout": true,
+      "rootUrl": "$(env:REDMINE_BASIS_URL)",
+      "baseUrl": "$(env:REDMINE_BASIS_URL)",
+      "redirectUris": [
+        "$(env:REDMINE_BASIS_URL)/*"
+      ],
+      "webOrigins": [
+        "+"
+      ],
+      "attributes": {
+        "post.logout.redirect.uris": "$(env:REDMINE_BASIS_URL)/*",
+        "backchannel.logout.session.required": "true"
+      },
+      "defaultClientScopes": [
+        "web-origins",
+        "acr",
+        "profile",
+        "roles",
+        "basic",
+        "email"
+      ],
+      "optionalClientScopes": [
+        "address",
+        "phone",
+        "offline_access",
+        "organization",
+        "microprofile-jwt"
+      ],
+      "protocolMappers": [
+        {
+          "name": "groups",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-group-membership-mapper",
+          "consentRequired": false,
+          "config": {
+            "claim.name": "groups",
+            "full.path": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "introspection.token.claim": "true"
+          }
+        },
+        {
+          "name": "organisatie",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "organisatie",
+            "claim.name": "organisatie",
+            "jsonType.label": "String",
+            "multivalued": "false",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "introspection.token.claim": "true"
+          }
+        },
+        {
+          "name": "functie",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "functie",
+            "claim.name": "functie",
+            "jsonType.label": "String",
+            "multivalued": "false",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "introspection.token.claim": "true"
+          }
+        },
+        {
+          "name": "werkveld",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "werkveld",
+            "claim.name": "werkveld",
+            "jsonType.label": "String",
+            "multivalued": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "introspection.token.claim": "true"
+          }
+        },
+        {
+          "name": "toestemming_mailing",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "toestemming_mailing",
+            "claim.name": "toestemming_mailing",
+            "jsonType.label": "String",
+            "multivalued": "false",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "introspection.token.claim": "true"
+          }
+        }
+      ],
+      "fullScopeAllowed": false
+    },
+    {
+      "clientId": "redmine-sync",
+      "name": "Groepen naar Redmine",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "$(env:REDMINE_SYNC_SECRET)",
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "defaultClientScopes": [
+        "basic",
+        "roles",
+        "kc-admin-api"
+      ],
+      "optionalClientScopes": [],
+      "fullScopeAllowed": false
+    }
+  ],
+  "users": [
+    {
+      "username": "service-account-redmine-sync",
+      "enabled": true,
+      "serviceAccountClientId": "redmine-sync",
+      "clientRoles": {
+        "realm-management": [
+          "view-users",
+          "query-groups",
+          "query-users"
+        ]
+      }
+    }
+  ],
+  "attributes": {
+    "frontendUrl": "",
+    "userProfileEnabled": "true"
+  },
+  "localizationTexts": {
+    "nl": {
+      "dgOrganisatie": "Organisatie",
+      "dgOrganisatieHulp": "Bij welke gemeente of organisatie werk je? Meld je je aan met het e-mailadres van je werk, dan koppelen we je vanzelf aan je organisatie.",
+      "dgFunctie": "Functie",
+      "dgWerkveld": "Werkveld",
+      "dgWerkveld.beheer": "Beheer",
+      "dgWerkveld.development": "Development",
+      "dgWerkveld.besluitvorming": "Besluitvorming",
+      "dgWerkveld.anders": "Anders",
+      "dgMailing": "Nieuwsbrief en uitnodigingen",
+      "dgMailingHulp": "Wil je de nieuwsbrief en uitnodigingen voor bijeenkomsten ontvangen? Je kunt dit altijd wijzigen in je account of afmelden onder elke mail.",
+      "dgMailing.ja": "Ja, graag",
+      "dgMailing.nee": "Nee, liever niet",
+      "dgGroepNetwerk": "Over jou in het netwerk",
+      "dgGroepNetwerkUitleg": "Zichtbaar voor andere leden, niet openbaar.",
+      "dgGroepToestemming": "Toestemming",
+      "dgGroepToestemmingUitleg": "",
+      "termsTitle": "Voorwaarden en privacy",
+      "termsText": "<p>Digitaal Gemeengoed en NL-Dit beheren dit platform samen. We gebruiken je gegevens om je toegang te geven tot de site, de fora en de projecten, en om je in contact te brengen met andere leden. Je profiel is alleen zichtbaar voor ingelogde leden; je e-mailadres nooit openbaar.</p><p>Lees de <a href=\"$(env:DG_BASIS_URL)/voorwaarden/\" target=\"_blank\" rel=\"noopener\">voorwaarden</a> en de <a href=\"$(env:DG_BASIS_URL)/privacy/\" target=\"_blank\" rel=\"noopener\">privacyverklaring</a>.</p>",
+      "registerTitle": "Lid worden van Digitaal Gemeengoed"
+    },
+    "en": {
+      "dgOrganisatie": "Organisation",
+      "dgOrganisatieHulp": "Which municipality or organisation do you work for? Sign up with your work e-mail address and we link you to your organisation automatically.",
+      "dgFunctie": "Job title",
+      "dgWerkveld": "Field of work",
+      "dgWerkveld.beheer": "Operations",
+      "dgWerkveld.development": "Development",
+      "dgWerkveld.besluitvorming": "Decision-making",
+      "dgWerkveld.anders": "Other",
+      "dgMailing": "Newsletter and invitations",
+      "dgMailingHulp": "Would you like to receive the newsletter and invitations to meetings? You can change this at any time in your account, or unsubscribe under every e-mail.",
+      "dgMailing.ja": "Yes, please",
+      "dgMailing.nee": "No, thanks",
+      "dgGroepNetwerk": "About you in the network",
+      "dgGroepNetwerkUitleg": "Visible to other members, not public.",
+      "dgGroepToestemming": "Consent",
+      "dgGroepToestemmingUitleg": "",
+      "termsTitle": "Terms and privacy",
+      "termsText": "<p>Digitaal Gemeengoed and NL-Dit run this platform together. We use your data to give you access to the site, the forums and the projects, and to connect you with other members. Your profile is visible to signed-in members only; your e-mail address is never public.</p><p>Read the <a href=\"$(env:DG_BASIS_URL)/voorwaarden/\" target=\"_blank\" rel=\"noopener\">terms</a> and the <a href=\"$(env:DG_BASIS_URL)/privacy/\" target=\"_blank\" rel=\"noopener\">privacy statement</a>.</p>",
+      "registerTitle": "Join Digitaal Gemeengoed"
+    }
+  },
+  "clientScopeMappings": {
+    "realm-management": [
+      {
+        "client": "redmine-sync",
+        "roles": [
+          "view-users",
+          "query-groups",
+          "query-users"
+        ]
+      }
+    ]
+  },
+  "userProfile": {
+    "unmanagedAttributePolicy": "ADMIN_VIEW",
+    "attributes": [
+      {
+        "name": "username",
+        "displayName": "${username}",
+        "permissions": {
+          "view": [
+            "admin",
+            "user"
+          ],
+          "edit": [
+            "admin",
+            "user"
+          ]
+        },
+        "validations": {
+          "length": {
+            "min": 3,
+            "max": 255
+          },
+          "username-prohibited-characters": {},
+          "up-username-not-idn-homograph": {}
+        }
+      },
+      {
+        "name": "email",
+        "displayName": "${email}",
+        "required": {
+          "roles": [
+            "user"
+          ]
+        },
+        "permissions": {
+          "view": [
+            "admin",
+            "user"
+          ],
+          "edit": [
+            "admin",
+            "user"
+          ]
+        },
+        "validations": {
+          "email": {},
+          "length": {
+            "max": 255
+          }
+        }
+      },
+      {
+        "name": "firstName",
+        "displayName": "${firstName}",
+        "required": {
+          "roles": [
+            "user"
+          ]
+        },
+        "permissions": {
+          "view": [
+            "admin",
+            "user"
+          ],
+          "edit": [
+            "admin",
+            "user"
+          ]
+        },
+        "validations": {
+          "length": {
+            "max": 255
+          },
+          "person-name-prohibited-characters": {}
+        }
+      },
+      {
+        "name": "lastName",
+        "displayName": "${lastName}",
+        "required": {
+          "roles": [
+            "user"
+          ]
+        },
+        "permissions": {
+          "view": [
+            "admin",
+            "user"
+          ],
+          "edit": [
+            "admin",
+            "user"
+          ]
+        },
+        "validations": {
+          "length": {
+            "max": 255
+          },
+          "person-name-prohibited-characters": {}
+        }
+      },
+      {
+        "name": "organisatie",
+        "displayName": "${dgOrganisatie}",
+        "group": "netwerk",
+        "required": {
+          "roles": [
+            "user"
+          ]
+        },
+        "permissions": {
+          "view": [
+            "admin",
+            "user"
+          ],
+          "edit": [
+            "admin",
+            "user"
+          ]
+        },
+        "annotations": {
+          "inputHelperTextBefore": "${dgOrganisatieHulp}"
+        },
+        "validations": {
+          "length": {
+            "min": 2,
+            "max": 120
+          }
+        }
+      },
+      {
+        "name": "functie",
+        "displayName": "${dgFunctie}",
+        "group": "netwerk",
+        "permissions": {
+          "view": [
+            "admin",
+            "user"
+          ],
+          "edit": [
+            "admin",
+            "user"
+          ]
+        },
+        "validations": {
+          "length": {
+            "max": 120
+          }
+        }
+      },
+      {
+        "name": "werkveld",
+        "displayName": "${dgWerkveld}",
+        "group": "netwerk",
+        "multivalued": true,
+        "permissions": {
+          "view": [
+            "admin",
+            "user"
+          ],
+          "edit": [
+            "admin",
+            "user"
+          ]
+        },
+        "annotations": {
+          "inputType": "multiselect-checkboxes",
+          "inputOptionLabelsI18nPrefix": "dgWerkveld"
+        },
+        "validations": {
+          "options": {
+            "options": [
+              "beheer",
+              "development",
+              "besluitvorming",
+              "anders"
+            ]
+          }
+        }
+      },
+      {
+        "name": "toestemming_mailing",
+        "displayName": "${dgMailing}",
+        "group": "toestemming",
+        "required": {
+          "roles": [
+            "user"
+          ]
+        },
+        "permissions": {
+          "view": [
+            "admin",
+            "user"
+          ],
+          "edit": [
+            "admin",
+            "user"
+          ]
+        },
+        "annotations": {
+          "inputType": "select-radiobuttons",
+          "inputOptionLabelsI18nPrefix": "dgMailing",
+          "inputHelperTextBefore": "${dgMailingHulp}"
+        },
+        "validations": {
+          "options": {
+            "options": [
+              "ja",
+              "nee"
+            ]
+          }
+        }
+      }
+    ],
+    "groups": [
+      {
+        "name": "netwerk",
+        "displayHeader": "${dgGroepNetwerk}",
+        "displayDescription": "${dgGroepNetwerkUitleg}"
+      },
+      {
+        "name": "toestemming",
+        "displayHeader": "${dgGroepToestemming}",
+        "displayDescription": "${dgGroepToestemmingUitleg}"
+      }
+    ]
+  }
+}
