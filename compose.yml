@@ -224,6 +224,9 @@ services:
       REDMINE_DB_PASSWORD: ${REDMINE_DB_WACHTWOORD:?}
       REDMINE_DB_DATABASE: redmine
       REDMINE_SECRET_KEY_BASE: ${REDMINE_SECRET_KEY_BASE:?}
+      # Ook voor rails runner via docker compose exec: het entrypoint zet de sleutel
+      # alleen voor zijn eigen proces.
+      SECRET_KEY_BASE: ${REDMINE_SECRET_KEY_BASE:?}
       REDMINE_PLUGINS_MIGRATE: "1"
       # Voor redmine/inrichten.rb:
       REDMINE_CLIENT_SECRET: ${REDMINE_CLIENT_SECRET:?}

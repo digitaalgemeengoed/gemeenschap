@@ -43,7 +43,7 @@ dc run --rm -T wpcli dg-inrichten || stop "WordPress bijwerken mislukt; kijk in 
 
 wacht "Redmine" 60 redmine_klaar || stop "Redmine start niet. Kijk met: sudo docker compose -f $DG_MAP/$COMPOSE logs redmine"
 meld "Redmine bijwerken"
-dc exec -T redmine bundle exec rails runner /usr/local/share/dg/inrichten.rb >/dev/null || stop "Redmine inrichten mislukt. Kijk met: sudo docker compose -f $DG_MAP/$COMPOSE logs redmine"
+dc exec -T -u redmine redmine bundle exec rails runner /usr/local/share/dg/inrichten.rb >/dev/null || stop "Redmine inrichten mislukt. Kijk met: sudo docker compose -f $DG_MAP/$COMPOSE logs redmine"
 dc restart redmine-groepen >/dev/null
 docker image prune -f >/dev/null
 ok "Bijgewerkt"
