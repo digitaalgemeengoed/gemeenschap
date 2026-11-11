@@ -49,8 +49,8 @@ provider.assign_attributes(
   client_id: 'redmine',
   client_secret: ENV.fetch('REDMINE_CLIENT_SECRET'),
   identify_user_by: 'email',
-  button_color: '#0b6e4f',
-  button_text: 'Inloggen met je account bij Digitaal GemeenGoed',
+  button_color: '#14478f',
+  button_text: 'Inloggen met je DGG-account', # maximaal 40 tekens
   position: 1
 )
 provider.save!
