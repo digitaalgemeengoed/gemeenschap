@@ -3,6 +3,7 @@ titel: Crowdfunding
 volgorde: 7
 ---
 ::: held
+beeld: media/crowdfunding-ai.jpg
 label: Samen betalen, samen hebben
 # Crowdfunding
 Een oplossing die één gemeente niet alleen kan dragen, kunnen tien gemeenten samen wel. Met crowdfunding leggen gemeenten samen in voor een project, en krijgen ze er allemaal hetzelfde voor terug: open source software, van iedereen.
