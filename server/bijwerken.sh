@@ -61,6 +61,9 @@ dc run --rm -T -e SMTP_SSL="$SMTP_SSL" -e SMTP_STARTTLS="$SMTP_STARTTLS" keycloa
 ok "Realm bijgewerkt"
 
 meld "Kennisbank (Wiki.js) bijwerken"
+# De volumes voor de Git-werkkopie en de uploads zijn (van vóór 0.9.1) van
+# root; de wiki draait als node en moet erin kunnen schrijven.
+dc exec -T -u 0 wiki chown -R node:node /wiki/data/repo /wiki/data/content || waarschuw "Eigenaar van de wiki-mappen zetten lukte niet"
 dc run --rm -T wiki-inrichten || stop "Kennisbank inrichten mislukt; kijk in de uitvoer hierboven en met: sudo docker compose -f $DG_MAP/$COMPOSE logs wiki"
 if ! grep -qE '^KENNISBANK_REPO=.+' .env; then
   waarschuw "De pagina's van de kennisbank gaan nog niet naar GitHub. Zet deze sleutel als deploy key (met schrijfrechten) bij de repo kennisbank:"

@@ -1,5 +1,13 @@
 # Wijzigingen
 
+## 0.9.1 — 2026-11-11
+
+**Hersteld:** 0.8.1 en 0.9.0 rolden niet uit. Het inrichten van de kennisbank stopte bij het bijwerken van de startpagina: `EACCES: permission denied, open '/wiki/data/repo/home.md'`. De volumes voor de Git-werkkopie en de uploads van de wiki waren van root, terwijl de wiki als `node` draait. Daardoor werkte ook de Git-opslag naar de repo `kennisbank` sinds 0.8.0 niet (de fout kwam alleen in het log van de wiki).
+- `bijwerken.sh` zet de eigenaar van `/wiki/data/repo` en `/wiki/data/content` goed, vóór het inrichten.
+- De image maakt die mappen zelf aan, zodat een nieuw volume meteen van `node` is.
+
+Verder alles van 0.8.1 en 0.9.0 (hieronder): de startinhoud van de kennisbank, de opening op de hoofdpagina's, terugzetten en herstellen, en Documenten.
+
 ## 0.9.0 — 2026-11-11
 
 **Documenten** op `documenten.<domein>` (nieuw): documenten bewaren en delen, voor de coöperatie en per project. Een lichte XENA: een register naast een objectopslag. Ontwerp in `documenten/ONTWERP.md`.

@@ -8,7 +8,10 @@ FROM ghcr.io/requarks/wiki:${WIKI_VERSIE}
 ARG VERTALINGEN=c4803134075eaa6a8806add09aaa8e9c9404a836
 USER root
 RUN set -eux; \
-    mkdir -p /wiki/data/sideload /wiki/assets/dgg; \
+    # repo en content worden volumes; bestaan ze hier al (van node), dan krijgt
+    # een nieuw volume die eigenaar mee. Anders zijn ze van root en kan de wiki
+    # er niet in schrijven.
+    mkdir -p /wiki/data/sideload /wiki/data/repo /wiki/data/content /wiki/assets/dgg; \
     cd /wiki/data/sideload; \
     for f in locales.json en.json nl.json; do \
       wget -q -O "$f" "https://raw.githubusercontent.com/Requarks/wiki-localization/${VERTALINGEN}/$f"; \
