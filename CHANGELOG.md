@@ -6,6 +6,7 @@
 - Oplossing: de plugin voor inloggen via Keycloak heet op wordpress.org `daggerhart-openid-connect-generic`; met de oude naam stopte het inrichten van WordPress.
 - De tabel voor toezeggingen wordt niet meer aangemaakt voordat WordPress zelf geïnstalleerd is (een foutmelding bij de eerste installatie, zonder gevolgen).
 - Oplossing: wp-cli kreeg de PHP-instellingen van de site niet mee (geheugen 128 MB in plaats van 512 MB), waardoor CiviCRM installeren vastliep.
+- Oplossing: Redmine startte steeds opnieuw. De image bewaart nu `Gemfile.lock.postgresql` met de gems van de OAuth-plugin, en het entrypoint start weer als root (zoals in de officiële image) en gaat daarna zelf over op de gebruiker redmine.
 - De testschermafdrukken in `gem/` zijn weg.
 
 ## 0.7.0 — 2026-11-11
