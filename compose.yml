@@ -186,6 +186,8 @@ services:
       - ./wordpress/dg-crowdfunding.php:/var/www/html/wp-content/mu-plugins/dg-crowdfunding.php:ro
       - ./wordpress/thema/digitaalgemeengoed:/var/www/html/wp-content/themes/digitaalgemeengoed:ro
       - ./wordpress/inrichten.sh:/usr/local/bin/dg-inrichten:ro
+      # Dezelfde PHP-instellingen als de site; CiviCRM heeft meer dan 128 MB nodig.
+      - ./wordpress/php.ini:/usr/local/etc/php/conf.d/dg-gemeenschap.ini:ro
       # De pagina's: bij de uitrol de versie van main (zie server/uitrol.sh).
       - ${DG_INHOUD:-./inhoud}:/inhoud:ro
     depends_on:
