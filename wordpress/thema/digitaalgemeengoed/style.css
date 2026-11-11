@@ -43,18 +43,25 @@ Text Domain: digitaalgemeengoed
   margin: 0;
   padding-left: 1.1rem;
   border-left: 1px solid #c9d6e3;
-  max-width: 14.5rem;
-  font-size: .8rem;
+  max-width: 12.5rem;
+  font-size: .78rem;
   line-height: 1.35;
   color: var(--dg-tekst);
 }
-@media (max-width: 1400px) { .site-branding .site-description { display: none; } }
+/* De ondertitel alleen als het hele hoofdmenu er nog naast past (anders zet
+   BuddyX de laatste punten onder "More"). */
+@media (max-width: 1699px) { .site-branding .site-description { display: none; } }
 @media (max-width: 960px) {
   .site-branding .custom-logo { height: 46px; }
   .site-branding .site-title, .site-branding .site-title a { font-size: 1.25rem !important; }
 }
 
 .main-navigation #primary-menu > li > a { font-weight: 650; color: var(--dg-marine); }
+/* Iets dichter op elkaar, zodat alle zeven punten op één regel passen. */
+@media (min-width: 961px) {
+  .main-navigation #primary-menu > li { margin-left: 0; }
+  .main-navigation ul#primary-menu > li > a { padding-left: .45em; padding-right: .45em; }
+}
 .main-navigation #primary-menu > li.current-menu-item > a,
 .main-navigation #primary-menu > li > a:hover { color: var(--dg-link); }
 /* Het eerste punt (Home) als huisje. */
@@ -137,7 +144,7 @@ Text Domain: digitaalgemeengoed
   margin: 0 0 0 calc(50% - 50vw) !important;
   max-width: none !important;
   min-height: 34rem;
-  padding: 3.5rem max(1.5rem, calc(50vw - 590px)) 9rem;
+  padding: 3.5rem max(1.5rem, calc(50vw - 670px)) 9rem;
   background: linear-gradient(100deg, #ffffff 0%, #f6fbfe 40%, var(--dg-ijs) 100%);
   overflow: hidden;
   box-sizing: border-box;
@@ -146,7 +153,7 @@ Text Domain: digitaalgemeengoed
 .entry-content .dg-held::before {
   content: "";
   position: absolute; z-index: 1;
-  left: max(0rem, calc(50vw - 640px)); bottom: 0;
+  left: max(0rem, calc(50vw - 720px)); bottom: 0;
   width: min(560px, 60vw); aspect-ratio: 600 / 180;
   background: url("assets/stad.svg") left bottom / contain no-repeat;
   opacity: .9;
@@ -295,7 +302,8 @@ Text Domain: digitaalgemeengoed
 
 /* Projecten: kaarten met een tegel links (icoon of beeld). Een kaart met
    "soort: oproep" komt als brede balk onder de projecten. */
-.entry-content .dg-projecten { grid-template-columns: repeat(auto-fit, minmax(min(17rem, 100%), 1fr)) !important; }
+/* Drie kaarten per rij op een breed scherm, zodat drie projecten de hele breedte vullen. */
+.entry-content .dg-projecten { grid-template-columns: repeat(auto-fit, minmax(min(22rem, 100%), 1fr)) !important; }
 .entry-content .dg-projecten .dg-kaart.heeft-icoon, .entry-content .dg-projecten .dg-kaart.heeft-beeld { padding-left: 7.1rem; min-height: 7.6rem; }
 .entry-content .dg-projecten .dg-kaart.heeft-icoon::before {
   content: ""; position: absolute; left: .9rem; top: .9rem; width: 5.3rem; height: 5.3rem;

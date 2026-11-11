@@ -37,6 +37,8 @@ add_filter(
 		DG_KLEUREN,
 		array(
 			'site_custom_colors'          => true,
+			// Breed genoeg voor logo, ondertitel en het hele hoofdmenu (anders "More").
+			'site_container_width'        => '1380px',
 			'site_copyright_privacy_link' => 'off',
 			'sidebar_option'              => 'none',
 			'single_post_sidebar_option'  => 'none',
@@ -98,3 +100,8 @@ add_filter(
 	10,
 	2
 );
+
+// De zwarte WordPress-werkbalk alleen voor wie pagina's of berichten bewerkt;
+// bezoekers en gewone leden hebben de kop van de site (BuddyPress toont hem
+// anders ook aan wie niet is ingelogd).
+add_filter( 'show_admin_bar', static fn( $tonen ) => $tonen && is_user_logged_in() && current_user_can( 'edit_posts' ), 99 );

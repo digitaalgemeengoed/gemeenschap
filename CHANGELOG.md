@@ -1,5 +1,13 @@
 # Wijzigingen
 
+## 0.7.2 — 2026-11-11
+
+Opmaak van de startpagina op brede schermen:
+- Eén inhoudsbreedte (1380 px) voor kop, opening en pagina; de tekst van de opening, het logo en de rest beginnen op dezelfde lijn. Alleen de achtergrond van de opening loopt over de hele breedte.
+- Het hele hoofdmenu past op één regel (geen *More* meer vanaf 1280 px): de punten staan iets dichter op elkaar en de ondertitel naast het logo verschijnt pas vanaf 1700 px.
+- Geen zwarte WordPress-werkbalk meer voor bezoekers en gewone leden; alleen voor wie pagina's of berichten bewerkt.
+- Actuele projecten: drie kaarten per rij die samen de hele breedte vullen.
+
 ## 0.7.1 — 2026-11-11
 
 - **Afschermen met een wachtwoord** zolang het platform nog niet openbaar is: `sudo /opt/gemeenschap/server/afschermen.sh aan` vraagt een gebruikersnaam en wachtwoord en zet de site, `aanmelden.` en `projecten.` erachter (HTTP Basic Auth in Caddy). In `.env` staat alleen een hash. Verkeer van de server zelf en uit de containers hoeft niet in te loggen, zodat de controles, wp-cron en het inloggen via Keycloak blijven werken. `afschermen.sh uit` maakt het weer openbaar.
