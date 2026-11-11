@@ -265,11 +265,11 @@ func (r *Register) ZetKerngroep(ctx context.Context, emails []string) error {
 		return err
 	}
 	defer tx.Rollback()
-	if _, err := tx.ExecContext(ctx, `DELETE FROM kerngroep`); err != nil {
+	if _, err := tx.ExecContext(ctx, `DELETE FROM vaste_leden`); err != nil {
 		return err
 	}
 	for _, e := range emails {
-		if _, err := tx.ExecContext(ctx, `INSERT INTO kerngroep (email) VALUES ($1) ON CONFLICT DO NOTHING`, strings.ToLower(e)); err != nil {
+		if _, err := tx.ExecContext(ctx, `INSERT INTO vaste_leden (email) VALUES ($1) ON CONFLICT DO NOTHING`, strings.ToLower(e)); err != nil {
 			return err
 		}
 	}
@@ -284,7 +284,7 @@ func (a *App) synchroniseerSteeds(ctx context.Context, rm *Redmine, interval tim
 		goed := a.Keycloak != nil
 		if a.Keycloak != nil {
 			if err := a.Keycloak.SynchroniseerKerngroep(ctx, a.Reg); err != nil {
-				log.Printf("Keycloak (kerngroep): %v", err)
+				log.Printf("Keycloak (kerngroep en beheerders): %v", err)
 				goed = false
 			}
 		}

@@ -2,6 +2,7 @@
 
 ## Nog niet uitgebracht
 
+- Documenten: **de beheerders van het platform** (`/site/beheer`) hebben nu ook altijd recht op *Mijn documenten*, naast de kerngroep, werkgroepen en projecten. Beide groepen komen rechtstreeks uit Keycloak.
 - Documenten: foutpagina's met een Nederlandse titel (Geen toegang, Niet gevonden …).
 
 ## 0.11.1 — 2026-11-11

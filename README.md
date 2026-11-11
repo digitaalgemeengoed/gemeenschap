@@ -218,7 +218,7 @@ Windows haalt standaard bestanden tot 50 MB op via WebDAV.
 
 **Ruimtes**: de coöperatie, elk project (leden uit Redmine), elke werkgroep
 (leden uit de groepen van BuddyPress) en *Mijn documenten* per persoon (voor
-wie in de kerngroep, een werkgroep of een project zit; 1 GB; bevroren als je
+wie in de kerngroep, een werkgroep of een project zit, en de beheerders van het platform; 1 GB; bevroren als je
 nergens meer lid bent, na 90 dagen naar de prullenbak). **Beheer** op
 `/beheer` (kerngroep en `/site/beheer`): omvang, quota, prullenbak, logboek.
 Op de site: een tab *Documenten* bij elke werkgroep, *Mijn documenten* op je

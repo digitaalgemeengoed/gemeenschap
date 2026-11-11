@@ -1,7 +1,7 @@
 package main
 
 // Persoonlijke ruimtes ("Mijn documenten"): voor wie in de kerngroep, een
-// werkgroep of een project zit. Aangemaakt bij het eerste gebruik, met een
+// werkgroep of een project zit, en voor de beheerders van het platform. Aangemaakt bij het eerste gebruik, met een
 // quotum. Alleen de eigenaar kan erin (ook de beheerders van het platform
 // niet); hij kan wel delen.
 //
@@ -26,7 +26,7 @@ const bevriesDuur = 90 * 24 * time.Hour
 // project (met een rol die toegang geeft)?
 func (r *Register) MagPersoonlijk(ctx context.Context, email string) (bool, error) {
 	var ja bool
-	err := r.db.QueryRowContext(ctx, `SELECT EXISTS (SELECT 1 FROM kerngroep WHERE email = $1)
+	err := r.db.QueryRowContext(ctx, `SELECT EXISTS (SELECT 1 FROM vaste_leden WHERE email = $1)
 		OR EXISTS (SELECT 1 FROM lid l JOIN ruimte r ON r.id = l.ruimte_id
 			WHERE l.email = $1 AND l.niveau > 0 AND r.status = 'actief' AND r.soort IN ('project', 'werkgroep'))`,
 		strings.ToLower(email)).Scan(&ja)
@@ -34,7 +34,7 @@ func (r *Register) MagPersoonlijk(ctx context.Context, email string) (bool, erro
 }
 
 func (a *App) magPersoonlijk(ctx context.Context, s *Sessie) (bool, error) {
-	if s.In(groepKerngroep) {
+	if s.In(groepKerngroep) || s.In(groepBeheer) {
 		return true, nil
 	}
 	return a.Reg.MagPersoonlijk(ctx, s.Email)
@@ -84,7 +84,7 @@ func (a *App) mijn(w http.ResponseWriter, r *http.Request, s *Sessie) {
 			return
 		}
 		if !mag {
-			a.fout(w, r, s, http.StatusForbidden, "Mijn documenten is er voor wie in de kerngroep, een werkgroep of een project zit. Word lid van een werkgroep op de site, of vraag de projectleider je in Redmine aan een project toe te voegen.")
+			a.fout(w, r, s, http.StatusForbidden, "Mijn documenten is er voor wie in de kerngroep, een werkgroep of een project zit, en voor de beheerders van het platform. Word lid van een werkgroep op de site, of vraag de projectleider je in Redmine aan een project toe te voegen.")
 			return
 		}
 	}
@@ -132,10 +132,10 @@ func (a *App) levenscyclus(ctx context.Context) error {
 			if _, err := a.Reg.db.ExecContext(ctx, `UPDATE ruimte SET status = 'gesloten', bevroren_sinds = now() WHERE id = $1`, rm.ID); err != nil {
 				return err
 			}
-			a.Reg.logboekLos(ctx, "systeem", rm.ID, "bevroren", eigenaar+" is geen lid meer van de kerngroep, een werkgroep of een project")
+			a.Reg.logboekLos(ctx, "systeem", rm.ID, "bevroren", eigenaar+" is geen lid meer van de kerngroep, een werkgroep of een project, en geen beheerder")
 			log.Printf("persoonlijke ruimte %s bevroren", rm.Sleutel)
 			a.systeembericht(ctx, eigenaar, "Je persoonlijke documenten zijn bevroren",
-				fmt.Sprintf("Je zit niet meer in de kerngroep, een werkgroep of een project. Daarom staat <a href=\"%s/r/%s\">Mijn documenten</a> nu op alleen-lezen. Over 90 dagen (%s) gaan de documenten naar de prullenbak. Download wat je wilt bewaren. Word je weer lid, dan gaat de ruimte vanzelf weer open.",
+				fmt.Sprintf("Je zit niet meer in de kerngroep, een werkgroep of een project (en bent geen beheerder). Daarom staat <a href=\"%s/r/%s\">Mijn documenten</a> nu op alleen-lezen. Over 90 dagen (%s) gaan de documenten naar de prullenbak. Download wat je wilt bewaren. Word je weer lid, dan gaat de ruimte vanzelf weer open.",
 					a.Basis, rm.Sleutel, time.Now().Add(bevriesDuur).In(amsterdam).Format("2-1-2006")))
 		case rm.Status == "gesloten" && mag:
 			if _, err := a.Reg.db.ExecContext(ctx, `UPDATE ruimte SET status = 'actief', bevroren_sinds = NULL WHERE id = $1`, rm.ID); err != nil {

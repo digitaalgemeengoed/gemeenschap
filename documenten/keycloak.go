@@ -78,10 +78,16 @@ func (k *KeycloakBeheer) Leden(ctx context.Context, pad string) ([]string, error
 	}
 }
 
+// SynchroniseerKerngroep: de kerngroep en de beheerders van het platform
+// (samen: wie altijd recht heeft op een persoonlijke ruimte).
 func (k *KeycloakBeheer) SynchroniseerKerngroep(ctx context.Context, reg *Register) error {
-	leden, err := k.Leden(ctx, groepKerngroep)
-	if err != nil {
-		return err
+	var alle []string
+	for _, pad := range []string{groepKerngroep, groepBeheer} {
+		leden, err := k.Leden(ctx, pad)
+		if err != nil {
+			return err
+		}
+		alle = append(alle, leden...)
 	}
-	return reg.ZetKerngroep(ctx, leden)
+	return reg.ZetKerngroep(ctx, alle)
 }

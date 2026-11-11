@@ -127,6 +127,9 @@ var schema = []string{
 	`UPDATE recht SET wie = 'leden' WHERE soort = 'rol'`,
 	// Wie in de kerngroep zit (uit de groep "Netwerk: Kerngroep" in Redmine).
 	`CREATE TABLE kerngroep (email text PRIMARY KEY)`,
+	// Ook de beheerders van het platform hebben altijd recht op een
+	// persoonlijke ruimte: de tabel bevat nu beide groepen uit Keycloak.
+	`ALTER TABLE kerngroep RENAME TO vaste_leden`,
 }
 
 func migreer(ctx context.Context, db *sql.DB) error {

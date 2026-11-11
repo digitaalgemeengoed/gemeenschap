@@ -184,7 +184,8 @@ Besloten op 11 november 2026:
    `objecten/r<ruimte-id>/<uuid>`. Zo is de omvang per ruimte te meten en kan
    één ruimte apart worden gekopieerd. Bestaande objecten houden hun naam.
 3. **Persoonlijke ruimte** (*Mijn documenten*) voor wie in de kerngroep, een
-   werkgroep of een project zit. Aangemaakt bij het eerste gebruik. Alleen de
+   werkgroep of een project zit, en (besloten op 11 november, 's avonds) voor
+   de beheerders van het platform (`/site/beheer`). Aangemaakt bij het eerste gebruik. Alleen de
    eigenaar (Beheren); hij kan delen. Ook de beheerders van het platform
    kunnen er niet in (de vaste regel geldt hier niet); in Beheer zien zij
    alleen de omvang. Is iemand nergens meer lid, dan wordt de ruimte
