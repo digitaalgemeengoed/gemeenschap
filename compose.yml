@@ -424,6 +424,10 @@ services:
       DOC_BERICHT_GEHEIM: ${DOC_BERICHT_GEHEIM:?}
       WORDPRESS_URL: http://wordpress
       WORDPRESS_HOST: ${DOMEIN}
+      # Wie in de kerngroep zit (voor de persoonlijke ruimtes), met de client redmine-sync.
+      KEYCLOAK_SYNC_GEHEIM: ${REDMINE_SYNC_SECRET:?}
+      # Persoonlijke ruimtes (Mijn documenten): quotum in MB.
+      DOC_QUOTUM_PERSOONLIJK_MB: ${DOC_QUOTUM_PERSOONLIJK_MB:-1024}
       # Welk niveau een rol in Redmine geeft (0 geen, 1 lezen, 2 bewerken, 3 beheren).
       DOC_ROLLEN: ${DOC_ROLLEN:-Gebruiker=0,Contributor=2,Member=2,Kerngroep=3,Manager=3,Projectmanager=3,Projectleider=3}
     volumes:

@@ -139,12 +139,20 @@ func main() {
 		app.Berichten = &WordPress{URL: env("WORDPRESS_URL", "http://wordpress"), Host: moet("WORDPRESS_HOST"), Geheim: g,
 			HTTP: &http.Client{Timeout: 60 * time.Second}}
 	}
-	if u := os.Getenv("REDMINE_URL"); u != "" {
-		rm := &Redmine{URL: u, Sleutel: moet("REDMINE_API_KEY"), HTTP: &http.Client{Timeout: 30 * time.Second},
-			Rollen: leesRollen(env("DOC_ROLLEN", standaardRollen))}
-		interval, _ := time.ParseDuration(env("REDMINE_INTERVAL", "5m"))
-		go rm.SynchroniseerSteeds(ctx, reg, interval)
+	if g := os.Getenv("KEYCLOAK_SYNC_GEHEIM"); g != "" {
+		app.Keycloak = &KeycloakBeheer{Realm: env("OIDC_INTERN", moet("OIDC_UITGEVER")), ClientID: env("KEYCLOAK_SYNC_CLIENT", "redmine-sync"),
+			Geheim: g, HTTP: &http.Client{Timeout: 30 * time.Second}}
 	}
+	var rm *Redmine
+	if u := os.Getenv("REDMINE_URL"); u != "" {
+		rm = &Redmine{URL: u, Sleutel: moet("REDMINE_API_KEY"), HTTP: &http.Client{Timeout: 30 * time.Second},
+			Rollen: leesRollen(env("DOC_ROLLEN", standaardRollen))}
+	}
+	if mb, _ := strconv.Atoi(env("DOC_QUOTUM_PERSOONLIJK_MB", "1024")); mb > 0 {
+		app.QuotumPersoonlijk = int64(mb) << 20
+	}
+	interval, _ := time.ParseDuration(env("REDMINE_INTERVAL", "5m"))
+	go app.synchroniseerSteeds(ctx, rm, interval)
 
 	srv := &http.Server{
 		Addr:              env("ADRES", ":8080"),

@@ -196,6 +196,23 @@ func (s *S3) HaalVanaf(ctx context.Context, sleutel string, vanaf int64) (io.Rea
 	return resp.Body, nil
 }
 
+// Verwijder: een object uit de opslag halen.
+func (s *S3) Verwijder(ctx context.Context, sleutel string) error {
+	req, err := s.verzoek(ctx, http.MethodDelete, sleutel, nil, nil, 0, legeHash, nil)
+	if err != nil {
+		return err
+	}
+	resp, err := s.HTTP.Do(req)
+	if err != nil {
+		return err
+	}
+	if resp.StatusCode/100 != 2 && resp.StatusCode != http.StatusNotFound {
+		return s3Fout(resp)
+	}
+	resp.Body.Close()
+	return nil
+}
+
 // Bestaat: of een object er is.
 func (s *S3) Bestaat(ctx context.Context, sleutel string) (bool, error) {
 	req, err := s.verzoek(ctx, http.MethodHead, sleutel, nil, nil, 0, legeHash, nil)

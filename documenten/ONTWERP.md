@@ -171,6 +171,42 @@ bewust niet: dat is openbaar maken, en vraagt een eigen besluit.
   minder dan tien minuten geleden aanmaakte (tijdelijke bestanden).
 - Caddy laat `/dav/` en `/o/` buiten de afscherming met wachtwoord.
 
+## Ruimtes, opslag en beheer (0.11)
+
+Besloten op 11 november 2026:
+
+1. **Werkgroepen** zijn de groepen van BuddyPress op de site. Elke werkgroep
+   krijgt een ruimte (`werkgroep-<slug>`); de leden komen elke vijf minuten
+   uit WordPress (`/wp-json/dg/v1/werkgroepen`, met het gedeelde geheim).
+   Lid: Bewerken; beheerder of moderator van de groep: Beheren; de kerngroep:
+   Beheren.
+2. **Eén bucket, een voorvoegsel per ruimte**: nieuwe objecten heten
+   `objecten/r<ruimte-id>/<uuid>`. Zo is de omvang per ruimte te meten en kan
+   één ruimte apart worden gekopieerd. Bestaande objecten houden hun naam.
+3. **Persoonlijke ruimte** (*Mijn documenten*) voor wie in de kerngroep, een
+   werkgroep of een project zit. Aangemaakt bij het eerste gebruik. Alleen de
+   eigenaar (Beheren); hij kan delen. Ook de beheerders van het platform
+   kunnen er niet in (de vaste regel geldt hier niet); in Beheer zien zij
+   alleen de omvang. Is iemand nergens meer lid, dan wordt de ruimte
+   **bevroren**: 90 dagen alleen-lezen (ook geen nieuwe documenten), met een
+   bericht. Wordt hij weer lid, dan gaat hij weer open. Na 90 dagen gaat
+   alles naar de prullenbak. Wie in de kerngroep zit, komt uit de groep
+   *Netwerk: Kerngroep* in Redmine (elke tien minuten gelijk met Keycloak).
+   De levenscyclus draait alleen na een geslaagde synchronisatie van Redmine
+   én WordPress, zodat een storing niemands ruimte bevriest.
+4. **Quotum alleen persoonlijk**: 1 GB (`DOC_QUOTUM_PERSOONLIJK_MB`). Alle
+   versies van wat niet in de prullenbak staat, tellen mee. Andere ruimtes
+   hebben geen quotum, tenzij Beheer er een zet.
+
+**Beheer** (`/beheer`, voor `/site/beheer` en de kerngroep): alle ruimtes
+met omvang, quotum en status; het quotum wijzigen; de prullenbak per ruimte
+(terugzetten, definitief verwijderen: dan gaan ook de objecten uit de
+opslag, niet uit de back-upspiegel); het logboek.
+
+**Op de site**: een regel *Documenten* in de feiten van elke projectpagina
+(`[dg_documenten project=…]`, alleen voor wie is ingelogd), een tab
+*Documenten* bij elke werkgroep en *Mijn documenten* op je eigen profiel.
+
 ## Fasering
 
 1. Garage en de dienst: ruimtes, mappen, uploaden en downloaden in de

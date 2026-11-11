@@ -216,6 +216,17 @@ a.naam:hover { color: var(--link); text-decoration: underline; }
 .sociaal { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .5rem; }
 .sociaal .knop, .sociaal button { font-size: .85rem; padding: .35rem .75rem; }
 
+/* Beheer */
+.losse.breed { max-width: none; }
+.beheerlijst td { vertical-align: middle; }
+.beheerlijst tr.weg { opacity: .55; }
+.quotum { display: flex; gap: .35rem; align-items: center; }
+.quotum input { width: 6rem; padding: .25rem .4rem; }
+.chip.rood { background: #fdecea; color: var(--rood); }
+.acties form { display: inline; }
+.logboek td small { font-size: .74rem; overflow-wrap: anywhere; }
+.bevroren { margin: .8rem .9rem 0; padding: .6rem .8rem; background: #fdecea; color: #7a271a; border-radius: 8px; font-size: .88rem; }
+
 /* Fout-pagina */
 .losse { background: var(--wit); border: 1px solid var(--rand); border-radius: 12px; padding: 1.5rem; }
 

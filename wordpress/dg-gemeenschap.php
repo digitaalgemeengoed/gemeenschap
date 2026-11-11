@@ -335,6 +335,55 @@ add_filter(
 	}
 );
 
+/**
+ * Documenten in BuddyPress: een tab "Documenten" bij elke werkgroep (voor de
+ * leden; de ruimte heet werkgroep-<slug>) en "Mijn documenten" op je eigen
+ * profiel. Beide gaan door naar documenten.<domein>; daar gelden de rechten.
+ */
+add_action(
+	'bp_setup_nav',
+	static function () {
+		if ( ! is_user_logged_in() || ! function_exists( 'dg_documenten_url' ) ) {
+			return;
+		}
+		if ( function_exists( 'bp_is_my_profile' ) && bp_is_my_profile() ) {
+			bp_core_new_nav_item(
+				array(
+					'name'                    => 'Mijn documenten',
+					'slug'                    => 'documenten',
+					'position'                => 85,
+					'show_for_displayed_user' => false,
+					'screen_function'         => static function () {
+						wp_redirect( dg_documenten_url( 'r/mijn' ) );
+						exit;
+					},
+				)
+			);
+		}
+		if ( function_exists( 'bp_is_group' ) && bp_is_group() ) {
+			$groep = groups_get_current_group();
+			if ( $groep && ( groups_is_user_member( get_current_user_id(), $groep->id ) || current_user_can( 'manage_options' ) ) ) {
+				bp_core_new_subnav_item(
+					array(
+						'name'            => 'Documenten',
+						'slug'            => 'documenten',
+						'parent_slug'     => $groep->slug,
+						'parent_url'      => bp_get_group_permalink( $groep ),
+						'position'        => 35,
+						'user_has_access' => true,
+						'screen_function' => static function () use ( $groep ) {
+							wp_redirect( dg_documenten_url( 'r/werkgroep-' . $groep->slug ) );
+							exit;
+						},
+					),
+					'groups'
+				);
+			}
+		}
+	},
+	100
+);
+
 /** Leden, profielen en groepen alleen voor wie is ingelogd. Fora blijven leesbaar. */
 add_action(
 	'template_redirect',
@@ -575,6 +624,51 @@ add_action(
 	}
 );
 
+add_action(
+	'rest_api_init',
+	static function () {
+		register_rest_route(
+			'dg/v1',
+			'/werkgroepen',
+			array(
+				'methods'             => 'GET',
+				'permission_callback' => 'dg_bericht_mag',
+				'callback'            => 'dg_werkgroepen_lijst',
+			)
+		);
+	}
+);
+
+/**
+ * De werkgroepen (groepen van BuddyPress) met de e-mailadressen van hun leden
+ * en beheerders (beheerder of moderator van de groep), voor Documenten.
+ */
+function dg_werkgroepen_lijst() {
+	if ( ! function_exists( 'groups_get_groups' ) ) {
+		return new WP_Error( 'dg_geen_groepen', 'De groepen van BuddyPress staan uit.', array( 'status' => 503 ) );
+	}
+	$uit    = array();
+	$groepen = groups_get_groups( array( 'per_page' => 500, 'show_hidden' => true ) );
+	foreach ( $groepen['groups'] as $g ) {
+		$leden      = array();
+		$beheerders = array();
+		$rij        = groups_get_group_members( array( 'group_id' => $g->id, 'per_page' => 5000, 'group_role' => array( 'admin', 'mod', 'member' ), 'exclude_banned' => true ) );
+		foreach ( $rij['members'] as $m ) {
+			$email = strtolower( (string) $m->user_email );
+			if ( '' === $email ) {
+				continue;
+			}
+			if ( ! empty( $m->is_admin ) || ! empty( $m->is_mod ) ) {
+				$beheerders[] = $email;
+			} else {
+				$leden[] = $email;
+			}
+		}
+		$uit[] = array( 'id' => (int) $g->id, 'slug' => (string) $g->slug, 'naam' => (string) $g->name, 'leden' => $leden, 'beheerders' => $beheerders );
+	}
+	return array( 'werkgroepen' => $uit );
+}
+
 function dg_bericht_mag( WP_REST_Request $verzoek ): bool {
 	$geheim = (string) getenv( 'DG_BERICHT_GEHEIM' );
 	return '' !== $geheim && hash_equals( $geheim, (string) $verzoek->get_header( 'x-dg-sleutel' ) );
@@ -589,7 +683,13 @@ function dg_bericht( WP_REST_Request $verzoek ) {
 	if ( ! function_exists( 'messages_new_message' ) ) {
 		return new WP_Error( 'dg_geen_berichten', 'De berichten van BuddyPress staan uit.', array( 'status' => 503 ) );
 	}
-	$van = get_user_by( 'email', sanitize_email( (string) $verzoek['van'] ) );
+	if ( ! empty( $verzoek['systeem'] ) ) {
+		// Een bericht van de site zelf (bijvoorbeeld: je persoonlijke documenten zijn bevroren).
+		$beheer = get_users( array( 'role' => 'administrator', 'number' => 1, 'orderby' => 'ID' ) );
+		$van    = $beheer[0] ?? null;
+	} else {
+		$van = get_user_by( 'email', sanitize_email( (string) $verzoek['van'] ) );
+	}
 	if ( ! $van ) {
 		return new WP_Error( 'dg_afzender', 'De afzender heeft geen account op de site.', array( 'status' => 422 ) );
 	}

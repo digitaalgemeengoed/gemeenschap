@@ -1,0 +1,36 @@
+{{define "inhoud"}}
+{{$d := .Data}}{{$csrf := .Sessie.CSRF}}
+<div class="losse breed">
+<p class="kruimels"><a href="/">Documenten</a> › {{if $d.Beheer}}<a href="/beheer">Beheer</a> › {{end}}{{$d.Naam}}</p>
+<h1>{{$d.Naam}}: prullenbak en logboek</h1>
+{{if ne $d.Ruimte.Status "weg"}}<p><a href="/r/{{$d.Ruimte.Sleutel}}">Naar de ruimte</a></p>{{end}}
+
+<h2>Prullenbak</h2>
+{{if $d.Prullenbak}}
+<table class="lijst">
+<thead><tr><th>Naam</th><th>Stond in</th><th>Verwijderd</th><th></th></tr></thead>
+<tbody>
+{{range $d.Prullenbak}}
+<tr>
+  <td><span class="naam {{if eq .Soort "map"}}map{{else}}tekst{{end}}">{{.Naam}}</span>{{if .Onder}}<small>met {{.Onder}} item(s) erin</small>{{end}}</td>
+  <td>{{if .Pad}}{{.Pad}}{{else}}<span class="zacht">bovenaan</span>{{end}}</td>
+  <td>{{datum .VerwijderdOp}}<small>{{.VerwijderdDoor}}</small></td>
+  <td class="r acties">
+    <form method="post"><input type="hidden" name="csrf" value="{{$csrf}}"><input type="hidden" name="actie" value="terug"><input type="hidden" name="item" value="{{.ID}}"><button class="licht klein">Terugzetten</button></form>
+    <form method="post" data-bevestig="{{.Naam}}{{if .Onder}} en alles erin{{end}} definitief verwijderen? Dit kan niet ongedaan worden gemaakt (alleen met de back-up)."><input type="hidden" name="csrf" value="{{$csrf}}"><input type="hidden" name="actie" value="weg"><input type="hidden" name="item" value="{{.ID}}"><button class="gevaar klein">Definitief weg</button></form>
+  </td>
+</tr>
+{{end}}
+</tbody></table>
+{{else}}<p class="zacht">De prullenbak is leeg.</p>{{end}}
+
+<h2>Logboek</h2>
+{{if $d.Logboek}}
+<table class="lijst logboek">
+<thead><tr><th>Wanneer</th><th>Wie</th><th>Wat</th><th>Waarop</th></tr></thead>
+<tbody>
+{{range $d.Logboek}}<tr><td>{{datum .Op}}</td><td>{{.Wie}}</td><td>{{.Actie}}<small>{{.Details}}</small></td><td>{{.Item}}</td></tr>{{end}}
+</tbody></table>
+{{else}}<p class="zacht">Nog niets gebeurd.</p>{{end}}
+</div>
+{{end}}

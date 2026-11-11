@@ -452,7 +452,10 @@ func (fs *DavFS) OpenFile(ctx context.Context, naam string, flag int, _ os.FileM
 			k, _ := f.ReadAt(kop, 0)
 			mt = http.DetectContentType(kop[:k])
 		}
-		object := "objecten/" + nieuwID()
+		if err := fs.a.Reg.PastErBij(ctx, rm, lengte); err != nil {
+			return err
+		}
+		object := objectSleutel(rm)
 		if err := fs.a.Opslag.Zet(ctx, object, f, lengte, som, mt); err != nil {
 			return err
 		}

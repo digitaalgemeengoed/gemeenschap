@@ -42,6 +42,30 @@ add_shortcode(
 	}
 );
 
+/** Het adres van Documenten (documenten.<domein>), met een pad erachter. */
+function dg_documenten_url( string $pad = '' ): string {
+	return 'https://documenten.' . wp_parse_url( home_url(), PHP_URL_HOST ) . '/' . ltrim( $pad, '/' );
+}
+
+/**
+ * [dg_documenten project="xena"]: een link naar de documenten van het project
+ * (de ruimte in Documenten heet zoals het project in Redmine). Alleen voor
+ * wie is ingelogd; anderen zien "voor leden".
+ */
+add_shortcode(
+	'dg_documenten',
+	static function ( $attr ) {
+		$id = sanitize_title( (string) ( $attr['project'] ?? '' ) );
+		if ( '' === $id ) {
+			return '';
+		}
+		if ( ! is_user_logged_in() ) {
+			return '<span class="dg-voor-leden">voor leden</span>';
+		}
+		return '<a href="' . esc_url( dg_documenten_url( 'r/' . $id ) ) . '">Documenten van dit project</a>';
+	}
+);
+
 /** Het hele dashboard. */
 function dg_dashboard(): string {
 	if ( ! is_user_logged_in() ) {
@@ -141,7 +165,7 @@ function dg_db_navigatie( WP_User $gebruiker ): string {
 		array( 'mensen', 'Community', function_exists( 'bp_get_members_directory_permalink' ) ? bp_get_members_directory_permalink() : home_url( '/leden/' ), 0 ),
 		array( 'forum', 'Discussies & fora', dg_db_forum_url(), 0 ),
 		array( 'boek', 'Kennis- & ervaringsbank', dg_db_kennisbank(), 0 ),
-		array( 'document', 'Documenten', 'https://documenten.' . wp_parse_url( home_url(), PHP_URL_HOST ) . '/', 0 ),
+		array( 'document', 'Documenten', dg_documenten_url(), 0 ),
 		array( 'lagen', 'Projecten', home_url( '/projecten/' ), 0 ),
 		array( 'hand', 'Samenwerkingen', home_url( '/samenwerkingen/' ), 0 ),
 		array( 'kalender', 'Evenementen', dg_db_evenementen_url(), 0 ),

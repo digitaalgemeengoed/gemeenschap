@@ -27,15 +27,17 @@ var sjabloonBestanden embed.FS
 var statischeBestanden embed.FS
 
 type App struct {
-	Reg        *Register
-	Opslag     *S3
-	OIDC       *OIDC
-	Basis      string
-	Geheim     []byte
-	MaxGrootte int64
-	Projecten  string     // publieke URL van Redmine, voor links
-	Berichten  *WordPress // nil: geen berichten bij delen
-	sjablonen  map[string]*template.Template
+	Reg               *Register
+	Opslag            *S3
+	OIDC              *OIDC
+	Basis             string
+	Geheim            []byte
+	MaxGrootte        int64
+	Projecten         string     // publieke URL van Redmine, voor links
+	Berichten         *WordPress // nil: geen berichten bij delen en geen werkgroepen
+	QuotumPersoonlijk int64
+	Keycloak          *KeycloakBeheer // wie in de kerngroep zit (voor de persoonlijke ruimtes)
+	sjablonen         map[string]*template.Template
 }
 
 const (
@@ -96,6 +98,11 @@ func (a *App) Routes() http.Handler {
 	mux.HandleFunc("POST /r/{ruimte}/i/{id}/verwijder", a.metRuimte(a.verwijder))
 	mux.HandleFunc("POST /r/{ruimte}/toegang", a.metRuimte(a.toegang))
 	mux.HandleFunc("POST /r/{ruimte}/i/{id}/openen", a.metRuimte(a.openen))
+	mux.HandleFunc("GET /r/mijn", a.metSessie(a.mijn))
+	mux.HandleFunc("GET /beheer", a.metSessie(a.beheer))
+	mux.HandleFunc("POST /beheer", a.metSessie(a.beheer))
+	mux.HandleFunc("GET /beheer/r/{id}", a.metSessie(a.beheerRuimte))
+	mux.HandleFunc("POST /beheer/r/{id}", a.metSessie(a.beheerRuimte))
 	mux.HandleFunc("GET /koppelen", a.metSessie(a.koppelen))
 	mux.HandleFunc("POST /koppelen", a.metSessie(a.koppelen))
 	a.davRoutes(mux)
@@ -163,6 +170,13 @@ func (a *App) laadSjablonen() {
 		"join":       strings.Join,
 		"niveau":     niveauNaam,
 		"programmas": programmasVoor,
+		"procent": func(a, b int64) int64 {
+			if b <= 0 {
+				return 0
+			}
+			return a * 100 / b
+		},
+		"mb": func(b int64) int64 { return b >> 20 },
 		// dict2: twee waarden aan een deelsjabloon meegeven.
 		"dict2": func(a, b any) struct{ A, B any } { return struct{ A, B any }{a, b} },
 		// eigenTitel: de titel, als die meer zegt dan de bestandsnaam.
@@ -175,7 +189,7 @@ func (a *App) laadSjablonen() {
 		},
 	}
 	a.sjablonen = map[string]*template.Template{}
-	for _, naam := range []string{"verkenner", "fout", "koppelen", "openen"} {
+	for _, naam := range []string{"verkenner", "fout", "koppelen", "openen", "beheer", "beheerruimte"} {
 		a.sjablonen[naam] = template.Must(template.New("").Funcs(functies).ParseFS(sjabloonBestanden, "sjablonen/basis.html", "sjablonen/"+naam+".html"))
 	}
 }

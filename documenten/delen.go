@@ -34,7 +34,11 @@ type berichtUitslag struct {
 // e-mailadres en op groep (de groepen uit Keycloak die WordPress bij elke
 // login bijhoudt).
 func (wp *WordPress) Stuur(ctx context.Context, van string, aan, groepen []string, onderwerp, inhoud string) (*berichtUitslag, error) {
-	body, _ := json.Marshal(map[string]any{"van": van, "aan": aan, "groepen": groepen, "onderwerp": onderwerp, "inhoud": inhoud})
+	return wp.stuur(ctx, map[string]any{"van": van, "aan": aan, "groepen": groepen, "onderwerp": onderwerp, "inhoud": inhoud})
+}
+
+func (wp *WordPress) stuur(ctx context.Context, bericht map[string]any) (*berichtUitslag, error) {
+	body, _ := json.Marshal(bericht)
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, strings.TrimRight(wp.URL, "/")+"/?rest_route=/dg/v1/bericht", bytes.NewReader(body))
 	if err != nil {
 		return nil, err
@@ -119,7 +123,7 @@ func (a *App) delen(w http.ResponseWriter, r *http.Request, s *Sessie, p *Plek) 
 	case soort == "persoon" && strings.Contains(wie, "@"):
 		wie = strings.ToLower(strings.TrimSpace(wie))
 	case soort == "groep" && strings.HasPrefix(wie, "/") && wie != groepBeheer:
-	case soort == "rol" && wie == "redmine" && p.Ruimte.Soort == "project":
+	case soort == "rol" && wie == "leden" && heeftLeden(p.Ruimte):
 	default:
 		terug(w, r, doel, "fout", "Kies met wie je deelt.")
 		return

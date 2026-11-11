@@ -1,0 +1,29 @@
+{{define "inhoud"}}
+{{$d := .Data}}{{$csrf := .Sessie.CSRF}}
+<div class="losse breed">
+<p class="kruimels"><a href="/">Documenten</a> › Beheer</p>
+<h1>Beheer</h1>
+<p class="zacht">Alle ruimtes, samen {{grootte $d.Totaal}} (alle versies, zonder de prullenbak). Van persoonlijke ruimtes zie je alleen de omvang; de inhoud is van de eigenaar. Een persoonlijke ruimte waarvan de eigenaar nergens meer lid is, wordt bevroren en gaat na 90 dagen naar de prullenbak.</p>
+<table class="lijst beheerlijst">
+<thead><tr><th>Ruimte</th><th>Soort</th><th>Status</th><th class="r">Documenten</th><th class="r">Gebruikt</th><th>Quotum</th><th></th></tr></thead>
+<tbody>
+{{range $d.Lijst}}
+<tr{{if eq .Status "weg"}} class="weg"{{end}}>
+  <td>{{if eq .Soort "persoonlijk"}}<span class="naam schijf">{{if .EigenaarNaam}}{{.EigenaarNaam}}{{else}}{{.Eigenaar.String}}{{end}}</span>{{else}}<a class="naam schijf" href="/r/{{.Sleutel}}">{{.Naam}}</a>{{end}}</td>
+  <td>{{if eq .Soort "cooperatie"}}<span class="chip groen">Coöperatie</span>{{else if eq .Soort "werkgroep"}}<span class="chip paars">Werkgroep</span>{{else if eq .Soort "project"}}<span class="chip">Project</span>{{else}}<span class="chip grijs">Persoonlijk</span>{{end}}</td>
+  <td>{{if eq .Status "actief"}}actief{{else if eq .Status "weg"}}<span class="zacht">weg</span>{{else if .BevrorenSinds.Valid}}<span class="chip rood">bevroren sinds {{datum .BevrorenSinds.Time}}</span>{{else}}alleen lezen{{end}}</td>
+  <td class="r">{{.Aantal}}</td>
+  <td class="r">{{grootte .Gebruik}}{{if .Quotum.Valid}}<small>{{procent .Gebruik .Quotum.Int64}}% van het quotum</small>{{end}}</td>
+  <td>
+    <form class="quotum" method="post" action="/beheer">
+      <input type="hidden" name="csrf" value="{{$csrf}}"><input type="hidden" name="ruimte" value="{{.ID}}">
+      <input name="mb" inputmode="numeric" value="{{if .Quotum.Valid}}{{mb .Quotum.Int64}}{{end}}" placeholder="geen" aria-label="Quotum in MB voor {{.Naam}}"><span class="zacht">MB</span>
+      <button class="licht klein">Opslaan</button>
+    </form>
+  </td>
+  <td class="r">{{if ne .Soort "persoonlijk"}}<a href="/beheer/r/{{.ID}}">Prullenbak{{if .InPrullenbak}} ({{.InPrullenbak}}){{end}} en logboek</a>{{end}}</td>
+</tr>
+{{end}}
+</tbody></table>
+</div>
+{{end}}

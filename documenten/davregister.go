@@ -209,8 +209,7 @@ func (r *Register) OpenLinkVan(ctx context.Context, sleutel string) (*OpenLink, 
 
 func (r *Register) RuimteVanID(ctx context.Context, id int64) (*Ruimte, error) {
 	var x Ruimte
-	err := r.db.QueryRowContext(ctx, `SELECT id, sleutel, soort, naam, redmine_id, status FROM ruimte WHERE id = $1 AND status <> 'weg'`, id).
-		Scan(&x.ID, &x.Sleutel, &x.Soort, &x.Naam, &x.RedmineID, &x.Status)
+	err := scanRuimte(r.db.QueryRowContext(ctx, `SELECT `+ruimteKolommen+` FROM ruimte WHERE id = $1 AND status <> 'weg'`, id), &x)
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, errNietGevonden
 	}

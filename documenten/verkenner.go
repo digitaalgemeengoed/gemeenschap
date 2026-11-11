@@ -19,6 +19,7 @@ import (
 	"path"
 	"strconv"
 	"strings"
+	"time"
 	"unicode"
 )
 
@@ -39,6 +40,7 @@ func (a *App) metRuimte(h func(http.ResponseWriter, *http.Request, *Sessie, *Ple
 			a.interneFout(w, r, s, err)
 			return
 		}
+		a.noemRuimte(r.Context(), rm, s, nil)
 		b, err := a.Reg.laadBoom(r.Context(), rm, s)
 		if err != nil {
 			a.interneFout(w, r, s, err)
@@ -124,6 +126,13 @@ type Verkenner struct {
 	Bekijkbaar     bool
 	Redmine        string
 	BeslotenMappen map[int64]bool
+	// Navigatie en ruimte
+	NavGroepen    []navGroep
+	MijnMogelijk  bool // nog geen persoonlijke ruimte, maar wel recht op een
+	KanBeheren    bool
+	Gebruik       int64
+	PrullenbakURL string
+	OpruimDatum   time.Time
 	// Het paneel Toegang: voor een map, de ruimte of een document.
 	ToegangID       int64
 	ToegangNaam     string
@@ -167,6 +176,58 @@ func (a *App) vulToegang(ctx context.Context, v *Verkenner, p *Plek, id int64, n
 
 func (v *Verkenner) MapURL(id int64) string { return mapURL(v.Ruimte, id) }
 
+// noemRuimte: een persoonlijke ruimte heet voor de eigenaar "Mijn documenten",
+// voor wie er iets uit gedeeld kreeg "Van <naam>".
+func (a *App) noemRuimte(ctx context.Context, rm *Ruimte, s *Sessie, namen map[string]string) {
+	if rm.Soort != "persoonlijk" || strings.EqualFold(rm.Eigenaar.String, s.Email) {
+		return
+	}
+	if namen == nil {
+		namen, _ = a.Reg.Namen(ctx)
+	}
+	n := namen[rm.Eigenaar.String]
+	if n == "" {
+		n = rm.Eigenaar.String
+	}
+	rm.Naam = "Van " + n
+}
+
+type navGroep struct {
+	Kop     string
+	Ruimtes []ruimteKaart
+}
+
+// vulNavigatie: de ruimtes per soort, Mijn documenten en Beheer.
+func (a *App) vulNavigatie(ctx context.Context, v *Verkenner, s *Sessie) error {
+	koppen := []struct{ soort, kop string }{{"cooperatie", "Coöperatie"}, {"werkgroep", "Werkgroepen"}, {"project", "Projecten"}, {"gedeeld", "Gedeeld met jou"}}
+	for _, k := range koppen {
+		g := navGroep{Kop: k.kop}
+		for _, r := range v.Ruimtes {
+			soort := r.Soort
+			if soort == "persoonlijk" && !strings.EqualFold(r.Eigenaar.String, s.Email) {
+				soort = "gedeeld"
+			}
+			if soort == k.soort {
+				g.Ruimtes = append(g.Ruimtes, r)
+			}
+		}
+		v.NavGroepen = append(v.NavGroepen, g)
+	}
+	eigen := false
+	for _, r := range v.Ruimtes {
+		eigen = eigen || (r.Soort == "persoonlijk" && strings.EqualFold(r.Eigenaar.String, s.Email))
+	}
+	if !eigen {
+		mag, err := a.magPersoonlijk(ctx, s)
+		if err != nil {
+			return err
+		}
+		v.MijnMogelijk = mag
+	}
+	v.KanBeheren = magBeheren(s)
+	return nil
+}
+
 func (a *App) ruimteKaarten(ctx context.Context, s *Sessie, huidig *Ruimte) ([]ruimteKaart, error) {
 	alle, err := a.Reg.Ruimtes(ctx)
 	if err != nil {
@@ -176,9 +237,14 @@ func (a *App) ruimteKaarten(ctx context.Context, s *Sessie, huidig *Ruimte) ([]r
 	if err != nil {
 		return nil, err
 	}
+	namen, err := a.Reg.Namen(ctx)
+	if err != nil {
+		return nil, err
+	}
 	var uit []ruimteKaart
 	for i := range alle {
 		rm := &alle[i]
+		a.noemRuimte(ctx, rm, s, namen)
 		b, err := a.Reg.laadBoom(ctx, rm, s)
 		if err != nil {
 			return nil, err
@@ -198,9 +264,12 @@ func (a *App) thuis(w http.ResponseWriter, r *http.Request, s *Sessie) {
 		a.interneFout(w, r, s, err)
 		return
 	}
-	a.toon(w, r, "verkenner", http.StatusOK, pagina{Titel: "Documenten", Sessie: s, Data: &Verkenner{
-		Ruimtes: kaarten, Hier: "/", Redmine: a.Projecten,
-	}})
+	v := &Verkenner{Ruimtes: kaarten, Hier: "/", Redmine: a.Projecten}
+	if err := a.vulNavigatie(r.Context(), v, s); err != nil {
+		a.interneFout(w, r, s, err)
+		return
+	}
+	a.toon(w, r, "verkenner", http.StatusOK, pagina{Titel: "Documenten", Sessie: s, Data: v})
 }
 
 // verkenner bouwt het scherm voor een map, eventueel met een selectie of paneel.
@@ -212,6 +281,20 @@ func (a *App) verkenner(ctx context.Context, s *Sessie, p *Plek, mapID int64) (*
 	v := &Verkenner{Ruimtes: kaarten, Ruimte: p.Ruimte, MapID: mapID, Niveau: p.Boom.Niveau(mapID), Berichten: a.Berichten != nil,
 		Besloten: p.Boom.Besloten(mapID), MaxMB: a.MaxGrootte >> 20, Soorten: documentsoorten, Redmine: a.Projecten}
 	v.Doorgang = v.Niveau < Lezen
+	if err := a.vulNavigatie(ctx, v, s); err != nil {
+		return nil, err
+	}
+	if p.Ruimte.Quotum.Valid {
+		if v.Gebruik, err = a.Reg.Gebruik(ctx, p.Ruimte.ID); err != nil {
+			return nil, err
+		}
+	}
+	if p.Ruimte.BevrorenSinds.Valid {
+		v.OpruimDatum = p.Ruimte.BevrorenSinds.Time.Add(bevriesDuur)
+	}
+	if (p.Ruimte.Soort == "persoonlijk" && strings.EqualFold(p.Ruimte.Eigenaar.String, s.Email)) || (p.Ruimte.Soort != "persoonlijk" && magBeheren(s)) {
+		v.PrullenbakURL = fmt.Sprintf("/beheer/r/%d", p.Ruimte.ID)
+	}
 	opPad := map[int64]bool{}
 	if mapID != 0 {
 		v.Pad, err = a.Reg.Pad(ctx, p.Ruimte.ID, mapID)
@@ -538,6 +621,8 @@ delen:
 				mislukt = append(mislukt, fmt.Sprintf("%s: groter dan %d MB", naam, a.MaxGrootte>>20))
 			case errors.Is(err, errIsMap):
 				mislukt = append(mislukt, naam+": "+err.Error())
+			case errors.Is(err, errVol):
+				mislukt = append(mislukt, naam+": "+err.Error())
 			case errors.Is(err, errNietGevonden):
 				a.fout(w, r, s, http.StatusNotFound, "Deze map bestaat niet (meer).")
 				return
@@ -600,7 +685,10 @@ func (a *App) bewaar(ctx context.Context, rm *Ruimte, ouder int64, naam string, 
 		mt = http.DetectContentType(kop)
 	}
 	som := hex.EncodeToString(h.Sum(nil))
-	object := "objecten/" + nieuwID()
+	if err := a.Reg.PastErBij(ctx, rm, lengte); err != nil {
+		return err
+	}
+	object := objectSleutel(rm)
 	if err := a.Opslag.Zet(ctx, object, f, lengte, som, mt); err != nil {
 		return err
 	}
@@ -745,7 +833,7 @@ func (a *App) toegang(w http.ResponseWriter, r *http.Request, s *Sessie, p *Plek
 	case "toevoegen":
 		soort, wie, _ := strings.Cut(r.FormValue("wie"), "|")
 		niveau, _ := strconv.Atoi(r.FormValue("niveau"))
-		if soort == "rol" && (p.Ruimte.Soort != "project" || wie != "redmine") || soort == "groep" && wie == groepBeheer {
+		if soort == "rol" && (!heeftLeden(p.Ruimte) || wie != "leden") || soort == "groep" && wie == groepBeheer {
 			err = errOngeldig
 		} else if soort == "persoon" {
 			wie = strings.ToLower(strings.TrimSpace(wie))

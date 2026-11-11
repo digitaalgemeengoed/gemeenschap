@@ -119,6 +119,14 @@ var schema = []string{
 		item_id     bigint NOT NULL REFERENCES item(id),
 		verloopt    timestamptz NOT NULL
 	)`,
+	// Werkgroepen en persoonlijke ruimtes (0.11); quota; de rol "leden" is
+	// algemeen (projectleden uit Redmine, werkgroepleden uit WordPress).
+	`ALTER TABLE ruimte DROP CONSTRAINT ruimte_soort_check`,
+	`ALTER TABLE ruimte ADD CONSTRAINT ruimte_soort_check CHECK (soort IN ('cooperatie','project','werkgroep','persoonlijk'))`,
+	`ALTER TABLE ruimte ADD COLUMN wp_groep_id integer UNIQUE, ADD COLUMN eigenaar text UNIQUE, ADD COLUMN quotum bigint, ADD COLUMN bevroren_sinds timestamptz`,
+	`UPDATE recht SET wie = 'leden' WHERE soort = 'rol'`,
+	// Wie in de kerngroep zit (uit de groep "Netwerk: Kerngroep" in Redmine).
+	`CREATE TABLE kerngroep (email text PRIMARY KEY)`,
 }
 
 func migreer(ctx context.Context, db *sql.DB) error {
@@ -150,12 +158,21 @@ func migreer(ctx context.Context, db *sql.DB) error {
 }
 
 type Ruimte struct {
-	ID        int64
-	Sleutel   string
-	Soort     string
-	Naam      string
-	RedmineID sql.NullInt64
-	Status    string
+	ID            int64
+	Sleutel       string
+	Soort         string // cooperatie, project, werkgroep, persoonlijk
+	Naam          string
+	RedmineID     sql.NullInt64
+	Status        string // actief, gesloten (alleen lezen), weg
+	Eigenaar      sql.NullString
+	Quotum        sql.NullInt64 // bytes
+	BevrorenSinds sql.NullTime
+}
+
+const ruimteKolommen = `id, sleutel, soort, naam, redmine_id, status, eigenaar, quotum, bevroren_sinds`
+
+func scanRuimte(s interface{ Scan(...any) error }, x *Ruimte) error {
+	return s.Scan(&x.ID, &x.Sleutel, &x.Soort, &x.Naam, &x.RedmineID, &x.Status, &x.Eigenaar, &x.Quotum, &x.BevrorenSinds)
 }
 
 type Item struct {
@@ -196,7 +213,7 @@ type Versie struct {
 type Register struct{ db *sql.DB }
 
 func (r *Register) Ruimtes(ctx context.Context) ([]Ruimte, error) {
-	rows, err := r.db.QueryContext(ctx, `SELECT id, sleutel, soort, naam, redmine_id, status FROM ruimte WHERE status <> 'weg' ORDER BY soort, lower(naam)`)
+	rows, err := r.db.QueryContext(ctx, `SELECT `+ruimteKolommen+` FROM ruimte WHERE status <> 'weg' ORDER BY soort, lower(naam)`)
 	if err != nil {
 		return nil, err
 	}
@@ -204,7 +221,7 @@ func (r *Register) Ruimtes(ctx context.Context) ([]Ruimte, error) {
 	var uit []Ruimte
 	for rows.Next() {
 		var x Ruimte
-		if err := rows.Scan(&x.ID, &x.Sleutel, &x.Soort, &x.Naam, &x.RedmineID, &x.Status); err != nil {
+		if err := scanRuimte(rows, &x); err != nil {
 			return nil, err
 		}
 		uit = append(uit, x)
@@ -214,8 +231,7 @@ func (r *Register) Ruimtes(ctx context.Context) ([]Ruimte, error) {
 
 func (r *Register) Ruimte(ctx context.Context, sleutel string) (*Ruimte, error) {
 	var x Ruimte
-	err := r.db.QueryRowContext(ctx, `SELECT id, sleutel, soort, naam, redmine_id, status FROM ruimte WHERE sleutel = $1 AND status <> 'weg'`, sleutel).
-		Scan(&x.ID, &x.Sleutel, &x.Soort, &x.Naam, &x.RedmineID, &x.Status)
+	err := scanRuimte(r.db.QueryRowContext(ctx, `SELECT `+ruimteKolommen+` FROM ruimte WHERE sleutel = $1 AND status <> 'weg'`, sleutel), &x)
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, errNietGevonden
 	}
@@ -583,4 +599,34 @@ func (r *Register) Objecten(ctx context.Context) (map[string]Versie, error) {
 		uit[v.Object] = v
 	}
 	return uit, rows.Err()
+}
+
+// objectSleutel: één bucket, een voorvoegsel per ruimte.
+func objectSleutel(rm *Ruimte) string {
+	return fmt.Sprintf("objecten/r%d/%s", rm.ID, nieuwID())
+}
+
+var errVol = errors.New("de ruimte is vol")
+
+// Gebruik: alle versies van wat niet in de prullenbak staat (bytes).
+func (r *Register) Gebruik(ctx context.Context, ruimteID int64) (int64, error) {
+	var n int64
+	err := r.db.QueryRowContext(ctx, `SELECT coalesce(sum(v.grootte), 0) FROM versie v JOIN item i ON i.id = v.item_id
+		WHERE i.ruimte_id = $1 AND i.verwijderd_op IS NULL`, ruimteID).Scan(&n)
+	return n, err
+}
+
+// PastErBij: past er nog zoveel bij binnen het quotum van de ruimte?
+func (r *Register) PastErBij(ctx context.Context, rm *Ruimte, erbij int64) error {
+	if !rm.Quotum.Valid {
+		return nil
+	}
+	nu, err := r.Gebruik(ctx, rm.ID)
+	if err != nil {
+		return err
+	}
+	if nu+erbij > rm.Quotum.Int64 {
+		return fmt.Errorf("%w: %s van %s gebruikt", errVol, grootte(nu), grootte(rm.Quotum.Int64))
+	}
+	return nil
 }

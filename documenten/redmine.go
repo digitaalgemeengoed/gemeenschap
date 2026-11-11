@@ -259,11 +259,51 @@ func (r *Register) WegBehalve(ctx context.Context, gezien map[int]bool) error {
 	return err
 }
 
-// SynchroniseerSteeds: meteen, en daarna elke interval.
-func (rm *Redmine) SynchroniseerSteeds(ctx context.Context, reg *Register, interval time.Duration) {
+func (r *Register) ZetKerngroep(ctx context.Context, emails []string) error {
+	tx, err := r.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	if _, err := tx.ExecContext(ctx, `DELETE FROM kerngroep`); err != nil {
+		return err
+	}
+	for _, e := range emails {
+		if _, err := tx.ExecContext(ctx, `INSERT INTO kerngroep (email) VALUES ($1) ON CONFLICT DO NOTHING`, strings.ToLower(e)); err != nil {
+			return err
+		}
+	}
+	return tx.Commit()
+}
+
+// synchroniseerSteeds: meteen, en daarna elke interval: projecten (Redmine),
+// werkgroepen (WordPress) en daarna de persoonlijke ruimtes. Die laatste
+// alleen als beide bronnen antwoordden: een storing bevriest niemands ruimte.
+func (a *App) synchroniseerSteeds(ctx context.Context, rm *Redmine, interval time.Duration) {
 	for {
-		if err := rm.Synchroniseer(ctx, reg); err != nil {
-			log.Printf("Redmine: %v", err)
+		goed := a.Keycloak != nil
+		if a.Keycloak != nil {
+			if err := a.Keycloak.SynchroniseerKerngroep(ctx, a.Reg); err != nil {
+				log.Printf("Keycloak (kerngroep): %v", err)
+				goed = false
+			}
+		}
+		if rm != nil {
+			if err := rm.Synchroniseer(ctx, a.Reg); err != nil {
+				log.Printf("Redmine: %v", err)
+				goed = false
+			}
+		}
+		if a.Berichten != nil {
+			if err := a.Berichten.SynchroniseerWerkgroepen(ctx, a.Reg); err != nil {
+				log.Printf("Werkgroepen: %v", err)
+				goed = false
+			}
+		}
+		if goed && rm != nil && a.Berichten != nil {
+			if err := a.levenscyclus(ctx); err != nil {
+				log.Printf("Persoonlijke ruimtes: %v", err)
+			}
 		}
 		select {
 		case <-ctx.Done():

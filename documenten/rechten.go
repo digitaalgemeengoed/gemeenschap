@@ -82,7 +82,7 @@ type Boom struct {
 func (r *Register) laadBoom(ctx context.Context, rm *Ruimte, s *Sessie) (*Boom, error) {
 	b := &Boom{Ruimte: rm, s: s, mappen: map[int64]*mapInfo{}, kinderen: map[int64][]int64{}, docs: map[int64][]int64{},
 		regels: map[int64][]Regel{}, niveaus: map[int64]int{}, zichtbaar: map[int64]bool{}}
-	if rm.Soort == "project" {
+	if heeftLeden(rm) {
 		err := r.db.QueryRowContext(ctx, `SELECT niveau FROM lid WHERE ruimte_id = $1 AND email = $2`, rm.ID, s.Email).Scan(&b.lidNiveau)
 		if err != nil && !errors.Is(err, sql.ErrNoRows) {
 			return nil, err
@@ -133,15 +133,22 @@ func (r *Register) laadBoom(ctx context.Context, rm *Ruimte, s *Sessie) (*Boom, 
 	return b, rows.Err()
 }
 
+// heeftLeden: ruimtes met leden van buiten (Redmine of een werkgroep).
+func heeftLeden(rm *Ruimte) bool { return rm.Soort == "project" || rm.Soort == "werkgroep" }
+
 // standaard: de regels die op elke ruimte staan.
 func (b *Boom) standaard() []Regel {
 	var uit []Regel
-	if b.Ruimte.Soort == "cooperatie" {
-		uit = append(uit, Regel{Soort: "groep", Wie: groepMembers, Niveau: Lezen})
-	} else {
-		uit = append(uit, Regel{Soort: "rol", Wie: "redmine", Niveau: Beheren})
+	switch b.Ruimte.Soort {
+	case "cooperatie":
+		uit = append(uit, Regel{Soort: "groep", Wie: groepMembers, Niveau: Lezen},
+			Regel{Soort: "groep", Wie: groepKerngroep, Niveau: Beheren})
+	case "project", "werkgroep":
+		uit = append(uit, Regel{Soort: "rol", Wie: "leden", Niveau: Beheren},
+			Regel{Soort: "groep", Wie: groepKerngroep, Niveau: Beheren})
+	case "persoonlijk":
+		uit = append(uit, Regel{Soort: "persoon", Wie: b.Ruimte.Eigenaar.String, Niveau: Beheren})
 	}
-	uit = append(uit, Regel{Soort: "groep", Wie: groepKerngroep, Niveau: Beheren})
 	for i := range uit {
 		uit[i].Bron, uit[i].Vast = "Standaard", true
 	}
@@ -154,8 +161,11 @@ var vasteRegel = Regel{Soort: "groep", Wie: groepBeheer, Niveau: Beheren, Bron: 
 // ruimte), met waar ze vandaan komen. De vaste regel voor de beheerders van
 // het platform staat er altijd bij.
 func (b *Boom) Geldend(id int64) []Regel {
-	uit := append([]Regel{vasteRegel}, b.geldend(id, id)...)
-	return uit
+	if b.Ruimte.Soort == "persoonlijk" {
+		// Persoonlijk: ook de beheerders van het platform kunnen er niet in.
+		return b.geldend(id, id)
+	}
+	return append([]Regel{vasteRegel}, b.geldend(id, id)...)
 }
 
 func (b *Boom) geldend(id, kijk int64) []Regel {
@@ -414,8 +424,11 @@ func (r *Register) Kandidaten(ctx context.Context, rm *Ruimte) (groepen, persone
 		groepen = append(groepen, Keuze{"groep|" + p, groepLabel(p)})
 	}
 	sort.Slice(groepen, func(i, j int) bool { return groepen[i].Label < groepen[j].Label })
-	if rm.Soort == "project" {
-		groepen = append([]Keuze{{"rol|redmine", "Projectleden (volgens hun rol in Redmine)"}}, groepen...)
+	switch rm.Soort {
+	case "project":
+		groepen = append([]Keuze{{"rol|leden", "Projectleden (volgens hun rol in Redmine)"}}, groepen...)
+	case "werkgroep":
+		groepen = append([]Keuze{{"rol|leden", "Leden van de werkgroep"}}, groepen...)
 	}
 	rows, err = r.db.QueryContext(ctx, `SELECT email, naam FROM persoon
 		UNION SELECT email, email FROM lid WHERE email NOT IN (SELECT email FROM persoon)
@@ -465,7 +478,7 @@ func regelLabel(x Regel, namen map[string]string) (naam, soort string) {
 	case "groep":
 		return groepLabel(x.Wie), "groep"
 	case "rol":
-		return "Projectleden", "volgens hun rol in Redmine"
+		return "Leden", "volgens hun rol (Redmine of werkgroep)"
 	default:
 		if n := namen[x.Wie]; n != "" {
 			return n, "persoon"

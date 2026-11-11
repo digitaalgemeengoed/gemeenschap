@@ -216,6 +216,14 @@ Opslaan binnen tien minuten door dezelfde persoon vervangt de laatste versie;
 systeembestanden (`._*`, `~$*`, `.~lock.*` …) blijven buiten het register.
 Windows haalt standaard bestanden tot 50 MB op via WebDAV.
 
+**Ruimtes**: de coöperatie, elk project (leden uit Redmine), elke werkgroep
+(leden uit de groepen van BuddyPress) en *Mijn documenten* per persoon (voor
+wie in de kerngroep, een werkgroep of een project zit; 1 GB; bevroren als je
+nergens meer lid bent, na 90 dagen naar de prullenbak). **Beheer** op
+`/beheer` (kerngroep en `/site/beheer`): omvang, quota, prullenbak, logboek.
+Op de site: een tab *Documenten* bij elke werkgroep, *Mijn documenten* op je
+profiel, en `[dg_documenten project=…]` in de feiten van een projectpagina.
+
 Projecten en hun leden komen elke vijf minuten uit Redmine; een nieuw project
 krijgt vanzelf een ruimte. Hooguit 500 MB per bestand (`DOC_MAX_MB` in `.env`).
 

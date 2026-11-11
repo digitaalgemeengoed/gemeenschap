@@ -44,6 +44,7 @@
   <span class="tip">Kies links een ruimte.</span>
 {{end}}
   <a class="opdracht rechts" href="/koppelen"><span class="i i-schijf" aria-hidden="true"></span>Netwerkschijf koppelen</a>
+  {{if $v.KanBeheren}}<a class="opdracht" href="/beheer"><span class="i i-info" aria-hidden="true"></span>Beheer</a>{{end}}
 </div>
 
 {{/* --- Adresbalk --------------------------------------------------------- */}}
@@ -59,13 +60,12 @@
 <nav class="navpaneel" aria-label="Ruimtes en mappen">
   <details class="nav-inklap" open>
   <summary>Ruimtes en mappen</summary>
-  {{$coop := false}}{{$proj := false}}
-  {{range $v.Ruimtes}}{{if eq .Soort "cooperatie"}}{{$coop = true}}{{else}}{{$proj = true}}{{end}}{{end}}
-  {{if $coop}}<p class="navkop">Coöperatie</p>
-  <ul class="boom">{{range $v.Ruimtes}}{{if eq .Soort "cooperatie"}}{{template "ruimte-in-nav" (dict2 . $v)}}{{end}}{{end}}</ul>{{end}}
-  {{if $proj}}<p class="navkop">Projecten</p>
-  <ul class="boom">{{range $v.Ruimtes}}{{if eq .Soort "project"}}{{template "ruimte-in-nav" (dict2 . $v)}}{{end}}{{end}}</ul>{{end}}
-  {{if not $v.Ruimtes}}<p class="leeg-klein">Nog geen ruimtes voor jou.</p>{{end}}
+  {{$eigen := false}}{{range $v.Ruimtes}}{{if and (eq .Soort "persoonlijk") (eq .Naam "Mijn documenten")}}{{$eigen = true}}{{end}}{{end}}
+  {{if or $eigen $v.MijnMogelijk}}<p class="navkop">Persoonlijk</p>
+  <ul class="boom">{{if $eigen}}{{range $v.Ruimtes}}{{if and (eq .Soort "persoonlijk") (eq .Naam "Mijn documenten")}}{{template "ruimte-in-nav" (dict2 . $v)}}{{end}}{{end}}{{else}}<li><a class="tak schijf" href="/r/mijn">Mijn documenten</a></li>{{end}}</ul>{{end}}
+  {{range $groep := $v.NavGroepen}}{{if $groep.Ruimtes}}<p class="navkop">{{$groep.Kop}}</p>
+  <ul class="boom">{{range $groep.Ruimtes}}{{template "ruimte-in-nav" (dict2 . $v)}}{{end}}</ul>{{end}}{{end}}
+  {{if and (not $v.Ruimtes) (not $v.MijnMogelijk)}}<p class="leeg-klein">Nog geen ruimtes voor jou.</p>{{end}}
   </details>
 </nav>
 
@@ -77,7 +77,7 @@
   <tbody>
   {{range $v.Ruimtes}}
   <tr><td><a class="naam schijf" href="/r/{{.Sleutel}}">{{.Naam}}</a></td>
-      <td>{{if eq .Soort "cooperatie"}}<span class="chip groen">Coöperatie</span>{{else}}<span class="chip">Project</span>{{end}}{{if eq .Status "gesloten"}} <span class="chip grijs">Gesloten</span>{{end}}</td>
+      <td>{{if eq .Soort "cooperatie"}}<span class="chip groen">Coöperatie</span>{{else if eq .Soort "werkgroep"}}<span class="chip paars">Werkgroep</span>{{else if eq .Soort "persoonlijk"}}<span class="chip grijs">Persoonlijk</span>{{else}}<span class="chip">Project</span>{{end}}{{if eq .Status "gesloten"}} <span class="chip grijs">{{if eq .Soort "persoonlijk"}}Bevroren{{else}}Gesloten{{end}}</span>{{end}}</td>
       <td>{{if .Niveau}}{{niveau .Niveau}}{{else}}<span class="zacht">Alleen enkele mappen</span>{{end}}</td>
       <td class="r">{{.Aantal}} document{{if ne .Aantal 1}}en{{end}}{{if .Aantal}} · {{grootte .Grootte}}{{end}}</td></tr>
   {{else}}
@@ -85,6 +85,7 @@
   {{end}}
   </tbody></table>
 {{else}}
+  {{if and (eq $rm.Soort "persoonlijk") $rm.BevrorenSinds.Valid}}<p class="bevroren"><b>Bevroren.</b> Je zit niet meer in de kerngroep, een werkgroep of een project. Deze ruimte staat op alleen-lezen; op {{datum $v.OpruimDatum}} gaat alles naar de prullenbak. Download wat je wilt bewaren. Word je weer lid, dan gaat hij vanzelf weer open.</p>{{end}}
   {{if $v.Doorgang}}<p class="doorgang"><span class="i i-slot" aria-hidden="true"></span>Je hebt geen toegang tot deze map zelf; je ziet alleen wat met jou gedeeld is.</p>{{end}}
   {{if $v.Inhoud}}
   <table class="lijst">
@@ -129,7 +130,9 @@
   <span>{{len $v.Inhoud}} item{{if ne (len $v.Inhoud) 1}}s{{end}}</span>
   {{with $v.Selectie}}<span>Jouw recht op {{.Naam}}: <b>{{niveau $v.SelNiveau}}</b></span>{{else}}<span>Jouw recht hier: <b>{{niveau $v.Niveau}}</b></span>{{end}}
   {{if $v.Besloten}}<span><span class="i i-slot" aria-hidden="true"></span>Besloten map</span>{{end}}
-  {{if eq $rm.Status "gesloten"}}<span>Project gesloten: alleen lezen</span>{{end}}
+  {{if eq $rm.Status "gesloten"}}<span>{{if eq $rm.Soort "persoonlijk"}}Bevroren{{else}}Gesloten{{end}}: alleen lezen</span>{{end}}
+  {{if $rm.Quotum.Valid}}<span>Gebruikt: <b>{{grootte $v.Gebruik}}</b> van {{grootte $rm.Quotum.Int64}}</span>{{end}}
+  {{if $v.PrullenbakURL}}<span><a href="{{$v.PrullenbakURL}}">Prullenbak en logboek</a></span>{{end}}
   {{else}}
   <span>{{len $v.Ruimtes}} ruimte{{if ne (len $v.Ruimtes) 1}}s{{end}}</span>
   {{end}}

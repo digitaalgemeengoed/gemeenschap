@@ -1,5 +1,15 @@
 # Wijzigingen
 
+## 0.11.0 — 2026-11-11
+
+**Documenten: werkgroepen, Mijn documenten, quota en beheer.**
+- **Werkgroepen** krijgen elk een ruimte (`werkgroep-<slug>`). De leden komen elke vijf minuten uit de groepen van BuddyPress op de site: lid Bewerken, beheerder of moderator van de groep Beheren, de kerngroep Beheren.
+- **Mijn documenten**: een persoonlijke ruimte voor wie in de kerngroep, een werkgroep of een project zit, aangemaakt bij het eerste gebruik, met een quotum van 1 GB (`DOC_QUOTUM_PERSOONLIJK_MB`). Alleen de eigenaar kan erin, ook de beheerders van het platform niet; hij kan wel delen (bij de ontvanger: *Gedeeld met jou → Van <naam>*). Is de eigenaar nergens meer lid, dan wordt de ruimte **bevroren**: 90 dagen alleen-lezen, met een bericht; daarna gaat alles naar de prullenbak. Wordt hij weer lid, dan gaat hij weer open. Wie in de kerngroep zit, komt rechtstreeks uit Keycloak (client `redmine-sync`). De levenscyclus draait alleen als Keycloak, Redmine en WordPress alle drie antwoordden.
+- **Eén bucket, een voorvoegsel per ruimte**: nieuwe bestanden heten `objecten/r<ruimte>/<uuid>`.
+- **Beheer** (`/beheer`, voor de kerngroep en `/site/beheer`): alle ruimtes met omvang, aantal documenten, status en quotum (in te stellen); per ruimte de prullenbak (terugzetten, definitief verwijderen: ook uit de opslag) en het logboek. Van persoonlijke ruimtes alleen de omvang; hun prullenbak is voor de eigenaar.
+- Navigatie in Documenten: Persoonlijk, Coöperatie, Werkgroepen, Projecten en Gedeeld met jou.
+- **Op de site**: een tab *Documenten* bij elke werkgroep (voor de leden), *Mijn documenten* op je eigen profiel, en de shortcode `[dg_documenten project=…]` voor de projectpagina's.
+
 ## 0.10.0 — 2026-11-11
 
 **Documenten: een verkenner, rechten per map en document, delen, WebDAV en openen in Word of LibreOffice.**
