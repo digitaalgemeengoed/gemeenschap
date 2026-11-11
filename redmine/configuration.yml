@@ -8,7 +8,11 @@ production:
     smtp_settings:
       address: <%= ENV['SMTP_HOST'] %>
       port: <%= ENV.fetch('SMTP_POORT', '587') %>
+<% if ENV.fetch('SMTP_POORT', '587').to_s == '465' %>
+      ssl: true
+<% else %>
       enable_starttls_auto: true
+<% end %>
       authentication: :login
       user_name: <%= ENV['SMTP_GEBRUIKER'].to_s.to_json %>
       password: <%= ENV['SMTP_WACHTWOORD'].to_s.to_json %>

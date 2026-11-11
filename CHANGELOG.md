@@ -1,5 +1,9 @@
 # Wijzigingen
 
+## 0.7.3 — 2026-11-11
+
+- Oplossing: mail via poort **465** (meteen versleuteld, zoals bij Migadu) werkte niet in Keycloak en Redmine; die gingen altijd uit van STARTTLS op 587. Nu kiezen Keycloak (bij `bijwerken.sh`) en Redmine zelf: poort 465 met SSL, andere poorten met STARTTLS. WordPress deed dit al goed.
+
 ## 0.7.2 — 2026-11-11
 
 Opmaak van de startpagina op brede schermen:

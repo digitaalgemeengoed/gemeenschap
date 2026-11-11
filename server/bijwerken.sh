@@ -33,7 +33,9 @@ fi
 
 wacht "Keycloak" 48 keycloak_klaar || stop "Keycloak start niet. Kijk met: sudo docker compose -f $DG_MAP/$COMPOSE logs keycloak"
 meld "Keycloak: realm gemeenschap gelijk trekken met keycloak/realm/"
-dc run --rm -T keycloak-config >/tmp/dg-keycloak-config.log 2>&1 \
+# Poort 465: meteen versleuteld (SSL); andere poorten: STARTTLS.
+if [ "$(sed -n 's/^SMTP_POORT=//p' "$DG_MAP/.env")" = 465 ]; then SMTP_SSL=true; SMTP_STARTTLS=false; else SMTP_SSL=false; SMTP_STARTTLS=true; fi
+dc run --rm -T -e SMTP_SSL="$SMTP_SSL" -e SMTP_STARTTLS="$SMTP_STARTTLS" keycloak-config >/tmp/dg-keycloak-config.log 2>&1 \
   || { tail -n 30 /tmp/dg-keycloak-config.log; stop "Keycloak inrichten mislukt (zie hierboven)."; }
 ok "Realm bijgewerkt"
 

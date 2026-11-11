@@ -33,8 +33,8 @@
     "from": "$(env:SMTP_AFZENDER:-noreply@digitaalgemeengoed.nl)",
     "fromDisplayName": "Digitaal GemeenGoed",
     "replyTo": "$(env:SMTP_AFZENDER:-noreply@digitaalgemeengoed.nl)",
-    "starttls": "true",
-    "ssl": "false",
+    "starttls": "$(env:SMTP_STARTTLS:-true)",
+    "ssl": "$(env:SMTP_SSL:-false)",
     "auth": "true",
     "user": "$(env:SMTP_GEBRUIKER:-)",
     "password": "$(env:SMTP_WACHTWOORD:-)"
