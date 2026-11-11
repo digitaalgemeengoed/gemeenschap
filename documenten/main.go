@@ -135,6 +135,10 @@ func main() {
 		MaxGrootte: int64(maxMB) << 20,
 		Projecten:  env("REDMINE_PUBLIEK", ""),
 	}
+	if g := os.Getenv("DOC_BERICHT_GEHEIM"); g != "" {
+		app.Berichten = &WordPress{URL: env("WORDPRESS_URL", "http://wordpress"), Host: moet("WORDPRESS_HOST"), Geheim: g,
+			HTTP: &http.Client{Timeout: 60 * time.Second}}
+	}
 	if u := os.Getenv("REDMINE_URL"); u != "" {
 		rm := &Redmine{URL: u, Sleutel: moet("REDMINE_API_KEY"), HTTP: &http.Client{Timeout: 30 * time.Second},
 			Rollen: leesRollen(env("DOC_ROLLEN", standaardRollen))}

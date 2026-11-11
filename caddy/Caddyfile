@@ -36,6 +36,10 @@
 	# Wie WordPress-gebruikers opsomt via de REST-API, krijgt niets (ledenlijsten alleen ingelogd, in BuddyPress).
 	@gebruikers path /wp-json/wp/v2/users*
 	respond @gebruikers 404
+	# Het berichteneindpunt van Documenten (/wp-json/dg/...) is alleen voor binnen het
+	# Docker-netwerk. Het geheim is de echte slot; dit is de tweede.
+	@intern expression `{path}.matches("(?i)^/+wp-json/+dg/") || {query.rest_route}.matches("(?i)^/*dg/")`
+	respond @intern 404
 	reverse_proxy wordpress:80
 }
 

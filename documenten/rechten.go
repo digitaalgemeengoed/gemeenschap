@@ -7,10 +7,10 @@ package main
 //	Beheren   ook verwijderen en de toegang wijzigen (ook aan anderen geven)
 //
 // Een regel geeft een persoon, een groep uit Keycloak of de projectleden
-// (volgens hun rol in Redmine) een niveau, op de ruimte of op een map. Een map
-// neemt de regels van de map erboven over en kan er regels bij krijgen. Met
-// "overerving stoppen" gelden alleen de eigen regels van de map: zo maak je
-// een besloten map. Beheerders van het platform (/site/beheer) kunnen altijd
+// (volgens hun rol in Redmine) een niveau, op de ruimte, een map of een
+// document. Een map of document neemt de regels van de map erboven over en
+// kan er regels bij krijgen. Met "overerving stoppen" gelden alleen de eigen
+// regels: zo maak je een besloten map of document. Beheerders van het platform (/site/beheer) kunnen altijd
 // overal bij, zodat niemand zich buitensluit.
 //
 // Standaard op de ruimte:
@@ -63,22 +63,24 @@ type mapInfo struct {
 	Ouder int64
 	Naam  string
 	Eigen bool
+	Doc   bool // een document (anders een map)
 }
 
 // Boom: de mappen en regels van één ruimte, bekeken door één persoon.
 type Boom struct {
 	Ruimte    *Ruimte
 	s         *Sessie
-	lidNiveau int // uit Redmine
-	mappen    map[int64]*mapInfo
-	kinderen  map[int64][]int64
-	regels    map[int64][]Regel // eigen regels per map (0 = de ruimte)
+	lidNiveau int                // uit Redmine
+	mappen    map[int64]*mapInfo // alle mappen én documenten van de ruimte
+	kinderen  map[int64][]int64  // submappen per map (voor de boom)
+	docs      map[int64][]int64  // documenten per map
+	regels    map[int64][]Regel  // eigen regels per map (0 = de ruimte)
 	niveaus   map[int64]int
 	zichtbaar map[int64]bool
 }
 
 func (r *Register) laadBoom(ctx context.Context, rm *Ruimte, s *Sessie) (*Boom, error) {
-	b := &Boom{Ruimte: rm, s: s, mappen: map[int64]*mapInfo{}, kinderen: map[int64][]int64{},
+	b := &Boom{Ruimte: rm, s: s, mappen: map[int64]*mapInfo{}, kinderen: map[int64][]int64{}, docs: map[int64][]int64{},
 		regels: map[int64][]Regel{}, niveaus: map[int64]int{}, zichtbaar: map[int64]bool{}}
 	if rm.Soort == "project" {
 		err := r.db.QueryRowContext(ctx, `SELECT niveau FROM lid WHERE ruimte_id = $1 AND email = $2`, rm.ID, s.Email).Scan(&b.lidNiveau)
@@ -86,14 +88,14 @@ func (r *Register) laadBoom(ctx context.Context, rm *Ruimte, s *Sessie) (*Boom, 
 			return nil, err
 		}
 	}
-	rows, err := r.db.QueryContext(ctx, `SELECT id, coalesce(ouder_id, 0), naam, eigen_rechten FROM item
-		WHERE ruimte_id = $1 AND soort = 'map' AND verwijderd_op IS NULL ORDER BY lower(naam)`, rm.ID)
+	rows, err := r.db.QueryContext(ctx, `SELECT id, coalesce(ouder_id, 0), naam, eigen_rechten, soort = 'document' FROM item
+		WHERE ruimte_id = $1 AND verwijderd_op IS NULL`, rm.ID)
 	if err != nil {
 		return nil, err
 	}
 	for rows.Next() {
 		m := &mapInfo{}
-		if err := rows.Scan(&m.ID, &m.Ouder, &m.Naam, &m.Eigen); err != nil {
+		if err := rows.Scan(&m.ID, &m.Ouder, &m.Naam, &m.Eigen, &m.Doc); err != nil {
 			rows.Close()
 			return nil, err
 		}
@@ -101,8 +103,13 @@ func (r *Register) laadBoom(ctx context.Context, rm *Ruimte, s *Sessie) (*Boom, 
 	}
 	rows.Close()
 	for _, m := range b.mappen {
-		// Een map onder een verwijderde map hoort niet in de boom.
-		if m.Ouder == 0 || b.mappen[m.Ouder] != nil {
+		// Iets onder een verwijderde map hoort er niet bij.
+		if m.Ouder != 0 && b.mappen[m.Ouder] == nil {
+			continue
+		}
+		if m.Doc {
+			b.docs[m.Ouder] = append(b.docs[m.Ouder], m.ID)
+		} else {
 			b.kinderen[m.Ouder] = append(b.kinderen[m.Ouder], m.ID)
 		}
 	}
@@ -202,9 +209,9 @@ func (b *Boom) Niveau(id int64) int {
 	return n
 }
 
-// Zichtbaar: de map zelf mag gelezen worden, of er ligt een map onder die
-// gelezen mag worden (dan is deze map een doorgang: je ziet de naam, niet de
-// inhoud).
+// Zichtbaar: de map zelf mag gelezen worden, of er ligt een map of document
+// onder dat gelezen mag worden (dan is deze map een doorgang: je ziet de naam,
+// en alleen wat je mag lezen).
 func (b *Boom) Zichtbaar(id int64) bool {
 	if z, ok := b.zichtbaar[id]; ok {
 		return z
@@ -215,11 +222,33 @@ func (b *Boom) Zichtbaar(id int64) bool {
 			z = true
 		}
 	}
+	for _, d := range b.docs[id] {
+		if b.Niveau(d) >= Lezen {
+			z = true
+		}
+	}
 	b.zichtbaar[id] = z
 	return z
 }
 
 func (b *Boom) Bestaat(id int64) bool { return id == 0 || b.mappen[id] != nil }
+
+// Zoek: het item met deze naam in deze map (0 = niet gevonden).
+func (b *Boom) Zoek(ouder int64, naam string) int64 {
+	for _, lijst := range [][]int64{b.kinderen[ouder], b.docs[ouder]} {
+		for _, id := range lijst {
+			if strings.EqualFold(b.mappen[id].Naam, naam) {
+				return id
+			}
+		}
+	}
+	return 0
+}
+
+func (b *Boom) IsDoc(id int64) bool {
+	m := b.mappen[id]
+	return m != nil && m.Doc
+}
 func (b *Boom) Besloten(id int64) bool {
 	m := b.mappen[id]
 	return m != nil && m.Eigen
@@ -303,6 +332,7 @@ func (r *Register) OverervingStoppen(ctx context.Context, b *Boom, mapID int64, 
 	if mapID == 0 || b.mappen[mapID] == nil {
 		return errOngeldig
 	}
+	// (mapID kan ook een document zijn.)
 	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
 		return err

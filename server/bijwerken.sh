@@ -36,6 +36,7 @@ vul_env_aan .env DOC_SESSIE_GEHEIM "$(geheim 32)"
 vul_env_aan .env GARAGE_RPC_GEHEIM "$(geheim 32)"
 vul_env_aan .env GARAGE_SLEUTEL "GK$(geheim 12)"
 vul_env_aan .env GARAGE_GEHEIM "$(geheim 32)"
+vul_env_aan .env DOC_BERICHT_GEHEIM "$(geheim 32)"
 # De sleutel waarmee de wiki zijn pagina's naar GitHub schrijft (deploy key).
 install -d -m 700 "$DG_MAP/geheimen"
 if [ ! -f "$DG_MAP/geheimen/kennisbank" ]; then

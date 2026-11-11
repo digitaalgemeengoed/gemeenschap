@@ -65,6 +65,22 @@
     rij.addEventListener('click', function (e) { if (!e.target.closest('a, button, input, select')) window.location.href = rij.dataset.href; });
   });
 
+  // Link kopiëren.
+  document.querySelectorAll('[data-kopieer]').forEach(function (k) {
+    k.addEventListener('click', function () {
+      var veld = document.getElementById(k.dataset.kopieer);
+      var klaar = function () { var t = k.textContent; k.textContent = 'Gekopieerd'; setTimeout(function () { k.textContent = t; }, 1500); };
+      if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(veld.value).then(klaar);
+      else { veld.select(); try { document.execCommand('copy'); klaar(); } catch (e) {} }
+    });
+  });
+  // Delen via de telefoon of de computer (Web Share), als de browser dat kan.
+  document.querySelectorAll('[data-webshare]').forEach(function (k) {
+    if (!navigator.share) return;
+    k.hidden = false;
+    k.addEventListener('click', function () { navigator.share({ title: k.dataset.titel, text: k.dataset.tekst, url: k.dataset.link }).catch(function () {}); });
+  });
+
   // Een recht direct opslaan bij het kiezen.
   document.querySelectorAll('select[data-direct]').forEach(function (s) {
     s.addEventListener('change', function () { s.form.submit(); });

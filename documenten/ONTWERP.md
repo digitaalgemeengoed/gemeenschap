@@ -75,12 +75,11 @@ Drie niveaus, zoals in de XENA-demo (venster Toegang):
 | Beheren | ook verwijderen en de toegang wijzigen, ook Beheren doorgeven |
 
 Een **regel** geeft een persoon (e-mailadres), een groep uit Keycloak of de
-projectleden (per rol in Redmine) een niveau, op de ruimte of op een map
-(tabel `recht`). Rechten staan op mappen, niet op losse documenten: een
-besloten document zet je in een besloten map.
+projectleden (per rol in Redmine) een niveau, op de ruimte, een map of een
+document (tabel `recht`).
 
-**Overerving.** Een map neemt de regels van de map erboven over en kan er
-regels bij krijgen. *Overerving stoppen* (`item.eigen_rechten`) kopieert de
+**Overerving.** Een map of document neemt de regels van de map erboven over en
+kan er regels bij krijgen. *Overerving stoppen* (`item.eigen_rechten`) kopieert de
 geldende regels naar de map; daarna gelden alleen de eigen regels. Zo maak je
 een besloten map. `/site/beheer` heeft altijd Beheren, zodat niemand zich
 buitensluit.
@@ -98,8 +97,25 @@ besloten map):
 Een gesloten project kan alleen nog gelezen worden. Wie toegang heeft tot een
 map diep in een ruimte, ziet de ruimte en de mappen erboven als doorgang.
 
-Een map verwijderen kan alleen met Beheren op de map erboven en op elke map
-eronder.
+Een map verwijderen kan alleen met Beheren op de map en op alles eronder.
+Uploaden met de naam van een bestaand document is een nieuwe versie daarvan:
+daarvoor is Bewerken op dat document nodig.
+
+## Delen
+
+Delen = toegang geven plus een bericht. Alleen met Beheren. Je kiest een
+persoon, groep of de projectleden en Lezen (standaard) of Bewerken; er komt een
+regel op de map of het document (een bestaand hoger recht blijft). Het bericht
+gaat via BuddyPress: de dienst roept `/wp-json/dg/v1/bericht` aan in de
+mu-plugin `dg-gemeenschap.php`, met een gedeeld geheim; WordPress zoekt de
+ontvangers op e-mailadres of op groep (de groepen uit Keycloak staan bij elke
+login in `dg_groepen`) en stuurt elk een eigen bericht. Caddy laat dit adres
+niet van buiten toe.
+
+De link is altijd de besloten link: alleen wie toegang heeft, kan hem openen.
+Kopiëren en doorsturen (LinkedIn, Bluesky, X, WhatsApp, e-mail, Web Share)
+kan iedereen die het kan lezen. Openbare links (iedereen met de link) zijn er
+bewust niet: dat is openbaar maken, en vraagt een eigen besluit.
 
 ## Inloggen
 

@@ -553,6 +553,89 @@ add_action(
 );
 
 // ---------------------------------------------------------------------------
+// Berichten namens Documenten (documenten.<domein>): bij het delen van een map
+// of document krijgt de ontvanger een bericht in BuddyPress (en daarmee de
+// gewone e-mailmelding). Alleen voor de dienst zelf: met het gedeelde geheim
+// DG_BERICHT_GEHEIM, en alleen binnen het Docker-netwerk (Caddy stuurt
+// /wp-json/dg/ niet door).
+// ---------------------------------------------------------------------------
+
+add_action(
+	'rest_api_init',
+	static function () {
+		register_rest_route(
+			'dg/v1',
+			'/bericht',
+			array(
+				'methods'             => 'POST',
+				'permission_callback' => 'dg_bericht_mag',
+				'callback'            => 'dg_bericht',
+			)
+		);
+	}
+);
+
+function dg_bericht_mag( WP_REST_Request $verzoek ): bool {
+	$geheim = (string) getenv( 'DG_BERICHT_GEHEIM' );
+	return '' !== $geheim && hash_equals( $geheim, (string) $verzoek->get_header( 'x-dg-sleutel' ) );
+}
+
+/**
+ * Eén bericht per ontvanger (geen groepsgesprek). Ontvangers op e-mailadres
+ * ("aan") en op groep uit Keycloak ("groepen", zoals /netwerk/members; die
+ * staan bij elke login in de gebruikersmeta dg_groepen).
+ */
+function dg_bericht( WP_REST_Request $verzoek ) {
+	if ( ! function_exists( 'messages_new_message' ) ) {
+		return new WP_Error( 'dg_geen_berichten', 'De berichten van BuddyPress staan uit.', array( 'status' => 503 ) );
+	}
+	$van = get_user_by( 'email', sanitize_email( (string) $verzoek['van'] ) );
+	if ( ! $van ) {
+		return new WP_Error( 'dg_afzender', 'De afzender heeft geen account op de site.', array( 'status' => 422 ) );
+	}
+	$ontvangers = array();
+	$onbekend   = array();
+	foreach ( (array) $verzoek['aan'] as $adres ) {
+		$u = get_user_by( 'email', sanitize_email( (string) $adres ) );
+		if ( $u ) {
+			$ontvangers[ $u->ID ] = true;
+		} else {
+			$onbekend[] = (string) $adres;
+		}
+	}
+	foreach ( (array) $verzoek['groepen'] as $groep ) {
+		$groep = (string) $groep;
+		if ( ! preg_match( '#^(/[A-Za-z0-9 _.-]+)+$#', $groep ) ) {
+			continue;
+		}
+		// dg_groepen is een geserialiseerde lijst; een pad staat er tussen aanhalingstekens in.
+		$ids = get_users( array( 'meta_key' => 'dg_groepen', 'meta_value' => '"' . $groep . '"', 'meta_compare' => 'LIKE', 'fields' => 'ID', 'number' => 2000 ) );
+		foreach ( $ids as $id ) {
+			$ontvangers[ (int) $id ] = true;
+		}
+	}
+	unset( $ontvangers[ $van->ID ] );
+	$onderwerp = wp_strip_all_tags( (string) $verzoek['onderwerp'] );
+	$inhoud    = wp_kses( (string) $verzoek['inhoud'], array( 'a' => array( 'href' => true ), 'strong' => array() ) );
+	$verstuurd = 0;
+	foreach ( array_keys( $ontvangers ) as $id ) {
+		$draad = messages_new_message(
+			array(
+				'sender_id'  => $van->ID,
+				'recipients' => array( $id ),
+				'subject'    => $onderwerp,
+				'content'    => $inhoud,
+				'error_type' => 'wp_error',
+			)
+		);
+		if ( $draad && ! is_wp_error( $draad ) ) {
+			++$verstuurd;
+		}
+	}
+	return array( 'verstuurd' => $verstuurd, 'onbekend' => $onbekend );
+}
+
+// ---------------------------------------------------------------------------
 // Inrichten met wp-cli: wp dg inrichten
 // ---------------------------------------------------------------------------
 

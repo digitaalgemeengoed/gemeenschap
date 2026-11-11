@@ -49,6 +49,8 @@ x-wordpress-omgeving: &wordpress-omgeving
   DG_KEYCLOAK_INTERN: http://keycloak:8080
   DG_KEYCLOAK_REALM: gemeenschap
   WP_CLIENT_SECRET: ${WP_CLIENT_SECRET:?}
+  # Berichten namens Documenten bij het delen (dg-gemeenschap.php, /wp-json/dg/v1/bericht).
+  DG_BERICHT_GEHEIM: ${DOC_BERICHT_GEHEIM:?}
 
 x-wordpress-mappen: &wordpress-mappen
   - wphtml:/var/www/html
@@ -418,6 +420,10 @@ services:
       REDMINE_API_KEY: ${REDMINE_API_KEY:?}
       REDMINE_PUBLIEK: https://projecten.${DOMEIN}
       MAX_MB: ${DOC_MAX_MB:-500}
+      # Bij het delen een bericht via de site (BuddyPress).
+      DOC_BERICHT_GEHEIM: ${DOC_BERICHT_GEHEIM:?}
+      WORDPRESS_URL: http://wordpress
+      WORDPRESS_HOST: ${DOMEIN}
       # Welk niveau een rol in Redmine geeft (0 geen, 1 lezen, 2 bewerken, 3 beheren).
       DOC_ROLLEN: ${DOC_ROLLEN:-Gebruiker=0,Contributor=2,Member=2,Kerngroep=3,Manager=3,Projectmanager=3,Projectleider=3}
     volumes:

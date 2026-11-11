@@ -54,6 +54,7 @@ input, textarea, select { font: inherit; color: var(--tekst); padding: .42rem .6
 .i-persoon { --m: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M4 21c1-4 4-6 8-6s7 2 8 6'/%3E%3C/svg%3E"); }
 .i-info { --m: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 11v6M12 7.5v.5'/%3E%3C/svg%3E"); }
 .i-schijf { --m: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linejoin='round'%3E%3Cpath d='M3 14l3-8h12l3 8v4H3z'/%3E%3Cpath d='M3 14h18M17 17h.01'/%3E%3C/svg%3E"); }
+.i-delen { --m: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='18' cy='5' r='3'/%3E%3Ccircle cx='6' cy='12' r='3'/%3E%3Ccircle cx='18' cy='19' r='3'/%3E%3Cpath d='M8.6 13.5l6.8 4M15.4 6.5l-6.8 4'/%3E%3C/svg%3E"); }
 .i-slot { --m: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2'%3E%3Crect x='5' y='11' width='14' height='10' rx='2'/%3E%3Cpath d='M8 11V8a4 4 0 0 1 8 0v3'/%3E%3C/svg%3E"); }
 
 /* --- Het venster ---------------------------------------------------------------- */
@@ -183,6 +184,19 @@ a.naam:hover { color: var(--link); text-decoration: underline; }
 .dialoog::backdrop { background: rgba(10, 38, 84, .35); }
 .dialoog h2 { margin: 0 0 .4rem; font-size: 1.15rem; }
 .dialoog label { display: grid; gap: .25rem; font-weight: 600; font-size: .88rem; margin-top: .6rem; }
+.dialoog.breed { width: min(34rem, calc(100vw - 32px)); }
+.dialoog .tussenkop { font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--grijs); margin: 1.2rem 0 .4rem; }
+.dialoog label small { display: inline; font-weight: 400; }
+.keuze { border: 0; padding: 0; margin: .6rem 0 0; }
+.keuze legend { font-weight: 600; font-size: .88rem; padding: 0; margin-bottom: .25rem; }
+.keuze label { display: inline-flex; align-items: center; gap: .4rem; font-weight: 400; margin: 0 1.2rem 0 0; }
+.dialoog label.vink { display: flex; gap: .4rem; font-weight: 400; }
+.dialoog label.vink { margin-top: .7rem; align-items: flex-start; }
+.keuze input, .vink input { width: auto; }
+.linkregel { display: flex; gap: .4rem; }
+.linkregel input { font-size: .82rem; color: var(--grijs); }
+.sociaal { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .5rem; }
+.sociaal .knop, .sociaal button { font-size: .85rem; padding: .35rem .75rem; }
 
 /* Fout-pagina */
 .losse { background: var(--wit); border: 1px solid var(--rand); border-radius: 12px; padding: 1.5rem; }

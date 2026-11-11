@@ -33,7 +33,8 @@ type App struct {
 	Basis      string
 	Geheim     []byte
 	MaxGrootte int64
-	Projecten  string // publieke URL van Redmine, voor links
+	Projecten  string     // publieke URL van Redmine, voor links
+	Berichten  *WordPress // nil: geen berichten bij delen
 	sjablonen  map[string]*template.Template
 }
 
@@ -85,6 +86,8 @@ func (a *App) Routes() http.Handler {
 	mux.HandleFunc("GET /r/{ruimte}/toegang", a.metRuimte(a.toonMap))
 	mux.HandleFunc("GET /r/{ruimte}/m/{id}/toegang", a.metRuimte(a.toonMap))
 	mux.HandleFunc("GET /r/{ruimte}/d/{id}", a.metRuimte(a.toonDocument))
+	mux.HandleFunc("GET /r/{ruimte}/d/{id}/toegang", a.metRuimte(a.toonDocument))
+	mux.HandleFunc("POST /r/{ruimte}/i/{id}/delen", a.metRuimte(a.delen))
 	mux.HandleFunc("GET /r/{ruimte}/d/{id}/download", a.metRuimte(a.download))
 	mux.HandleFunc("POST /r/{ruimte}/map", a.metRuimte(a.nieuweMap))
 	mux.HandleFunc("POST /r/{ruimte}/upload", a.metRuimte(a.upload))
@@ -198,6 +201,8 @@ func (a *App) toon(w http.ResponseWriter, r *http.Request, sjabloon string, stat
 func (a *App) fout(w http.ResponseWriter, r *http.Request, s *Sessie, status int, tekst string) {
 	a.toon(w, r, "fout", status, pagina{Titel: http.StatusText(status), Sessie: s, Data: tekst})
 }
+
+func logFout(r *http.Request, err error) { log.Printf("%s %s: %v", r.Method, r.URL.Path, err) }
 
 func (a *App) interneFout(w http.ResponseWriter, r *http.Request, s *Sessie, err error) {
 	log.Printf("%s %s: %v", r.Method, r.URL.Path, err)

@@ -119,10 +119,50 @@ type Verkenner struct {
 	Regels         []regelRegel
 	Groepen        []Keuze
 	Personen       []Keuze
-	SelNiveau      int // recht op de map van de selectie
+	SelNiveau      int // recht op de selectie
+	DoelNiveau     int // recht op waar Naam wijzigen, Verwijderen en Delen op werken
 	Bekijkbaar     bool
 	Redmine        string
 	BeslotenMappen map[int64]bool
+	// Het paneel Toegang: voor een map, de ruimte of een document.
+	ToegangID       int64
+	ToegangNaam     string
+	ToegangDoc      bool
+	ToegangNiveau   int
+	ToegangBesloten bool
+	ToegangURL      string
+	// Delen
+	Link      string // het volledige adres van wat je deelt
+	DeelNaam  string
+	Berichten bool // kan de dienst berichten sturen (WordPress)?
+}
+
+// deelKeuzes: wie je kunt kiezen in het venster Delen (alleen met Beheren).
+func (a *App) deelKeuzes(ctx context.Context, v *Verkenner, p *Plek) error {
+	if v.Link == "" || v.DoelNiveau < Beheren || v.Groepen != nil {
+		return nil
+	}
+	var err error
+	v.Groepen, v.Personen, err = a.Reg.Kandidaten(ctx, p.Ruimte)
+	return err
+}
+
+// vulToegang: de regels en (voor wie mag beheren) wie je toegang kunt geven.
+func (a *App) vulToegang(ctx context.Context, v *Verkenner, p *Plek, id int64, naam string, doc bool) error {
+	v.Paneel, v.ToegangID, v.ToegangNaam, v.ToegangDoc = "toegang", id, naam, doc
+	v.ToegangNiveau, v.ToegangBesloten = p.Boom.Niveau(id), p.Boom.Besloten(id)
+	namen, err := a.Reg.Namen(ctx)
+	if err != nil {
+		return err
+	}
+	for _, x := range p.Boom.Geldend(id) {
+		n, sl := regelLabel(x, namen)
+		v.Regels = append(v.Regels, regelRegel{Regel: x, Naam: n, SoortLabel: sl})
+	}
+	if v.ToegangNiveau >= Beheren {
+		v.Groepen, v.Personen, err = a.Reg.Kandidaten(ctx, p.Ruimte)
+	}
+	return err
 }
 
 func (v *Verkenner) MapURL(id int64) string { return mapURL(v.Ruimte, id) }
@@ -169,7 +209,7 @@ func (a *App) verkenner(ctx context.Context, s *Sessie, p *Plek, mapID int64) (*
 	if err != nil {
 		return nil, err
 	}
-	v := &Verkenner{Ruimtes: kaarten, Ruimte: p.Ruimte, MapID: mapID, Niveau: p.Boom.Niveau(mapID),
+	v := &Verkenner{Ruimtes: kaarten, Ruimte: p.Ruimte, MapID: mapID, Niveau: p.Boom.Niveau(mapID), Berichten: a.Berichten != nil,
 		Besloten: p.Boom.Besloten(mapID), MaxMB: a.MaxGrootte >> 20, Soorten: documentsoorten, Redmine: a.Projecten}
 	v.Doorgang = v.Niveau < Lezen
 	opPad := map[int64]bool{}
@@ -195,7 +235,7 @@ func (a *App) verkenner(ctx context.Context, s *Sessie, p *Plek, mapID int64) (*
 				v.Inhoud = append(v.Inhoud, x)
 				v.BeslotenMappen[x.ID] = p.Boom.Besloten(x.ID)
 			}
-		} else if !v.Doorgang {
+		} else if p.Boom.Niveau(x.ID) >= Lezen {
 			v.Inhoud = append(v.Inhoud, x)
 		}
 	}
@@ -214,24 +254,24 @@ func (a *App) toonMap(w http.ResponseWriter, r *http.Request, s *Sessie, p *Plek
 		return
 	}
 	v.Hier = mapURL(p.Ruimte, mapID)
+	v.DoelNiveau = v.Niveau
+	v.ToegangURL = toegangURL(p.Ruimte, mapID, false)
+	if v.Map != nil {
+		v.Link, v.DeelNaam = a.Basis+v.Hier, v.Map.Naam
+	}
 	if strings.HasSuffix(r.URL.Path, "/toegang") && !v.Doorgang {
-		v.Paneel = "toegang"
-		namen, err := a.Reg.Namen(r.Context())
-		if err != nil {
+		naam := p.Ruimte.Naam
+		if v.Map != nil {
+			naam = v.Map.Naam
+		}
+		if err := a.vulToegang(r.Context(), v, p, mapID, naam, false); err != nil {
 			a.interneFout(w, r, s, err)
 			return
 		}
-		for _, x := range p.Boom.Geldend(mapID) {
-			n, sl := regelLabel(x, namen)
-			v.Regels = append(v.Regels, regelRegel{Regel: x, Naam: n, SoortLabel: sl})
-		}
-		if v.Niveau >= Beheren {
-			v.Groepen, v.Personen, err = a.Reg.Kandidaten(r.Context(), p.Ruimte)
-			if err != nil {
-				a.interneFout(w, r, s, err)
-				return
-			}
-		}
+	}
+	if err := a.deelKeuzes(r.Context(), v, p); err != nil {
+		a.interneFout(w, r, s, err)
+		return
 	}
 	titel := p.Ruimte.Naam
 	if v.Map != nil {
@@ -250,7 +290,7 @@ func (a *App) toonDocument(w http.ResponseWriter, r *http.Request, s *Sessie, p 
 		a.interneFout(w, r, s, err)
 		return
 	}
-	if !a.mag(w, r, s, p, doc.OuderID.Int64, Lezen) {
+	if !a.mag(w, r, s, p, doc.ID, Lezen) {
 		return
 	}
 	v, err := a.verkenner(r.Context(), s, p, doc.OuderID.Int64)
@@ -258,9 +298,22 @@ func (a *App) toonDocument(w http.ResponseWriter, r *http.Request, s *Sessie, p 
 		a.interneFout(w, r, s, err)
 		return
 	}
-	v.Selectie, v.Paneel, v.SelNiveau = doc, "eigenschappen", v.Niveau
+	v.Selectie, v.Paneel, v.SelNiveau = doc, "eigenschappen", p.Boom.Niveau(doc.ID)
+	v.DoelNiveau = v.SelNiveau
 	v.Bekijkbaar = bekijkbaar(doc.Mediatype)
 	v.Hier = fmt.Sprintf("/r/%s/d/%d", p.Ruimte.Sleutel, doc.ID)
+	v.Link, v.DeelNaam = a.Basis+v.Hier, doc.Naam
+	v.ToegangURL = toegangURL(p.Ruimte, doc.ID, true)
+	if strings.HasSuffix(r.URL.Path, "/toegang") {
+		if err := a.vulToegang(r.Context(), v, p, doc.ID, doc.Naam, true); err != nil {
+			a.interneFout(w, r, s, err)
+			return
+		}
+	}
+	if err := a.deelKeuzes(r.Context(), v, p); err != nil {
+		a.interneFout(w, r, s, err)
+		return
+	}
 	if v.Versies, err = a.Reg.Versies(r.Context(), doc.ID); err != nil {
 		a.interneFout(w, r, s, err)
 		return
@@ -287,7 +340,7 @@ func (a *App) download(w http.ResponseWriter, r *http.Request, s *Sessie, p *Ple
 		a.interneFout(w, r, s, err)
 		return
 	}
-	if !a.mag(w, r, s, p, doc.OuderID.Int64, Lezen) {
+	if !a.mag(w, r, s, p, doc.ID, Lezen) {
 		return
 	}
 	nummer := doc.HuidigeVersie
@@ -351,6 +404,17 @@ func geldigeNaam(n string) (string, error) {
 		}
 	}
 	return n, nil
+}
+
+func toegangURL(rm *Ruimte, id int64, doc bool) string {
+	switch {
+	case doc:
+		return fmt.Sprintf("/r/%s/d/%d/toegang", rm.Sleutel, id)
+	case id == 0:
+		return "/r/" + rm.Sleutel + "/toegang"
+	default:
+		return fmt.Sprintf("/r/%s/m/%d/toegang", rm.Sleutel, id)
+	}
 }
 
 func mapURL(rm *Ruimte, id int64) string {
@@ -438,7 +502,11 @@ delen:
 			return
 		}
 		if !rechtOK {
-			if !a.mag(w, r, s, p, ouder, Bewerken) {
+			doelID := ouder
+			if doc != nil {
+				doelID = doc.ID
+			}
+			if !a.mag(w, r, s, p, doelID, Bewerken) {
 				return
 			}
 			rechtOK = true
@@ -454,6 +522,14 @@ delen:
 		if err != nil {
 			mislukt = append(mislukt, deel.FileName()+": "+err.Error())
 			continue
+		}
+		// Staat er al een document met die naam, dan wordt dit een nieuwe
+		// versie daarvan: daar moet je dan ook Bewerken hebben.
+		if doc == nil {
+			if bestaand := p.Boom.Zoek(ouder, naam); bestaand != 0 && p.Boom.IsDoc(bestaand) && p.Boom.Niveau(bestaand) < Bewerken {
+				mislukt = append(mislukt, naam+": hier staat al een document met die naam dat je niet mag wijzigen")
+				continue
+			}
 		}
 		if err := a.bewaar(r.Context(), p.Ruimte, ouder, naam, deel, s); err != nil {
 			var mbe *http.MaxBytesError
@@ -552,7 +628,7 @@ func (a *App) metadata(w http.ResponseWriter, r *http.Request, s *Sessie, p *Ple
 		a.fout(w, r, s, http.StatusNotFound, "Dit document bestaat niet (meer).")
 		return
 	}
-	if !a.mag(w, r, s, p, doc.OuderID.Int64, Bewerken) {
+	if !a.mag(w, r, s, p, doc.ID, Bewerken) {
 		return
 	}
 	doel := fmt.Sprintf("/r/%s/d/%d", p.Ruimte.Sleutel, id)
@@ -599,7 +675,7 @@ func (a *App) item(w http.ResponseWriter, r *http.Request, s *Sessie, p *Plek) *
 
 func (a *App) hernoem(w http.ResponseWriter, r *http.Request, s *Sessie, p *Plek) {
 	x := a.item(w, r, s, p)
-	if x == nil || !a.mag(w, r, s, p, x.OuderID.Int64, Bewerken) {
+	if x == nil || !a.mag(w, r, s, p, x.ID, Bewerken) {
 		return
 	}
 	doel := veiligTerug(r.FormValue("terug"))
@@ -621,7 +697,7 @@ func (a *App) hernoem(w http.ResponseWriter, r *http.Request, s *Sessie, p *Plek
 
 func (a *App) verwijder(w http.ResponseWriter, r *http.Request, s *Sessie, p *Plek) {
 	x := a.item(w, r, s, p)
-	if x == nil || !a.mag(w, r, s, p, x.OuderID.Int64, Beheren) {
+	if x == nil || !a.mag(w, r, s, p, x.ID, Beheren) {
 		return
 	}
 	// Een map met alles erin: ook in elke map eronder moet je Beheren hebben
@@ -637,10 +713,15 @@ func (a *App) verwijder(w http.ResponseWriter, r *http.Request, s *Sessie, p *Pl
 					return false
 				}
 			}
+			for _, d := range p.Boom.docs[id] {
+				if p.Boom.Niveau(d) < Beheren {
+					return false
+				}
+			}
 			return true
 		}
 		if !controleer(x.ID) {
-			terug(w, r, mapURL(p.Ruimte, x.ID), "fout", "Je kunt deze map niet verwijderen: in een map eronder heb je niet het recht Beheren.")
+			terug(w, r, mapURL(p.Ruimte, x.ID), "fout", "Je kunt deze map niet verwijderen: op iets eronder heb je niet het recht Beheren.")
 			return
 		}
 	}
@@ -657,10 +738,7 @@ func (a *App) toegang(w http.ResponseWriter, r *http.Request, s *Sessie, p *Plek
 	if !a.mag(w, r, s, p, mapID, Beheren) {
 		return
 	}
-	doel := mapURL(p.Ruimte, mapID) + "/toegang"
-	if mapID == 0 {
-		doel = "/r/" + p.Ruimte.Sleutel + "/toegang"
-	}
+	doel := toegangURL(p.Ruimte, mapID, p.Boom.IsDoc(mapID))
 	var err error
 	melding := ""
 	switch r.FormValue("actie") {
@@ -682,10 +760,10 @@ func (a *App) toegang(w http.ResponseWriter, r *http.Request, s *Sessie, p *Plek
 		melding = "Toegang ingetrokken."
 	case "stoppen":
 		err = a.Reg.OverervingStoppen(r.Context(), p.Boom, mapID, s.Email)
-		melding = "De overerving is gestopt. De regels van boven staan nu als eigen regels bij deze map; haal weg wie er niet bij hoort."
+		melding = "De overerving is gestopt. De regels van boven staan nu als eigen regels hier; haal weg wie er niet bij hoort."
 	case "herstellen":
 		err = a.Reg.OverervingHerstellen(r.Context(), p.Ruimte, mapID, s.Email)
-		melding = "Deze map neemt de toegang van boven weer over (de eigen regels blijven erbij)."
+		melding = "De toegang van boven geldt hier weer (de eigen regels blijven erbij)."
 	default:
 		err = errOngeldig
 	}
@@ -703,6 +781,9 @@ func (a *App) toegang(w http.ResponseWriter, r *http.Request, s *Sessie, p *Plek
 			melding += " Let op: je hebt hier zelf nu het recht " + niveauNaam(b.Niveau(mapID)) + "."
 			if b.Niveau(mapID) < Lezen {
 				doel = "/r/" + p.Ruimte.Sleutel
+				if b.Zichtbaar(0) == false {
+					doel = "/"
+				}
 			}
 		}
 		terug(w, r, doel, "melding", melding)

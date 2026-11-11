@@ -22,15 +22,18 @@
   {{if $doel}}
   <a class="opdracht" href="/r/{{$rm.Sleutel}}/d/{{$doel.ID}}/download" download><span class="i i-download" aria-hidden="true"></span>Downloaden</a>
   {{else}}<span class="opdracht uit"><span class="i i-download" aria-hidden="true"></span>Downloaden</span>{{end}}
-  {{if and (ge $v.Niveau 2) (or $doel $v.Map)}}
+  {{if and (ge $v.DoelNiveau 2) (or $doel $v.Map)}}
   <button type="button" class="opdracht" data-open="dlg-naam"><span class="i i-pen" aria-hidden="true"></span>Naam wijzigen</button>
   {{else}}<span class="opdracht uit"><span class="i i-pen" aria-hidden="true"></span>Naam wijzigen</span>{{end}}
-  {{if and (ge $v.Niveau 3) (or $doel $v.Map)}}
+  {{if and (ge $v.DoelNiveau 3) (or $doel $v.Map)}}
   <button type="button" class="opdracht" data-open="dlg-weg"><span class="i i-prullenbak" aria-hidden="true"></span>Verwijderen</button>
   {{else}}<span class="opdracht uit"><span class="i i-prullenbak" aria-hidden="true"></span>Verwijderen</span>{{end}}
   <span class="scheiding"></span>
-  {{if not $v.Doorgang}}
-  <a class="opdracht{{if eq $v.Paneel "toegang"}} aan{{end}}" href="{{if $v.MapID}}/r/{{$rm.Sleutel}}/m/{{$v.MapID}}/toegang{{else}}/r/{{$rm.Sleutel}}/toegang{{end}}"><span class="i i-persoon" aria-hidden="true"></span>Toegang</a>
+  {{if $v.Link}}
+  <button type="button" class="opdracht" data-open="dlg-delen"><span class="i i-delen" aria-hidden="true"></span>Delen</button>
+  {{else}}<span class="opdracht uit"><span class="i i-delen" aria-hidden="true"></span>Delen</span>{{end}}
+  {{if or $doel (not $v.Doorgang)}}
+  <a class="opdracht{{if eq $v.Paneel "toegang"}} aan{{end}}" href="{{$v.ToegangURL}}"><span class="i i-persoon" aria-hidden="true"></span>Toegang</a>
   {{end}}
   {{if $doel}}
   <a class="opdracht{{if eq $v.Paneel "eigenschappen"}} aan{{end}}" href="/r/{{$rm.Sleutel}}/d/{{$doel.ID}}"><span class="i i-info" aria-hidden="true"></span>Eigenschappen</a>
@@ -81,7 +84,7 @@
   {{end}}
   </tbody></table>
 {{else}}
-  {{if $v.Doorgang}}<p class="doorgang"><span class="i i-slot" aria-hidden="true"></span>Je hebt geen toegang tot de inhoud van deze map, wel tot een map eronder.</p>{{end}}
+  {{if $v.Doorgang}}<p class="doorgang"><span class="i i-slot" aria-hidden="true"></span>Je hebt geen toegang tot deze map zelf; je ziet alleen wat met jou gedeeld is.</p>{{end}}
   {{if $v.Inhoud}}
   <table class="lijst">
   <thead><tr><th>Naam</th><th>Status</th><th>Gewijzigd</th><th class="r">Grootte</th></tr></thead>
@@ -123,7 +126,7 @@
 <div class="statusbalk">
   {{if $rm}}
   <span>{{len $v.Inhoud}} item{{if ne (len $v.Inhoud) 1}}s{{end}}</span>
-  <span>Jouw recht hier: <b>{{niveau $v.Niveau}}</b></span>
+  {{with $v.Selectie}}<span>Jouw recht op {{.Naam}}: <b>{{niveau $v.SelNiveau}}</b></span>{{else}}<span>Jouw recht hier: <b>{{niveau $v.Niveau}}</b></span>{{end}}
   {{if $v.Besloten}}<span><span class="i i-slot" aria-hidden="true"></span>Besloten map</span>{{end}}
   {{if eq $rm.Status "gesloten"}}<span>Project gesloten: alleen lezen</span>{{end}}
   {{else}}
@@ -153,6 +156,47 @@
     <label>Nieuwe naam van {{if eq .Soort "map"}}de map{{else}}het document{{end}}<input name="naam" value="{{.Naam}}" required maxlength="200"></label>
     <div class="knoppen"><button>Opslaan</button><button type="button" class="licht" data-sluit>Annuleren</button></div>
   </form>
+</dialog>
+<dialog id="dlg-delen" class="dialoog breed">
+  <h2>Delen: {{.Naam}}</h2>
+  {{if ge $v.DoelNiveau 3}}
+  <form class="geven" method="post" action="/r/{{$rm.Sleutel}}/i/{{.ID}}/delen">
+    <input type="hidden" name="csrf" value="{{$csrf}}"><input type="hidden" name="terug" value="{{$v.Hier}}">
+    <label>Met wie
+      <select name="wie" required>
+        <option value="">Kies een persoon of groep</option>
+        <optgroup label="Groepen">{{range $v.Groepen}}<option value="{{.Waarde}}">{{.Label}}</option>{{end}}</optgroup>
+        <optgroup label="Personen">{{range $v.Personen}}<option value="{{.Waarde}}">{{.Label}}</option>{{end}}</optgroup>
+      </select>
+    </label>
+    <fieldset class="keuze">
+      <legend>Recht</legend>
+      <label><input type="radio" name="niveau" value="1" checked> Lezen</label>
+      <label><input type="radio" name="niveau" value="2"> Bewerken</label>
+    </fieldset>
+    <label>Bericht <small>optioneel</small><textarea name="bericht" rows="3" maxlength="2000" placeholder="Bijvoorbeeld: wil je hier voor donderdag naar kijken?"></textarea></label>
+    {{if $v.Berichten}}<label class="vink"><input type="checkbox" name="dm" value="ja" checked> Stuur een bericht met de link (via de berichten van de site; de ontvanger krijgt ook een e-mail)</label>{{end}}
+    <div class="knoppen"><button>Delen</button><button type="button" class="licht" data-sluit>Annuleren</button></div>
+  </form>
+  {{else}}
+  <p class="zacht">Toegang geven kan alleen wie hier <b>Beheren</b> heeft. De link kun je wel doorgeven aan wie al toegang heeft.</p>
+  {{end}}
+  <h3 class="tussenkop">Link</h3>
+  <div class="linkregel">
+    <input id="deellink" value="{{$v.Link}}" readonly aria-label="Link">
+    <button type="button" class="licht" data-kopieer="deellink">Kopiëren</button>
+  </div>
+  <p class="zacht klein">Alleen wie toegang heeft, kan de link openen; anderen komen bij het inloggen uit.</p>
+  {{$tekst := printf "%s · Documenten van Digitaal GemeenGoed (voor leden)" $v.DeelNaam}}
+  <div class="sociaal">
+    <button type="button" class="licht" data-webshare data-titel="{{$v.DeelNaam}}" data-tekst="{{$tekst}}" data-link="{{$v.Link}}" hidden>Delen via…</button>
+    <a class="knop licht" href="https://www.linkedin.com/sharing/share-offsite/?url={{urlquery $v.Link}}" target="_blank" rel="noopener">LinkedIn</a>
+    <a class="knop licht" href="https://bsky.app/intent/compose?text={{urlquery $tekst}}%20{{urlquery $v.Link}}" target="_blank" rel="noopener">Bluesky</a>
+    <a class="knop licht" href="https://x.com/intent/post?text={{urlquery $tekst}}&amp;url={{urlquery $v.Link}}" target="_blank" rel="noopener">X</a>
+    <a class="knop licht" href="https://wa.me/?text={{urlquery $tekst}}%20{{urlquery $v.Link}}" target="_blank" rel="noopener">WhatsApp</a>
+    <a class="knop licht" href="mailto:?subject={{urlquery $v.DeelNaam}}&amp;body={{urlquery $tekst}}%0A%0A{{urlquery $v.Link}}">E-mail</a>
+  </div>
+  {{if lt $v.DoelNiveau 3}}<div class="knoppen"><button type="button" class="licht" data-sluit>Sluiten</button></div>{{end}}
 </dialog>
 <dialog id="dlg-weg" class="dialoog">
   <form method="post" action="/r/{{$rm.Sleutel}}/i/{{.ID}}/verwijder">
@@ -245,29 +289,29 @@
 </aside>
 {{end}}
 
-{{define "toegangpaneel"}}{{$v := .A}}{{$csrf := .B}}{{$rm := $v.Ruimte}}
+{{define "toegangpaneel"}}{{$v := .A}}{{$csrf := .B}}{{$rm := $v.Ruimte}}{{$hier := "deze map"}}{{if $v.ToegangDoc}}{{$hier = "dit document"}}{{else if not $v.ToegangID}}{{$hier = "deze ruimte"}}{{end}}
 <aside class="paneel" aria-label="Toegang">
   <div class="paneelkop">
-    <h2 class="naam {{if $v.Map}}map{{else}}schijf{{end}}">Toegang: {{if $v.Map}}{{$v.Map.Naam}}{{else}}{{$rm.Naam}}{{end}}</h2>
-    <a class="sluit" href="{{$v.MapURL $v.MapID}}" aria-label="Sluiten">×</a>
+    <h2 class="naam {{if $v.ToegangDoc}}{{soortIcoon $v.Selectie.Mediatype $v.Selectie.Naam}}{{else if $v.ToegangID}}map{{else}}schijf{{end}}">Toegang: {{$v.ToegangNaam}}</h2>
+    <a class="sluit" href="{{if $v.ToegangDoc}}{{$v.Hier}}{{else}}{{$v.MapURL $v.MapID}}{{end}}" aria-label="Sluiten">×</a>
   </div>
-  <p class="zacht">Lezen: zien en downloaden. Bewerken: ook uploaden, nieuwe versies, gegevens, hernoemen, mappen maken. Beheren: ook verwijderen en de toegang wijzigen. Je hebt hier: <b>{{niveau $v.Niveau}}</b>.</p>
+  <p class="zacht">Lezen: zien en downloaden. Bewerken: ook uploaden, nieuwe versies, gegevens, hernoemen, mappen maken. Beheren: ook verwijderen, delen en de toegang wijzigen. Je hebt hier: <b>{{niveau $v.ToegangNiveau}}</b>.</p>
   <ul class="regels">
   {{range $v.Regels}}
   <li class="regel{{if .Eigen}} eigen{{end}}">
     <div class="wie">
       <span class="wienaam">{{.Naam}}</span> <span class="chip grijs">{{.SoortLabel}}</span>
-      <small>{{if eq .Bron "Altijd"}}Altijd: beheerders van het platform{{else if eq .Bron "Standaard"}}Standaard voor deze ruimte{{else if .Eigen}}Op deze {{if $v.Map}}map{{else}}ruimte{{end}}{{else}}Overgenomen van {{.Bron}}{{end}}</small>
+      <small>{{if eq .Bron "Altijd"}}Altijd: beheerders van het platform{{else if eq .Bron "Standaard"}}Standaard voor deze ruimte{{else if .Eigen}}Op {{$hier}}{{else}}Overgenomen van {{.Bron}}{{end}}</small>
     </div>
-    {{if and .Eigen (ge $v.Niveau 3)}}
+    {{if and .Eigen (ge $v.ToegangNiveau 3)}}
     <form class="regelform" method="post" action="/r/{{$rm.Sleutel}}/toegang">
-      <input type="hidden" name="csrf" value="{{$csrf}}"><input type="hidden" name="map" value="{{$v.MapID}}">
+      <input type="hidden" name="csrf" value="{{$csrf}}"><input type="hidden" name="map" value="{{$v.ToegangID}}">
       <input type="hidden" name="actie" value="toevoegen"><input type="hidden" name="wie" value="{{.Soort}}|{{.Wie}}">
       <select name="niveau" aria-label="Recht voor {{.Naam}}" data-direct>{{$n := .Niveau}}<option value="1"{{if eq $n 1}} selected{{end}}>Lezen</option><option value="2"{{if eq $n 2}} selected{{end}}>Bewerken</option><option value="3"{{if eq $n 3}} selected{{end}}>Beheren</option></select>
       <noscript><button class="klein">Opslaan</button></noscript>
     </form>
     <form method="post" action="/r/{{$rm.Sleutel}}/toegang">
-      <input type="hidden" name="csrf" value="{{$csrf}}"><input type="hidden" name="map" value="{{$v.MapID}}">
+      <input type="hidden" name="csrf" value="{{$csrf}}"><input type="hidden" name="map" value="{{$v.ToegangID}}">
       <input type="hidden" name="actie" value="weg"><input type="hidden" name="regel" value="{{.ID}}">
       <button class="weg" aria-label="{{.Naam}} weghalen" title="Weghalen">×</button>
     </form>
@@ -278,22 +322,22 @@
   {{end}}
   </ul>
 
-  {{if ge $v.Niveau 3}}
-  {{if $v.Map}}
+  {{if ge $v.ToegangNiveau 3}}
+  {{if $v.ToegangID}}
   <form class="overerving" method="post" action="/r/{{$rm.Sleutel}}/toegang">
-    <input type="hidden" name="csrf" value="{{$csrf}}"><input type="hidden" name="map" value="{{$v.MapID}}">
-    {{if $v.Besloten}}
-    <p><span class="i i-slot" aria-hidden="true"></span><b>Besloten map.</b> Alleen de regels hierboven gelden; de toegang van de map erboven telt niet mee.</p>
+    <input type="hidden" name="csrf" value="{{$csrf}}"><input type="hidden" name="map" value="{{$v.ToegangID}}">
+    {{if $v.ToegangBesloten}}
+    <p><span class="i i-slot" aria-hidden="true"></span><b>Besloten.</b> Alleen de regels hierboven gelden; de toegang van de map erboven telt niet mee.</p>
     <input type="hidden" name="actie" value="herstellen"><button class="licht">Overerving herstellen</button>
     {{else}}
-    <p>Deze map neemt de toegang van de map erboven over. Wil je hem besloten maken, stop dan de overerving: de huidige regels worden eigen regels, en daarna haal je weg wie er niet bij hoort.</p>
+    <p>{{if $v.ToegangDoc}}Dit document{{else}}Deze map{{end}} neemt de toegang van de map erboven over. Wil je {{if $v.ToegangDoc}}het{{else}}hem{{end}} besloten maken, stop dan de overerving: de huidige regels worden eigen regels, en daarna haal je weg wie er niet bij hoort.</p>
     <input type="hidden" name="actie" value="stoppen"><button class="licht">Overerving stoppen</button>
     {{end}}
   </form>
   {{end}}
   <h3>Toegang geven</h3>
   <form class="geven" method="post" action="/r/{{$rm.Sleutel}}/toegang">
-    <input type="hidden" name="csrf" value="{{$csrf}}"><input type="hidden" name="map" value="{{$v.MapID}}">
+    <input type="hidden" name="csrf" value="{{$csrf}}"><input type="hidden" name="map" value="{{$v.ToegangID}}">
     <input type="hidden" name="actie" value="toevoegen">
     <label>Aan wie
       <select name="wie" required>
@@ -307,7 +351,7 @@
     </label>
     <button>Toevoegen</button>
   </form>
-  <p class="zacht klein">Personen in de lijst: wie al eens heeft ingelogd of in Redmine bij een project staat.</p>
+  <p class="zacht klein">Wil je de ontvanger ook een bericht sturen, gebruik dan <b>Delen</b>. Personen in de lijst: wie al eens heeft ingelogd of in Redmine bij een project staat.</p>
   {{end}}
 </aside>
 {{end}}
