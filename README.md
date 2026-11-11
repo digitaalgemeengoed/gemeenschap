@@ -78,6 +78,7 @@ wijziging van de toestemming.
 
 ```
 inhoud/                     pagina's, menu's en afbeeldingen van de site
+ontwerp/                    logo, ontwerpvisualisaties en LICENTIES.md (herkomst van elke afbeelding)
 keycloak/realm/             de realm gemeenschap (keycloak-config-cli)
 keycloak/themes/            kleuren van het aanmeld- en inlogscherm
 wordpress/dg-gemeenschap.php  mu-plugin: inloggen, rollen, profiel, CiviCRM

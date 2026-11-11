@@ -11,6 +11,8 @@
 - `wp dg toezeggingen` toont de stand.
 - Privacyverklaring (concept): de gegevens van toezeggingen erbij.
 
+Ook: **`ontwerp/`** met het logo, de vier ontwerpvisualisaties en de links naar de Unsplash-foto's uit het prototype, en `ontwerp/LICENTIES.md` met de herkomst en licentie van elke afbeelding.
+
 ## 0.6.0 — 2026-11-11
 
 Naar aanleiding van de paginaset (prototype) en met een duidelijke verwijzing naar de VNG en Common Ground:

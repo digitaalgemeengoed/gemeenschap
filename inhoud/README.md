@@ -40,7 +40,7 @@ Daaronder de tekst, in Markdown:
 | `**vet**` en `*cursief*` | **vet** en *cursief* |
 | `[tekst](https://…)` | een link |
 | `[tekst](privacy.md)` | een link naar een andere pagina hier |
-| `![beschrijving](media/foto.jpg)` op een eigen regel | een afbeelding uit `media/` |
+| `![beschrijving](media/foto.jpg)` op een eigen regel | een afbeelding uit `media/` (zet herkomst en licentie in `ontwerp/LICENTIES.md`) |
 | `> tekst` | een citaat |
 | een tabel met `\|` | een tabel |
 | `---` | een lijn |
