@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: Digitaal Gemeengoed — pagina's uit GitHub
+ * Plugin Name: Digitaal GemeenGoed — pagina's uit GitHub
  * Description: De pagina's in inhoud/paginas/ van de repo digitaalgemeengoed/gemeenschap worden WordPress-pagina's. Die pagina's wijzig je via GitHub; in WordPress staan ze op slot.
  *
  * Een pagina is een Markdown-bestand met bovenaan een kopje tussen twee
@@ -25,7 +25,7 @@
 defined( 'ABSPATH' ) || exit;
 
 /** Ophogen als de omzetting verandert: dan worden alle pagina's opnieuw opgeslagen. */
-const DG_INHOUD_VERSIE = 1;
+const DG_INHOUD_VERSIE = 2;
 
 // ---------------------------------------------------------------------------
 // Op slot: pagina's en afbeeldingen uit de repo wijzig je via GitHub
@@ -164,6 +164,64 @@ function dg_blok( string $naam, string $html, array $attributen = array() ): str
 	return "<!-- wp:$naam$attr -->\n$html\n<!-- /wp:$naam -->";
 }
 
+/** De vakken die een pagina kan gebruiken (::: naam … :::), zie inhoud/README.md. */
+const DG_VAKKEN = array( 'held', 'kaarten', 'stappen', 'kader' );
+
+/**
+ * Een vak: een groep blokken met een eigen vorm (in het thema, style.css).
+ *
+ *   held     de opening van een pagina: grote kop, inleiding, knop
+ *   kaarten  elke ### kop met de tekst eronder wordt een kaart, naast elkaar
+ *   stappen  als kaarten, maar genummerd: een proces in stappen
+ *   kader    tekst in een gekleurd vlak
+ */
+function dg_inhoud_vak( string $soort, string $md, callable $link, callable $beeld ): string {
+	if ( in_array( $soort, array( 'kaarten', 'stappen' ), true ) ) {
+		$delen  = preg_split( '/^###\s+/m', "\n" . $md );
+		$kaarten = array();
+		foreach ( array_slice( $delen, 1 ) as $deel ) {
+			[ $kop, $rest ] = array_pad( explode( "\n", $deel, 2 ), 2, '' );
+			$binnen         = dg_blok( 'heading', '<h3 class="wp-block-heading">' . dg_inhoud_regel( trim( $kop ), $link ) . '</h3>', array( 'level' => 3 ) ) . "\n\n" . dg_inhoud_blokken( $rest, $link, $beeld );
+			$kaarten[]      = dg_blok( 'group', '<div class="wp-block-group dg-kaart">' . $binnen . '</div>', array( 'className' => 'dg-kaart', 'layout' => array( 'type' => 'default' ) ) );
+		}
+		$klasse = 'dg-' . $soort;
+		return dg_blok( 'group', '<div class="wp-block-group ' . $klasse . '">' . implode( "\n\n", $kaarten ) . '</div>', array( 'className' => $klasse, 'layout' => array( 'type' => 'grid', 'minimumColumnWidth' => '15rem' ) ) );
+	}
+	$klasse = 'dg-' . $soort;
+	return dg_blok( 'group', '<div class="wp-block-group ' . $klasse . '">' . dg_inhoud_blokken( $md, $link, $beeld ) . '</div>', array( 'className' => $klasse, 'layout' => array( 'type' => 'constrained' ) ) );
+}
+
+/** Fouten in de vakken van een pagina: onbekende naam, niet afgesloten, kaarten zonder ### kop. */
+function dg_inhoud_controleer_vakken( string $md ): array {
+	$fouten = array();
+	$open   = null;
+	foreach ( explode( "\n", $md ) as $nr => $regel ) {
+		if ( preg_match( '/^\s*:::\s*([a-z]*)\s*$/', $regel, $m ) ) {
+			if ( null === $open && '' === $m[1] ) {
+				$fouten[] = 'regel ' . ( $nr + 1 ) . ': ::: sluit een vak dat niet geopend is.';
+			} elseif ( null === $open ) {
+				if ( ! in_array( $m[1], DG_VAKKEN, true ) ) {
+					$fouten[] = 'regel ' . ( $nr + 1 ) . ": onbekend vak \"{$m[1]}\" (kies uit " . implode( ', ', DG_VAKKEN ) . ').';
+				}
+				$open = array( $m[1], $nr + 1, false );
+			} elseif ( '' === $m[1] ) {
+				if ( in_array( $open[0], array( 'kaarten', 'stappen' ), true ) && ! $open[2] ) {
+					$fouten[] = "regel {$open[1]}: in een vak \"{$open[0]}\" begint elke kaart met een kop ###.";
+				}
+				$open = null;
+			} else {
+				$fouten[] = 'regel ' . ( $nr + 1 ) . ': een vak in een vak kan niet; sluit eerst af met :::.';
+			}
+		} elseif ( null !== $open && preg_match( '/^###\s+/', $regel ) ) {
+			$open[2] = true;
+		}
+	}
+	if ( null !== $open ) {
+		$fouten[] = "regel {$open[1]}: het vak \"{$open[0]}\" wordt niet afgesloten met :::.";
+	}
+	return $fouten;
+}
+
 /**
  * Markdown naar blokken. Kent: kopjes (## tot ####), alinea's, lijsten (- en
  * 1.), citaten (>), tabellen (| a | b |), een lijn (---), een afbeelding of
@@ -191,10 +249,32 @@ function dg_inhoud_blokken( string $md, callable $link, callable $beeld ): strin
 			$sluit();
 			continue;
 		}
+		if ( preg_match( '/^:::\s*([a-z]+)\s*$/', $t, $m ) ) {
+			$sluit();
+			$binnen = array();
+			for ( ++$i; $i < $n && ! preg_match( '/^\s*:::\s*$/', $regels[ $i ] ); $i++ ) {
+				$binnen[] = $regels[ $i ];
+			}
+			$blokken[] = dg_inhoud_vak( $m[1], implode( "\n", $binnen ), $link, $beeld );
+			continue;
+		}
 		if ( preg_match( '/^(#{1,4})\s+(.+?)\s*#*$/', $t, $m ) ) {
 			$sluit();
 			$niveau    = max( 2, strlen( $m[1] ) );
 			$blokken[] = dg_blok( 'heading', "<h$niveau class=\"wp-block-heading\">" . dg_inhoud_regel( $m[2], $link ) . "</h$niveau>", 2 === $niveau ? array() : array( 'level' => $niveau ) );
+			continue;
+		}
+		if ( preg_match( '/^\[\[([^\]]+)\]\]\(([^)\s]+)\)$/', $t ) ) {
+			// Knoppen: [[Tekst]](adres), één of meer onder elkaar.
+			$sluit();
+			$knoppen = array();
+			while ( $i < $n && preg_match( '/^\s*\[\[([^\]]+)\]\]\(([^)\s]+)\)\s*$/', $regels[ $i ], $k ) ) {
+				$tweede    = $knoppen ? ' is-style-outline' : '';
+				$knoppen[] = dg_blok( 'button', '<div class="wp-block-button' . $tweede . '"><a class="wp-block-button__link wp-element-button" href="' . esc_url( $link( $k[2] ) ) . '">' . esc_html( $k[1] ) . '</a></div>', $tweede ? array( 'className' => 'is-style-outline' ) : array() );
+				++$i;
+			}
+			--$i;
+			$blokken[] = dg_blok( 'buttons', '<div class="wp-block-buttons">' . implode( "\n", $knoppen ) . '</div>' );
 			continue;
 		}
 		if ( preg_match( '/^(-{3,}|\*{3,})$/', $t ) ) {
@@ -358,6 +438,9 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
 				}
 				if ( ! in_array( $status, array( 'publiceren', 'concept' ), true ) ) {
 					$fouten[] = "$bron: status is \"publiceren\" of \"concept\", niet \"$status\".";
+				}
+				foreach ( dg_inhoud_controleer_vakken( $tekst ) as $fout ) {
+					$fouten[] = "$bron: $fout";
 				}
 				foreach ( array_keys( $kop ) as $sleutel ) {
 					if ( ! in_array( $sleutel, array( 'titel', 'adres', 'ouder', 'volgorde', 'status', 'voorpagina' ), true ) ) {

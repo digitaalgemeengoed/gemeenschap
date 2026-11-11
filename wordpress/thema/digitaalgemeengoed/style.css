@@ -1,7 +1,7 @@
 /*
-Theme Name: Digitaal Gemeengoed
+Theme Name: Digitaal GemeenGoed
 Template: buddyx
-Description: Het thema van digitaalgemeengoed.nl: BuddyX (voor BuddyPress en bbPress) met het logo, de kleuren en de voet van Digitaal Gemeengoed. Kleuren en voet staan vast in functions.php; de menu's komen uit inhoud/menu.md in de repo digitaalgemeengoed/gemeenschap.
+Description: Het thema van digitaalgemeengoed.nl: BuddyX (voor BuddyPress en bbPress) met het logo, de kleuren en de voet van Digitaal GemeenGoed. Kleuren en voet staan vast in functions.php; de menu's komen uit inhoud/menu.md in de repo digitaalgemeengoed/gemeenschap.
 Version: 1.0.0
 License: EUPL-1.2
 Text Domain: digitaalgemeengoed
@@ -22,9 +22,113 @@ Text Domain: digitaalgemeengoed
 /* De naam naast de uil wat kleiner, zodat het hele menu naast de naam past. */
 .site-branding .site-title, .site-branding .site-title a { font-size: 1.5rem !important; line-height: 1.2; }
 
-/* Startpagina: de eerste alinea als inleiding. */
-.home .entry-content > p:first-of-type { font-size: 1.3em; line-height: 1.55; color: var(--bx-color-fg, #1c1c1a); max-width: 46em; }
 
 /* Knoppen in de tekst in de kleur van het logo (BuddyX geeft blokken een eigen accentkleur). */
 .entry-content .wp-element-button, .entry-content .wp-block-button__link { background-color: var(--bx-color-button-bg, #0066cc); color: #fff; }
 .entry-content .wp-element-button:hover, .entry-content .wp-block-button__link:hover { background-color: var(--bx-color-button-bg-hover, #003c7a); color: #fff; }
+
+/* ------------------------------------------------------------------------
+   Vakken uit inhoud/ (::: held, kaarten, stappen, kader), in de stijl van de
+   presentatie: wit dat overloopt in lichtblauw, de uil, ronde vlakken.
+   ------------------------------------------------------------------------ */
+:root {
+  --dg-blauw: #0066cc;
+  --dg-blauw-donker: #003c7a;
+  --dg-lichtblauw: #13aef3;   /* alleen decoratie: te licht voor tekst */
+  --dg-ijs: #e8f5fb;
+  --dg-hemel: #b9e3f3;
+}
+
+.entry-content .dg-held {
+  position: relative;
+  overflow: hidden;
+  margin: 0 0 3rem;
+  padding: clamp(2rem, 5vw, 4rem) clamp(1.5rem, 5vw, 4rem);
+  padding-right: clamp(1.5rem, 22vw, 18rem);
+  border-radius: 28px;
+  background: linear-gradient(115deg, #ffffff 0%, var(--dg-ijs) 55%, var(--dg-hemel) 100%);
+}
+.entry-content .dg-held::after {
+  content: "";
+  position: absolute;
+  right: clamp(1rem, 4vw, 3.5rem);
+  bottom: -1.5rem;
+  width: clamp(6rem, 16vw, 12rem);
+  height: 115%;
+  background: url("assets/uil.png") right bottom / contain no-repeat;
+  opacity: .9;
+  pointer-events: none;
+}
+.entry-content .dg-held > * { position: relative; z-index: 1; max-width: 40em; margin-left: 0 !important; margin-right: 0 !important; }
+.entry-content .dg-held h2:first-child {
+  font-size: clamp(2.2rem, 5vw, 3.4rem);
+  line-height: 1.1;
+  margin: 0 0 1rem;
+  color: var(--dg-blauw-donker);
+}
+.entry-content .dg-held p { font-size: 1.2em; line-height: 1.6; }
+@media (max-width: 700px) {
+  .entry-content .dg-held { padding-right: 1.5rem; padding-bottom: 9rem; }
+  .entry-content .dg-held::after { height: 9rem; bottom: .5rem; }
+}
+
+.entry-content .dg-kaarten,
+.entry-content .dg-stappen {
+  gap: 1.25rem; margin: 1.5rem 0 2.5rem; counter-reset: dg-stap;
+  grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr)) !important;
+  align-items: stretch !important;
+}
+.entry-content .dg-kaart {
+  margin: 0 !important;
+  align-self: stretch;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 1.25rem 1.5rem 1.4rem;
+  border-radius: 18px;
+  background: #fff;
+  border: 1px solid #d5e8f4;
+  border-top: 5px solid var(--dg-lichtblauw);
+  box-shadow: 0 6px 20px rgba(0, 60, 122, .06);
+}
+.entry-content .dg-kaart > :first-child { margin-top: 0; }
+.entry-content .dg-kaart > :last-child { margin-bottom: 0; }
+.entry-content .dg-kaart h3 { font-size: 1.2rem; color: var(--dg-blauw-donker); margin-bottom: .5rem; }
+.entry-content .dg-kaart ul { padding-left: 1.1em; }
+.entry-content .dg-kaart em { color: #5b6b7a; }
+.entry-content .dg-stappen .dg-kaart { counter-increment: dg-stap; }
+.entry-content .dg-stappen .dg-kaart h3::before {
+  content: counter(dg-stap);
+  display: inline-grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  margin-right: .6rem;
+  border-radius: 50%;
+  background: var(--dg-blauw);
+  color: #fff;
+  font-size: 1rem;
+  vertical-align: middle;
+}
+
+.entry-content .dg-kader {
+  margin: 3rem 0 1rem;
+  padding: 2rem clamp(1.5rem, 4vw, 3rem);
+  border-radius: 24px;
+  background: linear-gradient(115deg, var(--dg-ijs), var(--dg-hemel));
+}
+.entry-content .dg-kader > :first-child { margin-top: 0; }
+.entry-content .dg-kader > * { margin-left: 0 !important; margin-right: 0 !important; max-width: 46em; }
+
+/* Knoppen: de tweede en volgende als omlijning. */
+.entry-content .wp-block-button.is-style-outline .wp-block-button__link {
+  background: transparent; color: var(--dg-blauw); border: 2px solid var(--dg-blauw);
+}
+.entry-content .wp-block-button.is-style-outline .wp-block-button__link:hover { background: var(--dg-blauw); color: #fff; }
+.entry-content .wp-block-buttons { gap: .75rem; }
+
+/* Donkere modus van BuddyX: vlakken donker, tekst licht. */
+[data-bx-mode="dark"] .entry-content .dg-held,
+[data-bx-mode="dark"] .entry-content .dg-kader { background: linear-gradient(115deg, #0d1a2a, #10304f); }
+[data-bx-mode="dark"] .entry-content .dg-held h2:first-child,
+[data-bx-mode="dark"] .entry-content .dg-kaart h3 { color: #cfe8ff; }
+[data-bx-mode="dark"] .entry-content .dg-kaart { background: #13202f; border-color: #1f3b57; }

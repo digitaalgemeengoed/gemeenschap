@@ -3,7 +3,7 @@ titel: Privacyverklaring
 volgorde: 9
 status: concept
 ---
-> **Concept.** Deze tekst moet nog juridisch worden getoetst, en de afspraken tussen Digitaal Gemeengoed en NL-Dit (artikel 26 AVG) moeten er zijn. Vul alles in wat met IN TE VULLEN is gemarkeerd en zet dan `status: publiceren`.
+> **Concept.** Deze tekst moet nog juridisch worden getoetst, en de afspraken tussen Digitaal GemeenGoed en NL-Dit (artikel 26 AVG) moeten er zijn. Vul alles in wat met IN TE VULLEN is gemarkeerd en zet dan `status: publiceren`.
 
 Versie 1, [IN TE VULLEN: datum].
 
@@ -11,7 +11,7 @@ Versie 1, [IN TE VULLEN: datum].
 
 Dit platform (digitaalgemeengoed.nl, de fora en projecten.digitaalgemeengoed.nl) wordt beheerd door:
 
-- **Digitaal Gemeengoed**, [IN TE VULLEN: rechtsvorm, adres, KvK-nummer]
+- **Stichting Digitaal GemeenGoed**, [IN TE VULLEN: adres, KvK-nummer]
 - **NL-Dit**, [IN TE VULLEN: rechtsvorm, adres, KvK-nummer]
 
 Wij zijn samen verantwoordelijk voor je gegevens (gezamenlijke verwerkingsverantwoordelijken, artikel 26 AVG). Wij hebben afgesproken dat [IN TE VULLEN: wie] je aanspreekpunt is. Je kunt je rechten bij ieder van ons uitoefenen.

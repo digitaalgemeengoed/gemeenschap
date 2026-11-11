@@ -1,9 +1,9 @@
 <?php
 /**
- * Plugin Name: Digitaal Gemeengoed — gemeenschap
+ * Plugin Name: Digitaal GemeenGoed — gemeenschap
  * Description: Neemt bij elke login de gegevens uit Keycloak (realm "gemeenschap") over in WordPress, BuddyPress, bbPress en CiviCRM. Keycloak is de bron; hier wordt niets terug geschreven.
  * Version: 0.1.0
- * Author: Digitaal Gemeengoed
+ * Author: Digitaal GemeenGoed
  * License: EUPL-1.2
  *
  * Een must-use plugin: staat in wp-content/mu-plugins en kan niet worden
@@ -275,7 +275,7 @@ function dg_profielvelden(): array {
 		$groep = (int) xprofile_insert_field_group(
 			array(
 				'name'        => DG_PROFIELGROEP,
-				'description' => 'Uit je account bij Digitaal Gemeengoed. Wijzigen doe je daar (Mijn account).',
+				'description' => 'Uit je account bij Digitaal GemeenGoed. Wijzigen doe je daar (Mijn account).',
 				'can_delete'  => false,
 			)
 		);
@@ -376,7 +376,7 @@ function dg_civicrm( int $uid, array $groepen, array $org, string $toestemming, 
 			\Civi\Api4\Activity::create( false )
 				->addValue( 'activity_type_id:name', dg_civicrm_activiteitsoort() )
 				->addValue( 'subject', 'ja' === $toestemming ? 'Toestemming nieuwsbrief: ja' : 'Toestemming nieuwsbrief: nee' )
-				->addValue( 'details', 'Gegeven of gewijzigd in het account bij Digitaal Gemeengoed (Keycloak).' )
+				->addValue( 'details', 'Gegeven of gewijzigd in het account bij Digitaal GemeenGoed (Keycloak).' )
 				->addValue( 'source_contact_id', $contact )
 				->addValue( 'target_contact_id', array( $contact ) )
 				->addValue( 'status_id:name', 'Completed' )
@@ -547,7 +547,7 @@ add_action(
 		$mailer->Password   = (string) getenv( 'SMTP_WACHTWOORD' );
 		$afzender           = getenv( 'SMTP_AFZENDER' );
 		if ( $afzender ) {
-			$mailer->setFrom( $afzender, 'Digitaal Gemeengoed', false );
+			$mailer->setFrom( $afzender, 'Digitaal GemeenGoed', false );
 		}
 	}
 );

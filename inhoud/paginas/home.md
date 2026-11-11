@@ -1,18 +1,57 @@
 ---
-titel: Digitaal Gemeengoed
+titel: Digitaal GemeenGoed
 adres: start
 voorpagina: ja
 ---
-Gemeenten werken met dezelfde soorten stukken, onder dezelfde wetten: de Woo, de Archiefwet, de AVG. Toch lost elke gemeente het informatiebeheer voor een groot deel zelf op. **Digitaal Gemeengoed** is een netwerk van mensen bij gemeenten en daaromheen die dat samen willen doen: met open software die van iedereen is en die je zelf kunt inzien, gebruiken en verbeteren.
+::: held
+# Samen grenzeloos sterk
 
-Ons eerste project is de [Office Assistent](office-assistent.md): een assistent in Word, LibreOffice en Collabora die helpt een stuk goed vast te leggen terwijl je het schrijft.
+Gemeenten werken met dezelfde wetten, dezelfde soorten stukken en vaak dezelfde vragen. Toch lost elke gemeente veel zelf op. **Digitaal GemeenGoed** brengt gemeenten samen om open software te maken, in te voeren en te beheren die van iedereen is. Want waarom moeilijk doen als het samen kan?
 
-## Wat je hier vindt
+[[Doe mee]](meedoen.md)
+[[Hoe we werken]](werkwijze.md)
+:::
 
-- **De fora.** Vragen, ervaringen en ideeën, over beheer, development en besluitvorming.
-- **De leden.** Wie er bij welke gemeente aan werkt, zodat je weet bij wie je terecht kunt.
-- **De projecten.** Meldingen, wensen en de planning, op [projecten.digitaalgemeengoed.nl](https://projecten.digitaalgemeengoed.nl).
+## Van publiek geld naar publieke waarde
 
-Lees meer [over het netwerk](over.md) of over [hoe je meedoet](meedoen.md).
+Wat één gemeente laat bouwen, kan elke gemeente gebruiken. Wij zorgen dat dat ook gebeurt, met twee taken:
+
+::: kaarten
+### Kennis en software
+We ontwikkelen open source componenten die passen in de Common Ground-architectuur, en stellen ze beschikbaar aan alle gemeenten. We brengen kennis bij elkaar, zodat het werk niet versnippert.
+
+### Invoeren en beheren
+We helpen gemeenten bij het invoeren en het duurzaam beheer van die oplossingen. Zo kunnen ook gemeenten zonder eigen capaciteit digitaal meebewegen.
+:::
+
+## Samenwerken is meer
+
+Echte samenwerking vraagt niet alleen organisatie, maar vooral commitment.
+
+::: kaarten
+### Dezelfde werkwijze
+Eenduidige werkwijzen en formats, voor architectuur, beheer en projectaanpak, zodat we sneller en soepeler samenwerken.
+
+### Groot helpt klein
+Grotere gemeenten begeleiden kleinere, met kennis en ervaring: een buddysysteem, zodat iedereen kan aansluiten.
+
+### Samen kiezen
+Leden stellen samen de prioriteiten en houden zich eraan. Zo voorkomen we versnippering en dubbel werk.
+
+### Delen wat je hebt
+Gemeenten stellen kennis, expertise en ontwikkelcapaciteit beschikbaar voor gezamenlijke projecten.
+:::
+
+## Waar we aan werken
+
+De eerste projecten komen uit het portfolio van de gemeenten Haarlem en Zandvoort, en zijn bedoeld voor iedereen. Het eerste resultaat is de [Office Assistent](office-assistent.md).
+
+[[Alle projecten]](projecten.md)
+
+::: kader
+## Doen jullie mee?
+
+Werk je bij een gemeente aan informatiebeheer, architectuur, beheer of besluitvorming? Word lid van het netwerk, praat mee in de fora en help bepalen wat we samen maken.
 
 [dg_lid_worden]
+:::

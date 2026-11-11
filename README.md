@@ -1,6 +1,6 @@
-# Gemeenschapsplatform Digitaal Gemeengoed
+# Gemeenschapsplatform Digitaal GemeenGoed
 
-Het platform van Digitaal Gemeengoed en NL-Dit voor het netwerk rond de
+Het platform van Digitaal GemeenGoed en NL-Dit voor het netwerk rond de
 [Office Assistent](https://github.com/digitaalgemeengoed): lid worden,
 profielen, fora, nieuwsbrief, meldingen en projecten. Deze repo is de bron
 voor de hele server: de software, de instellingen en de pagina's van de site.
@@ -116,7 +116,7 @@ aanbieder; `.env` hoort in je wachtwoordmanager, niet in de back-up.
 
 ## Privacy
 
-Digitaal Gemeengoed en NL-Dit zijn samen verantwoordelijk (AVG artikel 26).
+Digitaal GemeenGoed en NL-Dit zijn samen verantwoordelijk (AVG artikel 26).
 De privacyverklaring staat in `inhoud/paginas/privacy.md`; elke versie is
 terug te vinden in de geschiedenis van die pagina.
 

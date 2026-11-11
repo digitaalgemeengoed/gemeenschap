@@ -44,9 +44,33 @@ Daaronder de tekst, in Markdown:
 | `> tekst` | een citaat |
 | een tabel met `\|` | een tabel |
 | `---` | een lijn |
-| `[dg_lid_worden]` op een eigen regel | de knop *Lid worden* |
+| `[[Doe mee]](meedoen.md)` op een eigen regel | een knop (meer regels onder elkaar: meer knoppen naast elkaar) |
+| `[dg_lid_worden]` op een eigen regel | de knop *Lid worden* (alleen voor wie niet is ingelogd) |
 
 HTML werkt niet: het verschijnt als tekst.
+
+### Vakken
+
+Voor een opvallender opmaak zet je tekst tussen `::: naam` en `:::`:
+
+```
+::: kaarten
+### Eerste kaart
+Tekst van de eerste kaart.
+
+### Tweede kaart
+Tekst van de tweede kaart.
+:::
+```
+
+| Vak | Wat het doet |
+|---|---|
+| `held` | de opening van een pagina: grote kop, inleiding en knoppen, met de uil op de achtergrond |
+| `kaarten` | elke `###` kop met de tekst eronder wordt een kaart; de kaarten staan naast elkaar |
+| `stappen` | als kaarten, maar genummerd: een proces in stappen |
+| `kader` | tekst in een lichtblauw vlak, bijvoorbeeld een oproep |
+
+Een vak in een vak kan niet.
 
 Een pagina weghalen: verwijder het bestand. Op de site wordt het dan een
 concept; het verdwijnt niet.

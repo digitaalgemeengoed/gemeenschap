@@ -1,4 +1,4 @@
-# Redmine inrichten voor Digitaal Gemeengoed. Opnieuw draaien kan zonder schade.
+# Redmine inrichten voor Digitaal GemeenGoed. Opnieuw draaien kan zonder schade.
 #
 #   docker compose -f compose.yml exec redmine \
 #     bundle exec rails runner /usr/local/share/dg/inrichten.rb
@@ -15,7 +15,7 @@ domein = ENV.fetch('DOMEIN')
 
 # --- Instellingen ----------------------------------------------------------
 {
-  'app_title' => 'Projecten · Digitaal Gemeengoed',
+  'app_title' => 'Projecten · Digitaal GemeenGoed',
   'host_name' => "projecten.#{domein}",
   'protocol' => 'https',
   'default_language' => 'nl',
@@ -41,7 +41,7 @@ Setting.plugin_redmine_oauth = (Setting.plugin_redmine_oauth || {}).merge(
   'oauth_login' => '0',
   'oauth_only_login' => '0'
 )
-provider = OauthProvider.find_or_initialize_by(custom_name: 'Digitaal Gemeengoed')
+provider = OauthProvider.find_or_initialize_by(custom_name: 'Digitaal GemeenGoed')
 provider.assign_attributes(
   oauth_name: 'Keycloak',
   site: "https://aanmelden.#{domein}",
@@ -50,7 +50,7 @@ provider.assign_attributes(
   client_secret: ENV.fetch('REDMINE_CLIENT_SECRET'),
   identify_user_by: 'email',
   button_color: '#0b6e4f',
-  button_text: 'Inloggen met je account bij Digitaal Gemeengoed',
+  button_text: 'Inloggen met je account bij Digitaal GemeenGoed',
   position: 1
 )
 provider.save!

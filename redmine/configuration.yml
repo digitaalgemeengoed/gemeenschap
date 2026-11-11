@@ -1,4 +1,4 @@
-# Redmine — Digitaal Gemeengoed. De waarden komen uit de omgeving (compose.yml).
+# Redmine — Digitaal GemeenGoed. De waarden komen uit de omgeving (compose.yml).
 production:
   email_delivery:
 <% if ENV['SMTP_HOST'].to_s.empty? %>

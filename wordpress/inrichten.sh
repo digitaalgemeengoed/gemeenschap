@@ -1,5 +1,5 @@
 #!/bin/sh
-# WordPress inrichten of bijwerken voor Digitaal Gemeengoed. Draait in de
+# WordPress inrichten of bijwerken voor Digitaal GemeenGoed. Draait in de
 # wp-cli-container (compose.yml, service wpcli):
 #
 #   docker compose -f compose.yml run --rm wpcli dg-inrichten
@@ -13,13 +13,15 @@ log() { printf '  %s\n' "$*"; }
 
 # --- WordPress ----------------------------------------------------------------
 if ! wp core is-installed 2>/dev/null; then
-  wp core install --url="https://$DOMEIN" --title="Digitaal Gemeengoed" \
+  wp core install --url="https://$DOMEIN" --title="Digitaal GemeenGoed" \
     --admin_user=beheer --admin_password="$WP_BEHEER_WACHTWOORD" \
     --admin_email="beheer@$DOMEIN" --skip-email
   log "WordPress geïnstalleerd (noodaccount: beheer)"
 fi
 wp core update --minor >/dev/null && wp core update-db >/dev/null
 wp language core install nl_NL --activate >/dev/null 2>&1 || true
+wp option update blogname 'Digitaal GemeenGoed' >/dev/null
+wp option update blogdescription 'Samen grenzeloos sterk' >/dev/null
 wp option update timezone_string Europe/Amsterdam >/dev/null
 wp option update date_format 'j F Y' >/dev/null
 wp option update users_can_register 0 >/dev/null
@@ -73,7 +75,7 @@ if [ "$(wp theme get buddyx --field=version 2>/dev/null || true)" != "$BUDDYX_VE
   wp theme install buddyx --version="$BUDDYX_VERSIE" --force >/dev/null
 fi
 wp theme activate digitaalgemeengoed >/dev/null
-log "Thema Digitaal Gemeengoed (BuddyX $BUDDYX_VERSIE)"
+log "Thema Digitaal GemeenGoed (BuddyX $BUDDYX_VERSIE)"
 
 # --- Onze inrichting: fora, profielvelden, adressen ----------------------------
 wp dg inrichten

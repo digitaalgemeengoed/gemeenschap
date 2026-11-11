@@ -1,8 +1,8 @@
 {
   "realm": "gemeenschap",
   "enabled": true,
-  "displayName": "Digitaal Gemeengoed",
-  "displayNameHtml": "<span>Digitaal Gemeengoed</span>",
+  "displayName": "Digitaal GemeenGoed",
+  "displayNameHtml": "<span>Digitaal GemeenGoed</span>",
   "sslRequired": "external",
   "registrationAllowed": true,
   "registrationEmailAsUsername": true,
@@ -31,7 +31,7 @@
     "host": "$(env:SMTP_HOST:-)",
     "port": "$(env:SMTP_POORT:-587)",
     "from": "$(env:SMTP_AFZENDER:-noreply@digitaalgemeengoed.nl)",
-    "fromDisplayName": "Digitaal Gemeengoed",
+    "fromDisplayName": "Digitaal GemeenGoed",
     "replyTo": "$(env:SMTP_AFZENDER:-noreply@digitaalgemeengoed.nl)",
     "starttls": "true",
     "ssl": "false",
@@ -152,7 +152,7 @@
   "clients": [
     {
       "clientId": "wordpress",
-      "name": "Digitaal Gemeengoed (site)",
+      "name": "Digitaal GemeenGoed (site)",
       "enabled": true,
       "protocol": "openid-connect",
       "publicClient": false,
@@ -451,8 +451,8 @@
       "dgGroepToestemming": "Toestemming",
       "dgGroepToestemmingUitleg": "",
       "termsTitle": "Voorwaarden en privacy",
-      "termsText": "<p>Digitaal Gemeengoed en NL-Dit beheren dit platform samen. We gebruiken je gegevens om je toegang te geven tot de site, de fora en de projecten, en om je in contact te brengen met andere leden. Je profiel is alleen zichtbaar voor ingelogde leden; je e-mailadres nooit openbaar.</p><p>Lees de <a href=\"$(env:DG_BASIS_URL)/voorwaarden/\" target=\"_blank\" rel=\"noopener\">voorwaarden</a> en de <a href=\"$(env:DG_BASIS_URL)/privacy/\" target=\"_blank\" rel=\"noopener\">privacyverklaring</a>.</p>",
-      "registerTitle": "Lid worden van Digitaal Gemeengoed"
+      "termsText": "<p>Digitaal GemeenGoed en NL-Dit beheren dit platform samen. We gebruiken je gegevens om je toegang te geven tot de site, de fora en de projecten, en om je in contact te brengen met andere leden. Je profiel is alleen zichtbaar voor ingelogde leden; je e-mailadres nooit openbaar.</p><p>Lees de <a href=\"$(env:DG_BASIS_URL)/voorwaarden/\" target=\"_blank\" rel=\"noopener\">voorwaarden</a> en de <a href=\"$(env:DG_BASIS_URL)/privacy/\" target=\"_blank\" rel=\"noopener\">privacyverklaring</a>.</p>",
+      "registerTitle": "Lid worden van Digitaal GemeenGoed"
     },
     "en": {
       "dgOrganisatie": "Organisation",
@@ -472,8 +472,8 @@
       "dgGroepToestemming": "Consent",
       "dgGroepToestemmingUitleg": "",
       "termsTitle": "Terms and privacy",
-      "termsText": "<p>Digitaal Gemeengoed and NL-Dit run this platform together. We use your data to give you access to the site, the forums and the projects, and to connect you with other members. Your profile is visible to signed-in members only; your e-mail address is never public.</p><p>Read the <a href=\"$(env:DG_BASIS_URL)/voorwaarden/\" target=\"_blank\" rel=\"noopener\">terms</a> and the <a href=\"$(env:DG_BASIS_URL)/privacy/\" target=\"_blank\" rel=\"noopener\">privacy statement</a>.</p>",
-      "registerTitle": "Join Digitaal Gemeengoed"
+      "termsText": "<p>Digitaal GemeenGoed and NL-Dit run this platform together. We use your data to give you access to the site, the forums and the projects, and to connect you with other members. Your profile is visible to signed-in members only; your e-mail address is never public.</p><p>Read the <a href=\"$(env:DG_BASIS_URL)/voorwaarden/\" target=\"_blank\" rel=\"noopener\">terms</a> and the <a href=\"$(env:DG_BASIS_URL)/privacy/\" target=\"_blank\" rel=\"noopener\">privacy statement</a>.</p>",
+      "registerTitle": "Join Digitaal GemeenGoed"
     }
   },
   "clientScopeMappings": {

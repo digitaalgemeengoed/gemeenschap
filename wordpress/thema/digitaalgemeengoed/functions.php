@@ -1,6 +1,6 @@
 <?php
 /**
- * Thema Digitaal Gemeengoed: een kindthema van BuddyX.
+ * Thema Digitaal GemeenGoed: een kindthema van BuddyX.
  *
  * Kleuren, voet en logo komen uit deze repo. Wat in de Customizer staat,
  * telt voor deze instellingen niet: een wijziging doe je hier, via GitHub.
@@ -49,7 +49,7 @@ add_filter(
 				)
 			)
 			: '';
-		return $menu . '<p>Een netwerk van Digitaal Gemeengoed en NL-Dit. Open source, onder de EUPL.</p>';
+		return $menu . '<p>Een netwerk van Digitaal GemeenGoed en NL-Dit. Open source, onder de EUPL.</p>';
 	}
 );
 

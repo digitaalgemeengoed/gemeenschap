@@ -5,7 +5,7 @@ status: concept
 ---
 > **Concept.** Deze tekst moet nog juridisch worden getoetst. Zet `status: publiceren` pas na die toets.
 
-Deze voorwaarden gelden voor iedereen met een account op digitaalgemeengoed.nl, de fora en projecten.digitaalgemeengoed.nl. Het platform wordt beheerd door Digitaal Gemeengoed en NL-Dit samen ("wij").
+Deze voorwaarden gelden voor iedereen met een account op digitaalgemeengoed.nl, de fora en projecten.digitaalgemeengoed.nl. Het platform wordt beheerd door Digitaal GemeenGoed en NL-Dit samen ("wij").
 
 Versie 1, [IN TE VULLEN: datum].
 

@@ -1,30 +1,48 @@
 ---
-titel: Over het netwerk
+titel: Over ons
+adres: over
 volgorde: 1
 ---
-Digitaal Gemeengoed brengt mensen samen die bij gemeenten werken aan informatiebeheer, en mensen die daaraan bijdragen. Het netwerk wordt gedragen door **Digitaal Gemeengoed** en **NL-Dit**.
+**Stichting Digitaal GemeenGoed** helpt gemeenten om digitale vernieuwing samen te doen: van het eerste idee tot het dagelijkse beheer. Het netwerk rond de stichting wordt gedragen door Digitaal GemeenGoed en NL-Dit.
 
-## Voor wie
+## De uitdaging
 
-Het netwerk is er voor drie groepen, en de meeste mensen horen bij meer dan één:
+Gemeenten willen schaalbaar en effectief vernieuwen. Daar staan vier dingen in de weg:
 
-- **Beheer.** Wie de systemen inricht en draaiende houdt: applicatiebeheer, functioneel beheer, informatiebeheer, archief.
-- **Development.** Wie software bouwt, koppelt of test, bij een gemeente of als leverancier.
-- **Besluitvorming.** Wie bepaalt wat een gemeente aanschaft of invoert: CIO's, architecten, adviseurs, bestuurders.
+::: kaarten
+### Afstemming
+Er is onvoldoende zicht op wie waarmee bezig is. Daardoor ontstaan dubbel werk en inefficiëntie. Structurele coördinatie, gedeelde informatie en open communicatie zijn nodig.
 
-## Hoe het werkt
+### Schaalbaarheid
+Samenwerken op grote schaal vraagt een flexibele structuur die de eigen keuzes van elke gemeente respecteert, met duidelijke processen en dezelfde werkwijzen.
 
-Iedereen die lid wordt, begint als **gebruiker**: je kunt de fora lezen en meeschrijven, het ledenoverzicht zien en meldingen doen. Daarna groei je mee:
+### Sturing
+Zonder gezamenlijke sturing verzanden projecten of lopen initiatieven langs elkaar heen. Een gedeeld governance-model en professioneel portfolio- en projectmanagement zijn nodig.
 
-| Rol | Wat het betekent |
+### Het hele werk
+Veel gemeenten, vooral kleinere, hebben zelf niet de mensen en de kennis om vernieuwing door te voeren. Zij willen ontzorgd worden: niet alleen ontwikkeling, maar ook invoering en beheer.
+:::
+
+## Naast wat er al is
+
+Er wordt al veel samengewerkt, bijvoorbeeld in Dimpact, in de G4 en in thematische communities. Die samenwerkingen richten zich vaak op het delen van broncode, of op een deel van het werkveld. Digitaal GemeenGoed vult dat aan: een organisatie die meegroeit met het aantal gemeenten, die ook invoering en beheer regelt, en die er is voor gemeenten van elke grootte. Van de ruim 340 gemeenten in Nederland heeft het grootste deel minder dan 50.000 inwoners.
+
+## Hoe we zijn georganiseerd
+
+De stichting verzorgt de strategie, promotie en werving, kennisdeling, het starten van projecten, de ontwikkeling van software en het product-, portfolio-, project- en servicemanagement. Software laten we bouwen door leveranciers; de broncode blijft van iedereen.
+
+Gemeenten doen op verschillende manieren mee:
+
+| Wie | Wat ze doen |
 |---|---|
-| Gebruiker | Je doet mee in de fora en kunt meldingen en wensen indienen. |
-| Contributor | Je draagt bij: code, tests, documentatie, of het uitproberen bij je gemeente. |
-| Member | Je organisatie verbindt zich aan het netwerk en praat mee over de koers. |
-| Kerngroep | Je zorgt mee voor de fora, de planning en de afspraken. |
+| Raad van advies | adviseert over de koers |
+| Leden | gemeenten die zich verbinden, samen prioriteren en meebeslissen |
+| Informatiemanagers en architecten | brengen behoeften in en bewaken dat oplossingen passen |
+| Projectmanagers | leiden de gezamenlijke projecten |
+| Implementatie en beheer | voeren oplossingen in bij hun gemeente en houden ze draaiende |
 
-Een rol vraag je aan in het forum *Algemeen* of bij iemand van de kerngroep.
+Al dat werk komt samen op het [platform](platform.md): fora, kennis, architectuur en projecten op één plek.
 
 ## Open, en van iedereen
 
-Alle software die we samen maken is open source, onder de [EUPL](https://interoperable-europe.ec.europa.eu/collection/eupl). Dat betekent dat elke gemeente haar mag gebruiken, aanpassen en verder geven, ook als het netwerk ooit ophoudt. De code staat op [GitHub](https://github.com/digitaalgemeengoed).
+Alle software die we samen maken is open source, onder de [EUPL](https://interoperable-europe.ec.europa.eu/collection/eupl). Elke gemeente mag haar gebruiken, aanpassen en verder geven, ook als het netwerk ooit ophoudt. De code staat op [GitHub](https://github.com/digitaalgemeengoed).

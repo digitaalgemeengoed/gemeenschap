@@ -5,15 +5,17 @@ pagina die nog een concept is, verschijnt pas als die pagina gepubliceerd is.
 
 ## Hoofdmenu
 
-- [Over het netwerk](over.md)
-- [Office Assistent](office-assistent.md)
+- [Over ons](over.md)
+- [Werkwijze](werkwijze.md)
+- [Projecten](projecten.md)
+- [Platform](platform.md)
 - [Fora](/forum/)
-- [Leden](/leden/)
-- [Projecten](https://projecten.digitaalgemeengoed.nl)
 - [Meedoen](meedoen.md)
 
 ## Voet
 
+- [Leden](/leden/)
+- [Projecten in Redmine](https://projecten.digitaalgemeengoed.nl)
 - [Voorwaarden](voorwaarden.md)
 - [Privacyverklaring](privacy.md)
 - [Code op GitHub](https://github.com/digitaalgemeengoed)
