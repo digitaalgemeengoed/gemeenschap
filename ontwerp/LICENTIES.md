@@ -36,17 +36,19 @@ van die dienst nagaan of wij deze beelden op de openbare site mogen
 gebruiken.] Omdat de mensen
 erop niet bestaan, horen ze niet op de site als beeld van onze community.
 
-## Foto's van Unsplash (nog niet in de repo)
+## Foto's van Unsplash (`inhoud/media/`)
 
 Het HTML-prototype (de paginaset) laadde drie foto's rechtstreeks van
-Unsplash; zie `unsplash-fotolinks.csv`. Ze zitten niet in de repo en de site
-gebruikt ze niet.
+Unsplash; zie `unsplash-fotolinks.csv`. Ze staan nu in `inhoud/media/`, zodat
+de site ze zelf aanbiedt (rechtstreeks van Unsplash laden stuurt het
+IP-adres van elke bezoeker naar een dienst buiten de EU). Een pagina gebruikt
+ze nog niet.
 
-| Referentie | Unsplash-id | Gebruikt in het prototype op |
+| Bestand in `inhoud/media/` | Fotograaf | Gebruikt in het prototype op |
 |---|---|---|
-| foto-samenwerking-1 | `photo-1521737711867-e3b97375f902` | startpagina |
-| foto-samenwerking-2 | `photo-1556761175-b413da4baf72` | startpagina, aanmelden |
-| foto-overleg-3 | `photo-1552664730-d307ca884978` | kennisbank, open source, implementatie |
+| `photo-1521737711867-e3b97375f902.avif` (foto-samenwerking-1) | onbekend: niet achterhaald | startpagina |
+| `photo-1556761175-b413da4baf72.avif` (foto-samenwerking-2) | Austin Distel | startpagina, aanmelden |
+| `photo-1552664730-d307ca884978.avif` (foto-overleg-3) | Annie Spratt | kennisbank, open source, implementatie |
 
 **Unsplash License** (https://unsplash.com/license): gratis te gebruiken, ook
 commercieel, kopiëren en aanpassen mag, naamsvermelding is niet verplicht
@@ -55,9 +57,8 @@ verkopen, of verzamelen voor een concurrerende fotodienst. Bij herkenbare
 personen of merken kunnen portret- of merkrechten gelden (zie de
 [uitleg van Unsplash](https://help.unsplash.com/en/articles/2646379-what-if-there-s-a-brand-or-identifiable-person-depicted-in-an-image-that-i-download)).
 
-Gaan we ze gebruiken, dan:
-1. download het origineel via de pagina van de foto op unsplash.com;
-2. zet het in `inhoud/media/` (niet rechtstreeks van Unsplash laden: dat
-   stuurt het IP-adres van elke bezoeker naar een dienst buiten de EU);
-3. vul hierboven onder *Op de site* een regel in, met de fotograaf en de link
-   naar de pagina op Unsplash. [IN TE VULLEN: fotograaf per foto.]
+Gebruik je er een op een pagina, vermeld dan de fotograaf, bijvoorbeeld onder
+de foto: *Foto: Annie Spratt via Unsplash*. Van foto-samenwerking-1 is de
+fotograaf niet bekend en is dus ook niet na te gaan of de foto echt onder de
+Unsplash License valt; gebruik die pas als dat wel bekend is, of kies een
+andere foto.
