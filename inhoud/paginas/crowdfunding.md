@@ -2,8 +2,12 @@
 titel: Crowdfunding
 volgorde: 7
 ---
-::: kader
-**Samen betalen, samen hebben.** Een oplossing die één gemeente niet alleen kan dragen, kunnen tien gemeenten samen wel. Met crowdfunding leggen gemeenten samen in voor een project, en krijgen ze er allemaal hetzelfde voor terug: open source software, van iedereen.
+::: held
+label: Samen betalen, samen hebben
+# Crowdfunding
+Een oplossing die één gemeente niet alleen kan dragen, kunnen tien gemeenten samen wel. Met crowdfunding leggen gemeenten samen in voor een project, en krijgen ze er allemaal hetzelfde voor terug: open source software, van iedereen.
+
+[[Bekijk de projecten →]](projecten.md)
 :::
 
 ## Hoe het werkt

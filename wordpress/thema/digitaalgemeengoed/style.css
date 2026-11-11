@@ -104,8 +104,15 @@ Text Domain: digitaalgemeengoed
 }
 .entry-content .wp-block-button.is-style-outline .wp-block-button__link:hover { background: var(--dg-blauw); color: #fff; }
 
-/* De startpagina: geen ruimte boven de opening. */
-.home .site-wrapper, .home .site-content, .home #primary, .home .site-main, .home article.entry, .home .entry-content { padding-top: 0 !important; margin-top: 0 !important; }
+/* Een pagina met een opening (de startpagina en de hoofdpagina's): geen titelbalk
+   van BuddyX (functions.php) en geen ruimte boven de opening. */
+.home .site-wrapper, .home .site-content, .home #primary, .home .site-main, .home article.entry, .home .entry-content,
+.dg-met-held .site-wrapper, .dg-met-held .site-content, .dg-met-held #primary, .dg-met-held .site-main, .dg-met-held article.entry, .dg-met-held .entry-content { padding-top: 0 !important; margin-top: 0 !important; }
+.dg-met-held .entry-header { display: none; }
+/* De opening van een hoofdpagina is wat lager dan die van de startpagina. */
+.dg-met-held:not(.home) .entry-content .dg-held { min-height: 27rem; padding-top: 3rem; padding-bottom: 8rem; }
+.dg-met-held:not(.home) .entry-content .dg-held h2:first-child { font-size: clamp(2rem, 3.4vw, 3rem); }
+.dg-met-held:not(.home) .entry-content .dg-held + * { margin-top: 2.75rem !important; }
 
 /* Iconen (assets/iconen/<naam>.svg), in de kleur van de tekst eromheen. */
 .dg-icoon {
@@ -364,7 +371,7 @@ Text Domain: digitaalgemeengoed
    ------------------------------------------------------------------------ */
 /* Wat op de startpagina na het dashboard komt, is voor gasten. */
 .logged-in .entry-content > .dg-dashboard ~ * { display: none !important; }
-.logged-in .entry-content .dg-held .wp-block-buttons { display: none; }
+.home.logged-in .entry-content .dg-held .wp-block-buttons { display: none; }
 
 .entry-content .dg-dashboard {
   width: min(100vw - 2rem, 1520px);

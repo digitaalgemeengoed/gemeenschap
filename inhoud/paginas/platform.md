@@ -3,7 +3,14 @@ titel: Het platform
 adres: platform
 volgorde: 4
 ---
+::: held
+beeld: media/photo-1552664730-d307ca884978.avif
+label: Alles op één plek
+# Het platform
 Op het platform komt het werk van het netwerk samen: kennisdeling, projecten en ondersteuning. Je logt overal in met hetzelfde account.
+
+[[Word lid van de community →]](/lid-worden/)
+:::
 
 ::: kaarten
 ### Discussiefora

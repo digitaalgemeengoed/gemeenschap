@@ -3,7 +3,15 @@ titel: Over ons
 adres: over
 volgorde: 1
 ---
+::: held
+beeld: media/photo-1556761175-b413da4baf72.avif
+label: Samen grenzeloos sterk
+# Over Digitaal GemeenGoed
 **Stichting Digitaal GemeenGoed** helpt gemeenten om digitale vernieuwing samen te doen: van het eerste idee tot het dagelijkse beheer. Het netwerk rond de stichting wordt gedragen door Digitaal GemeenGoed en NL-Dit.
+
+[[Doe mee →]](meedoen.md)
+[[Onze werkwijze]](werkwijze.md)
+:::
 
 ## De uitdaging
 

@@ -105,3 +105,22 @@ add_filter(
 // bezoekers en gewone leden hebben de kop van de site (BuddyPress toont hem
 // anders ook aan wie niet is ingelogd).
 add_filter( 'show_admin_bar', static fn( $tonen ) => $tonen && is_user_logged_in() && current_user_can( 'edit_posts' ), 99 );
+
+// Een pagina die begint met een opening (::: held in inhoud/): geen titelbalk van
+// BuddyX met kruimelpad, want de opening heeft de titel al.
+function dg_heeft_held(): bool {
+	if ( ! is_page() ) {
+		return false;
+	}
+	$post = get_queried_object();
+	return $post instanceof WP_Post && str_contains( $post->post_content, 'dg-held' );
+}
+add_action(
+	'wp',
+	static function () {
+		if ( dg_heeft_held() ) {
+			remove_action( 'buddyx_sub_header', 'buddyx_sub_header' );
+		}
+	}
+);
+add_filter( 'body_class', static fn( $klassen ) => dg_heeft_held() ? array_merge( $klassen, array( 'dg-met-held' ) ) : $klassen );

@@ -2,6 +2,14 @@
 titel: Meedoen
 volgorde: 5
 ---
+::: held
+label: Word onderdeel van DGG
+# Meedoen
+Werk je bij of voor een gemeente aan informatiebeheer, architectuur, beheer of besluitvorming? Doe mee als persoon, of laat je gemeente aansluiten.
+
+[[Word lid van de community →]](/lid-worden/)
+:::
+
 ::: kaarten
 ### Als persoon
 Werk je bij of voor een gemeente aan informatiebeheer, architectuur, beheer of besluitvorming? Maak een account. Gebruik het e-mailadres van je werk: dan koppelen we je vanzelf aan je gemeente, als die al bij het netwerk hoort.

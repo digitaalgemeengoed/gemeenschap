@@ -73,7 +73,7 @@ Tekst van de tweede kaart.
 
 | Vak | Wat het doet |
 |---|---|
-| `held` | de opening van de startpagina over de hele breedte: grote kop, linten, inleiding, knoppen, stadsgezicht, en rechts een foto |
+| `held` | de opening van een pagina over de hele breedte: grote kop, linten, inleiding, knoppen, stadsgezicht, en rechts een foto (`beeld:`). Zet hem bovenaan een hoofdpagina; de titelbalk van het thema vervalt dan, dus begin met `# Titel`. Zonder `beeld:` staat er rechts alleen het netwerk. |
 | `kenmerken` | een strook met per `###` kop een groot icoon en een korte regel |
 | `kaarten` | elke `###` kop met de tekst eronder wordt een kaart; de kaarten staan naast elkaar |
 | `stappen` | als kaarten, maar genummerd: een proces in stappen |

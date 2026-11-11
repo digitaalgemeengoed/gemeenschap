@@ -2,7 +2,13 @@
 titel: Contact
 volgorde: 8
 ---
-**Stichting Digitaal GemeenGoed**
+::: held
+label: Stichting Digitaal GemeenGoed
+# Contact
+Een vraag over een project of de community? In de fora lezen de meeste mensen mee. Voor al het andere: mail ons.
+
+[[Naar de fora →]](/forum/)
+:::
 
 ::: kaarten
 ### Mail

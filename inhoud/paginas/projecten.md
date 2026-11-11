@@ -2,7 +2,16 @@
 titel: Projecten
 volgorde: 3
 ---
-Innovatie versnellen en samenwerking verdiepen. Onze projecten komen uit de praktijk van gemeenten, te beginnen met het portfolio van Haarlem en Zandvoort, en zijn bedoeld voor elke gemeente. Doe mee in een project dat je aanspreekt.
+::: held
+beeld: media/projecten-mizuno-kozuki.jpg
+label: Innovatie versnellen
+label: Samenwerking verdiepen
+# Projecten
+Onze projecten komen uit de praktijk van gemeenten, te beginnen met het portfolio van Haarlem en Zandvoort, en zijn bedoeld voor elke gemeente. Doe mee in een project dat je aanspreekt.
+
+[[Doe mee →]](meedoen.md)
+[[Meebetalen]](crowdfunding.md)
+:::
 
 ## Actuele projecten
 

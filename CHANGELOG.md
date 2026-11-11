@@ -11,6 +11,8 @@
 - **Startinhoud** (29 pagina's, `wiki/startinhoud/`): een algemene sectie over hoe Digitaal GemeenGoed werkt (werkwijze, platform, lid worden en rollen, meldingen, bijdragen, crowdfunding, werken in de kennisbank, privacy en beveiliging, veelgestelde vragen), een pagina per project (de Office Assistent uitgebreid, met het prototype), en een pagina per demo (XENA, MIRA, TINA, ELSA, MAIA, VERA, IRIS, LISA) met de weergaven, uitgangspunten, vragen en begrippen uit de demo zelf. Alleen pagina's die nog niet bestaan; wat leden wijzigen, blijft. Plus een navigatie links.
 - De pagina *Het platform* op de site wijst naar de kennisbank en de architectuurmodellen.
 
+**Opmaak:** de hoofdpagina's (Over ons, Werkwijze, Projecten, Het platform, Meedoen, Crowdfunding, Contact) beginnen nu met een opening in de stijl van de startpagina: titel, lint, inleiding, knoppen, stadsgezicht en (waar er een is) een foto. Op zo'n pagina vervalt de titelbalk van BuddyX met het kruimelpad. De opening is daar wat lager dan op de startpagina. Foto's: *Projecten* (Mizuno Kozuki), *Over ons* (Austin Distel), *Het platform* (Annie Spratt). De knoppen in een opening blijven nu zichtbaar voor wie is ingelogd, behalve op de startpagina.
+
 **Architectuurmodellen** op `architectuur.<domein>`, alleen voor leden.
 - Eén repo per project of domein (coArchi); de lijst staat in `architectuur/repos.txt` en werkt na samenvoegen op `main`, zonder versie.
 - `server/architectuur.sh` (systemd-timer, elk kwartier) bouwt het HTML-rapport met Archi (archimate-ci-image, zonder netwerk) als het model is gewijzigd, en maakt een overzichtspagina. Een mislukt rapport laat het vorige staan.
