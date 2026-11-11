@@ -40,9 +40,11 @@ wp language plugin update --all >/dev/null 2>&1 || true
 log "Plugins: OpenID Connect Generic, BuddyPress, bbPress"
 
 # Inloggen via Keycloak: de vaste instellingen; geheimen en adressen komen
-# als constanten uit dg-gemeenschap.php (omgeving).
+# als constanten uit dg-gemeenschap.php (omgeving). Een inlogverzoek blijft een
+# half uur geldig (standaard drie minuten): lang genoeg om bij het aanmelden de
+# bevestigingsmail te openen.
 wp option update openid_connect_generic_settings --format=json \
-  '{"identity_key":"preferred_username","nickname_key":"preferred_username","email_format":"{email}","displayname_format":"{given_name} {family_name}","identify_with_username":false,"token_refresh_enable":1,"http_request_timeout":10}' >/dev/null
+  '{"identity_key":"preferred_username","nickname_key":"preferred_username","email_format":"{email}","displayname_format":"{given_name} {family_name}","identify_with_username":false,"token_refresh_enable":1,"http_request_timeout":10,"state_time_limit":1800}' >/dev/null
 
 # BuddyPress: leden, profielen, groepen, activiteit, berichten, meldingen.
 wp option update bp-active-components --format=json \

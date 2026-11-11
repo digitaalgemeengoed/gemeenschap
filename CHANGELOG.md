@@ -1,5 +1,9 @@
 # Wijzigingen
 
+## 0.7.5 — 2026-11-11
+
+- Oplossing: na de bevestigingsmail bij het aanmelden kwam je op een foutpagina (*Invalid state*). Een inlogverzoek bleef maar drie minuten geldig; nu een half uur. En komt WordPress toch een verzoek tegen dat het niet meer kent, dan begint het één keer opnieuw: wie al bij Keycloak is ingelogd, is dan meteen ingelogd.
+
 ## 0.7.4 — 2026-11-11
 
 - De opening staat op een breed scherm in het midden: de foto en de netwerklijnen eindigen bij de rechterkant van de inhoud, met een zachte rand, in plaats van door te lopen tot de rand van het scherm. Daardoor leek de pagina rechts uitgelijnd.

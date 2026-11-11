@@ -743,3 +743,24 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
 		}
 	);
 }
+
+// Een inlogverzoek dat WordPress niet meer kent (verlopen, of in een ander
+// venster begonnen, zoals na de bevestigingsmail): één keer opnieuw beginnen.
+// Wie al bij Keycloak is ingelogd, komt dan meteen terug en is ingelogd; lukt
+// het weer niet, dan blijft de melding staan (het koekje voorkomt een lus).
+add_action(
+	'login_init',
+	static function () {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- alleen een foutcode van de plugin.
+		if ( 'invalid-state' !== ( $_GET['login-error'] ?? '' ) || is_user_logged_in() || ! empty( $_COOKIE['dg_oidc_opnieuw'] ) ) {
+			return;
+		}
+		$url = do_shortcode( '[openid_connect_generic_auth_url]' );
+		if ( ! is_string( $url ) || ! str_starts_with( $url, 'https://' ) ) {
+			return;
+		}
+		setcookie( 'dg_oidc_opnieuw', '1', array( 'expires' => time() + 120, 'path' => '/', 'secure' => is_ssl(), 'httponly' => true, 'samesite' => 'Lax' ) );
+		wp_redirect( $url ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- naar Keycloak (OIDC_ENDPOINT_LOGIN_URL).
+		exit;
+	}
+);
