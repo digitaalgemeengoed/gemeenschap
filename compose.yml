@@ -65,6 +65,10 @@ services:
       - "443:443"
     environment:
       DOMEIN: ${DOMEIN:?}
+      # Afschermen met gebruikersnaam en wachtwoord: server/afschermen.sh.
+      DG_TOEGANG: ${DG_TOEGANG:-open}
+      DG_TOEGANG_GEBRUIKER: ${DG_TOEGANG_GEBRUIKER:-}
+      DG_TOEGANG_HASH: ${DG_TOEGANG_HASH:-}
     volumes:
       - ./caddy:/etc/caddy:ro
       - caddydata:/data

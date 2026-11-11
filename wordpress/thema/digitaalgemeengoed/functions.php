@@ -27,10 +27,25 @@ const DG_KLEUREN = array(
 );
 // BuddyX leest zijn instellingen in één keer (get_theme_mods), dus de vaste
 // waarden gaan over de opgeslagen instellingen heen, niet per instelling.
-// De privacyverklaring staat al in het menu "Voet".
+// De privacyverklaring staat al in het menu "Voet". Geen zijbalken: de pagina's
+// gebruiken de hele breedte (anders toont BuddyX de standaardwidgets van een
+// nieuwe installatie, zoals Recent Posts, naast de opening).
 add_filter(
 	'option_theme_mods_' . get_stylesheet(),
-	static fn( $mods ) => array_merge( (array) $mods, DG_KLEUREN, array( 'site_custom_colors' => true, 'site_copyright_privacy_link' => 'off' ) )
+	static fn( $mods ) => array_merge(
+		(array) $mods,
+		DG_KLEUREN,
+		array(
+			'site_custom_colors'          => true,
+			'site_copyright_privacy_link' => 'off',
+			'sidebar_option'              => 'none',
+			'single_post_sidebar_option'  => 'none',
+			'buddypress_sidebar_option'   => 'none',
+			'buddypress_members_sidebar_option' => 'none',
+			'buddypress_groups_sidebar_option'  => 'none',
+			'bbpress_sidebar_option'      => 'none',
+		)
+	)
 );
 
 // De voet: het menu "Voet" uit inhoud/menu.md en een regel over wie we zijn.

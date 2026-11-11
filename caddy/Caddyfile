@@ -2,6 +2,20 @@
 # Nodig in DNS: A-records (of CNAME's) naar deze server voor <domein>,
 # www.<domein>, aanmelden.<domein>, projecten.<domein> en forum.<domein>.
 
+# Afschermen met gebruikersnaam en wachtwoord zolang het platform niet openbaar
+# is: server/afschermen.sh zet DG_TOEGANG op dicht of open. Verkeer van de
+# server zelf en uit de containers (privé-adressen) hoeft niet in te loggen,
+# zodat de controles, wp-cron en het inloggen via Keycloak blijven werken.
+(toegang-open) {
+}
+
+(toegang-dicht) {
+	@extern not remote_ip private_ranges
+	basic_auth @extern {
+		{$DG_TOEGANG_GEBRUIKER} {$DG_TOEGANG_HASH}
+	}
+}
+
 (beveiliging) {
 	header {
 		Strict-Transport-Security "max-age=31536000"
@@ -14,6 +28,7 @@
 
 {$DOMEIN} {
 	import beveiliging
+	import toegang-{$DG_TOEGANG:open}
 	encode zstd gzip
 	# XML-RPC is een bekend doelwit en hier niet nodig.
 	@xmlrpc path /xmlrpc.php
@@ -34,6 +49,7 @@ forum.{$DOMEIN} {
 
 aanmelden.{$DOMEIN} {
 	import beveiliging
+	import toegang-{$DG_TOEGANG:open}
 	# Het beheerscherm van Keycloak niet naar buiten; via de SSH-tunnel (README.md, Beheer op de server).
 	@beheer path /admin*
 	respond @beheer "Niet beschikbaar" 404
@@ -44,6 +60,7 @@ aanmelden.{$DOMEIN} {
 
 projecten.{$DOMEIN} {
 	import beveiliging
+	import toegang-{$DG_TOEGANG:open}
 	encode zstd gzip
 	reverse_proxy redmine:3000
 }

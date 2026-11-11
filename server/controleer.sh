@@ -18,7 +18,9 @@ meld "Adressen"
 DOMEIN="$(sed -n 's/^DOMEIN=//p' .env)"
 for adres in "$DOMEIN/" "aanmelden.$DOMEIN/realms/gemeenschap/.well-known/openid-configuration" "projecten.$DOMEIN/login"; do
   code="$(curl -s -o /dev/null -w '%{http_code}' --max-time 8 "https://$adres")"
-  if [[ "$code" =~ ^[23] ]]; then ok "https://$adres ($code)"; else waarschuw "https://$adres antwoordt niet goed ($code)"; fi
+  if [[ "$code" =~ ^[23] ]]; then ok "https://$adres ($code)"
+  elif [ "$code" = 401 ] && grep -q '^DG_TOEGANG=dicht' .env; then ok "https://$adres (afgeschermd met wachtwoord)"
+  else waarschuw "https://$adres antwoordt niet goed ($code)"; fi
 done
 
 meld "Uitrol vanuit GitHub"

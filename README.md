@@ -106,6 +106,7 @@ stap 12): `inrichten.sh` (kies 4), `ssh-afsluiten.sh`, `installeer.sh`.
 | Nu meteen uitrollen | `sudo /opt/gemeenschap/server/uitrol.sh` |
 | Pauzeren / hervatten | `sudo touch /var/lib/dg-gemeenschap/pauze` / `sudo rm …/pauze` |
 | Na een wijziging in `.env` | `sudo /opt/gemeenschap/server/bijwerken.sh` |
+| Afschermen met wachtwoord (zolang het niet openbaar is) | `sudo /opt/gemeenschap/server/afschermen.sh aan` / `… uit` |
 | Keycloak-beheer | `ssh -L 8080:127.0.0.1:8080 beheer@<server>`, dan `http://localhost:8080/admin` |
 
 Met `UITROL_MELDEN=<adres>` in `.env` krijg je een mail bij elke nieuwe

@@ -2,6 +2,8 @@
 
 ## 0.7.1 — 2026-11-11
 
+- **Afschermen met een wachtwoord** zolang het platform nog niet openbaar is: `sudo /opt/gemeenschap/server/afschermen.sh aan` vraagt een gebruikersnaam en wachtwoord en zet de site, `aanmelden.` en `projecten.` erachter (HTTP Basic Auth in Caddy). In `.env` staat alleen een hash. Verkeer van de server zelf en uit de containers hoeft niet in te loggen, zodat de controles, wp-cron en het inloggen via Keycloak blijven werken. `afschermen.sh uit` maakt het weer openbaar.
+- **Geen zijbalk** meer op pagina's, fora en ledenlijsten: BuddyX toonde op een nieuwe installatie de widgets *Recent Posts* en *Recent Comments* naast de opening, waardoor de startpagina werd samengedrukt.
 - Oplossing: de image van keycloak-config-cli heet `adorsys/keycloak-config-cli:6.5.1-26` (versie plus de Keycloak-reeks); `6.5.1` bestaat niet, waardoor de eerste installatie stopte bij het inrichten van Keycloak.
 - Oplossing: de plugin voor inloggen via Keycloak heet op wordpress.org `daggerhart-openid-connect-generic`; met de oude naam stopte het inrichten van WordPress.
 - De tabel voor toezeggingen wordt niet meer aangemaakt voordat WordPress zelf geïnstalleerd is (een foutmelding bij de eerste installatie, zonder gevolgen).
