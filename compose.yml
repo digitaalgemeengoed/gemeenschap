@@ -38,6 +38,9 @@ x-wordpress-omgeving: &wordpress-omgeving
     define( 'WP_AUTO_UPDATE_CORE', 'minor' );
   # Waar een pagina uit inhoud/ op GitHub staat (link "Bewerken op GitHub").
   DG_INHOUD_REPO: ${DG_INHOUD_REPO:-https://github.com/digitaalgemeengoed/gemeenschap/blob/main/inhoud}
+  # Redmine voor het dashboard (dg-dashboard.php): intern voor de API, publiek voor links.
+  DG_REDMINE_INTERN: http://redmine:3000
+  DG_REDMINE_URL: https://projecten.${DOMEIN}
   # Inloggen via Keycloak (gelezen door wp-content/mu-plugins/dg-gemeenschap.php).
   DG_KEYCLOAK_URL: https://aanmelden.${DOMEIN}
   DG_KEYCLOAK_INTERN: http://keycloak:8080
@@ -48,6 +51,7 @@ x-wordpress-mappen: &wordpress-mappen
   - wphtml:/var/www/html
   - ./wordpress/dg-gemeenschap.php:/var/www/html/wp-content/mu-plugins/dg-gemeenschap.php:ro
   - ./wordpress/dg-inhoud.php:/var/www/html/wp-content/mu-plugins/dg-inhoud.php:ro
+  - ./wordpress/dg-dashboard.php:/var/www/html/wp-content/mu-plugins/dg-dashboard.php:ro
   - ./wordpress/thema/digitaalgemeengoed:/var/www/html/wp-content/themes/digitaalgemeengoed:ro
   - ./wordpress/php.ini:/usr/local/etc/php/conf.d/dg-gemeenschap.ini:ro
 
@@ -177,6 +181,7 @@ services:
       - wphtml:/var/www/html
       - ./wordpress/dg-gemeenschap.php:/var/www/html/wp-content/mu-plugins/dg-gemeenschap.php:ro
       - ./wordpress/dg-inhoud.php:/var/www/html/wp-content/mu-plugins/dg-inhoud.php:ro
+      - ./wordpress/dg-dashboard.php:/var/www/html/wp-content/mu-plugins/dg-dashboard.php:ro
       - ./wordpress/thema/digitaalgemeengoed:/var/www/html/wp-content/themes/digitaalgemeengoed:ro
       - ./wordpress/inrichten.sh:/usr/local/bin/dg-inrichten:ro
       # De pagina's: bij de uitrol de versie van main (zie server/uitrol.sh).

@@ -102,18 +102,35 @@ groepen = { 'Netwerk: Gebruikers' => 'Gebruiker', 'Netwerk: Contributors' => 'Co
             'Netwerk: Members' => 'Member', 'Netwerk: Kerngroep' => 'Kerngroep' }
 groepen.each_key { |n| Group.find_or_create_by!(lastname: n) }
 
-project = Project.find_by(identifier: 'office-assistent') || Project.create!(
-  name: 'Office Assistent', identifier: 'office-assistent', is_public: true,
-  description: 'Meldingen, wensen en wijzigingsverzoeken voor de Office Assistent. Discussie in het forum.',
-  enabled_module_names: %w[issue_tracking wiki boards news files calendar gantt roadmap]
-)
-project.trackers = Tracker.all if project.trackers.empty?
-Board.find_or_create_by!(project: project, name: 'Algemeen') { |b| b.description = 'Vragen en ideeën over dit project.' }
-groepen.each do |groep, rol|
-  g = Group.find_by(lastname: groep)
-  m = Member.find_or_initialize_by(project: project, principal: g)
-  m.role_ids = [Role.find_by(name: rol).id]
-  m.save!
+# De fase van een project; het dashboard op de site toont die bij elke projectupdate.
+fase = ProjectCustomField.find_or_initialize_by(name: 'Fase')
+fase.field_format = 'list'
+fase.possible_values = %w[Verkenning Ontwikkeling Pilot Beheer]
+fase.visible = true
+fase.is_filter = true
+fase.save!
+
+# De projecten van de site (inhoud/paginas/projecten.md). Wat beheerders in
+# Redmine zelf aan een project veranderen, blijft staan: dit maakt alleen aan.
+projecten = {
+  'office-assistent' => ['Office Assistent', 'Metadata, anonimiseren en bewaren in Word, LibreOffice en Collabora.'],
+  'xena' => ['XENA – Open DMS/RMA', 'Open document- en zaakbeheer voor gemeenten.'],
+  'e-mailarchivering' => ['E-mailarchivering', 'Duurzame en veilige archivering van e-mail (VNG Selectielijst).'],
+  'werkplek' => ['Object-native werkplek', 'WebDAV, CardDAV en CalDAV voor de overheid.']
+}
+projecten.each do |id, (naam, omschrijving)|
+  project = Project.find_by(identifier: id) || Project.create!(
+    name: naam, identifier: id, is_public: true, description: omschrijving,
+    enabled_module_names: %w[issue_tracking wiki boards news files calendar gantt roadmap]
+  )
+  project.trackers = Tracker.all if project.trackers.empty?
+  Board.find_or_create_by!(project: project, name: 'Algemeen') { |b| b.description = 'Vragen en ideeën over dit project.' }
+  groepen.each do |groep, rol|
+    g = Group.find_by(lastname: groep)
+    m = Member.find_or_initialize_by(project: project, principal: g)
+    m.role_ids = [Role.find_by(name: rol).id]
+    m.save!
+  end
 end
-puts "Project 'Office Assistent' met de netwerkgroepen"
+puts "Projecten: #{projecten.values.map(&:first).join(', ')}, met de netwerkgroepen en het veld Fase"
 puts 'Redmine ingericht'

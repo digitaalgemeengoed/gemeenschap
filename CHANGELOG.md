@@ -1,5 +1,15 @@
 # Wijzigingen
 
+## 0.5.0 — 2026-11-11
+
+**Dashboard voor leden** op de startpagina, naar het ontwerp van Erik (shortcode `[dg_dashboard]`, `wordpress/dg-dashboard.php`):
+- links: profiel met foto en gemeente, en navigatie (dashboard, community, fora, kennisbank, projecten, samenwerkingen, evenementen, berichten met het aantal ongelezen, instellingen in Keycloak);
+- midden: welkom, **projectupdates** (het nieuws van de openbare projecten in Redmine, met de fase van het project), **recente discussies** (de fora), en oproepen voor de kennisbank en om mee te doen;
+- rechts: **samenwerkingen** (uit `inhoud/paginas/samenwerkingen.md`, pas zichtbaar als die gepubliceerd is), **actieve leden** (BuddyPress) en **aankomende evenementen** (CiviCRM, met het aantal aanmeldingen).
+- Wie is ingelogd, ziet onder de opening het dashboard in plaats van de pagina voor gasten.
+- Redmine: het projectveld **Fase** (verkenning, ontwikkeling, pilot, beheer) en de projecten XENA, E-mailarchivering en Object-native werkplek.
+- Nieuwe pagina's: Samenwerkingen (concept), Crowdfunding en Contact; in het hoofdmenu Kennisbank, Crowdfunding en Contact.
+
 ## 0.4.0 — 2026-11-11
 
 **De opmaak van het ontwerp** (schets van Erik, 11 november):

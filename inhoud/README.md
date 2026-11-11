@@ -49,6 +49,14 @@ Daaronder de tekst, in Markdown:
 
 HTML werkt niet: het verschijnt als tekst.
 
+`[dg_dashboard]` op een eigen regel (alleen op de startpagina): het dashboard
+voor leden. Wie is ingelogd, ziet het dashboard en niet wat eronder staat;
+wie niet is ingelogd, ziet juist alleen wat eronder staat.
+
+Met `dashboard: samenwerkingen` in het kopje van een pagina komen de kaarten
+van die pagina (kop, label, icoon, eerste regel) ook op het dashboard, zodra
+de pagina gepubliceerd is.
+
 ### Vakken
 
 Voor een opvallender opmaak zet je tekst tussen `::: naam` en `:::`:

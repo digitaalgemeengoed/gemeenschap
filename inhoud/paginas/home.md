@@ -36,6 +36,8 @@ icoon: plant
 Duurzaam, soeverein en maatschappelijk relevant
 :::
 
+[dg_dashboard]
+
 ## Actuele projecten
 
 ::: projecten

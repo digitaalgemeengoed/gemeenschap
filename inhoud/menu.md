@@ -22,10 +22,11 @@ gepubliceerd is.
   - [Fora](/forum/)
   - [Leden](/leden/)
   - [Groepen](/groepen/)
+  - [Samenwerkingen](samenwerkingen.md)
   - [Meldingen en wensen](https://projecten.digitaalgemeengoed.nl)
 - [Kennisbank](platform.md)
-  - [Het platform](platform.md)
-  - [Code op GitHub](https://github.com/digitaalgemeengoed)
+- [Crowdfunding](crowdfunding.md)
+- [Contact](contact.md)
 
 ## Voet
 

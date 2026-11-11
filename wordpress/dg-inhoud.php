@@ -171,7 +171,7 @@ const DG_VAKKEN = array( 'held', 'kaarten', 'stappen', 'kenmerken', 'projecten',
 const DG_KAARTVAKKEN = array( 'kaarten', 'stappen', 'kenmerken', 'projecten' );
 
 /** De iconen in het thema (wordpress/thema/…/assets/iconen/<naam>.svg). */
-const DG_ICONEN = array( 'open', 'lagen', 'mensen', 'raket', 'plant', 'document', 'mail', 'werkplek', 'forum', 'boek', 'schild', 'stad', 'puzzel', 'hand', 'kompas', 'code', 'huis' );
+const DG_ICONEN = array( 'open', 'lagen', 'mensen', 'raket', 'plant', 'document', 'mail', 'werkplek', 'forum', 'boek', 'schild', 'stad', 'puzzel', 'hand', 'kompas', 'code', 'huis', 'kalender', 'instellingen' );
 
 /** Regels "sleutel: waarde" bovenaan een vak of kaart. */
 const DG_KENMERKEN = array( 'label', 'beeld', 'icoon', 'link', 'soort' );
@@ -535,7 +535,7 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
 					$fouten[] = "$bron: $fout";
 				}
 				foreach ( array_keys( $kop ) as $sleutel ) {
-					if ( ! in_array( $sleutel, array( 'titel', 'adres', 'ouder', 'volgorde', 'status', 'voorpagina' ), true ) ) {
+					if ( ! in_array( $sleutel, array( 'titel', 'adres', 'ouder', 'volgorde', 'status', 'voorpagina', 'dashboard' ), true ) ) {
 						$fouten[] = "$bron: onbekend veld \"$sleutel\" in het kopje.";
 					}
 				}
@@ -549,6 +549,7 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
 					'ouder'      => $kop['ouder'] ?? '',
 					'volgorde'   => (int) ( $kop['volgorde'] ?? 0 ),
 					'status'     => 'concept' === $status ? 'draft' : 'publish',
+					'dashboard'  => preg_replace( '/[^a-z]/', '', strtolower( $kop['dashboard'] ?? '' ) ),
 					'voorpagina' => in_array( strtolower( $kop['voorpagina'] ?? '' ), array( 'ja', 'true', '1' ), true ),
 					'tekst'      => $tekst,
 				);
@@ -765,7 +766,32 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
 				}
 			}
 
-			// 6. De voorpagina, en de privacyverklaring voor WordPress zelf.
+			// 6. Gegevens voor het dashboard (dg-dashboard.php): de kaarten van een
+			//    pagina met "dashboard: <naam>" in het kopje.
+			foreach ( $paginas as $p ) {
+				if ( '' === $p['dashboard'] || $droog ) {
+					continue;
+				}
+				if ( 'publish' !== $p['status'] ) {
+					// Een concept komt niet op het dashboard.
+					delete_option( 'dg_dashboard_' . $p['dashboard'] );
+					continue;
+				}
+				$kaarten = array();
+				foreach ( array_slice( preg_split( '/^###\s+/m', "\n" . $p['tekst'] ), 1 ) as $deel ) {
+					[ $kop, $rest ]     = array_pad( explode( "\n", $deel, 2 ), 2, '' );
+					[ $kenmerk, $rest ] = dg_inhoud_kenmerken( preg_replace( '/^\s*:::.*$/m', '', $rest ) );
+					$kaarten[]          = array(
+						'naam'  => trim( $kop ),
+						'label' => $kenmerk['label'][0] ?? '',
+						'icoon' => $kenmerk['icoon'][0] ?? '',
+						'tekst' => trim( (string) strtok( trim( $rest ), "\n" ) ),
+					);
+				}
+				update_option( 'dg_dashboard_' . $p['dashboard'], $kaarten, false );
+			}
+
+			// 7. De voorpagina, en de privacyverklaring voor WordPress zelf.
 			foreach ( $paginas as $adres => $p ) {
 				if ( $p['voorpagina'] && ! $droog && (int) get_option( 'page_on_front' ) !== $ids[ $adres ] ) {
 					update_option( 'show_on_front', 'page' );
