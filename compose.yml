@@ -117,7 +117,7 @@ services:
   # Draait alleen op verzoek (server/bijwerken.sh). Wat beheerders in Keycloak
   # zelf aanmaken (leden, organisaties, extra groepen) laat het staan.
   keycloak-config:
-    image: adorsys/keycloak-config-cli:${KEYCLOAK_CONFIG_VERSIE:-6.5.1}
+    image: adorsys/keycloak-config-cli:${KEYCLOAK_CONFIG_VERSIE:-6.5.1-26}
     profiles: ["gereedschap"]
     environment:
       <<: *smtp

@@ -1,5 +1,10 @@
 # Wijzigingen
 
+## 0.7.1 — 2026-11-11
+
+- Oplossing: de image van keycloak-config-cli heet `adorsys/keycloak-config-cli:6.5.1-26` (versie plus de Keycloak-reeks); `6.5.1` bestaat niet, waardoor de eerste installatie stopte bij het inrichten van Keycloak.
+- De testschermafdrukken in `gem/` zijn weg.
+
 ## 0.7.0 — 2026-11-11
 
 **Toezeggingen voor crowdfunding per gemeente** (`wordpress/dg-crowdfunding.php`):
