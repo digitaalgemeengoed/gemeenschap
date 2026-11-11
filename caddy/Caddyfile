@@ -6,13 +6,28 @@
 # is: server/afschermen.sh zet DG_TOEGANG op dicht of open. Verkeer van de
 # server zelf en uit de containers (privé-adressen) hoeft niet in te loggen,
 # zodat de controles, wp-cron en het inloggen via Keycloak blijven werken.
+#
+# Na het inloggen krijgt de browser een cookie (dg_toegang, voor het domein en
+# alle subdomeinen); met dat cookie hoeft het niet opnieuw. Nodig voor
+# programma's die zelf een Authorization-kop sturen: de kennisbank (Wiki.js)
+# stuurt na het inloggen "Bearer <token>" mee, waardoor de browser het
+# wachtwoord van de afscherming niet meer kan meesturen. Eén keer inloggen
+# geldt zo ook voor alle subdomeinen. De waarde (DG_TOEGANG_COOKIE) is
+# geheim en wisselt bij elk nieuw wachtwoord.
 (toegang-open) {
 }
 
 (toegang-dicht) {
-	@extern not remote_ip private_ranges
-	basic_auth @extern {
-		{$DG_TOEGANG_GEBRUIKER} {$DG_TOEGANG_HASH}
+	@extern {
+		not remote_ip private_ranges
+		not header Cookie *dg_toegang={$DG_TOEGANG_COOKIE}*
+	}
+	# In deze volgorde: het cookie alleen na een geslaagde aanmelding.
+	route {
+		basic_auth @extern {
+			{$DG_TOEGANG_GEBRUIKER} {$DG_TOEGANG_HASH}
+		}
+		header @extern +Set-Cookie "dg_toegang={$DG_TOEGANG_COOKIE}; Domain={$DOMEIN}; Path=/; Max-Age=2592000; Secure; HttpOnly; SameSite=Lax"
 	}
 }
 

@@ -74,6 +74,8 @@ services:
       DG_TOEGANG: ${DG_TOEGANG:-open}
       DG_TOEGANG_GEBRUIKER: ${DG_TOEGANG_GEBRUIKER:-}
       DG_TOEGANG_HASH: ${DG_TOEGANG_HASH:-}
+      # Geheim: na het inloggen hoeft het niet opnieuw (zie caddy/Caddyfile).
+      DG_TOEGANG_COOKIE: ${DG_TOEGANG_COOKIE:?}
     volumes:
       - ./caddy:/etc/caddy:ro
       - caddydata:/data

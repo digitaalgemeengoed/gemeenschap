@@ -2,6 +2,12 @@
 
 ## Nog niet uitgebracht
 
+**Hersteld: de kennisbank achter de afscherming.** Na het inloggen stuurt Wiki.js bij elk verzoek zijn eigen `Authorization: Bearer …` mee; daardoor kon de browser het wachtwoord van de afscherming niet meer meesturen, en bleef hij erom vragen (ook als het klopte).
+- Na een geslaagde aanmelding bij de afscherming krijgt de browser het cookie `dg_toegang` (30 dagen, voor het domein en alle subdomeinen). Met dat cookie vraagt Caddy niet opnieuw. Gevolg: één keer inloggen geldt nu voor de site, aanmelden., projecten., kennis., documenten., beheer. en architectuur. samen.
+- Het cookie bevat een geheim (`DG_TOEGANG_COOKIE` in `.env`, vanzelf aangemaakt); het wordt alleen na een geslaagde aanmelding gezet. `afschermen.sh aan` (nieuw wachtwoord) maakt ook een nieuw cookie: dan moet iedereen opnieuw inloggen.
+
+## 0.12.0 — 2026-11-11
+
 **Beheer: een beheerscherm voor de beheerders van het platform en de kerngroep** (`beheer.<domein>`, op de site *Beheer* op je eigen profiel).
 - **Leden en rollen**: zoeken (ook per groep), account bekijken (organisatie, rollen, sessies, logboek) en rollen geven of afnemen. De kerngroep geeft en neemt contributor en member; de beheerders alle rollen, en zij kunnen ook een account blokkeren en iemand overal uitloggen.
 - **Organisaties**: de deelnemende organisaties met hun e-maildomeinen en leden. Bekijken: beheer en kerngroep; toevoegen, wijzigen en leden koppelen: beheer.

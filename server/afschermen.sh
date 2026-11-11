@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # Het platform afschermen met één gebruikersnaam en wachtwoord (HTTP Basic
-# Auth), bijvoorbeeld zolang het nog niet openbaar is. Geldt voor de site,
-# aanmelden. en projecten.; verkeer van de server zelf en uit de containers
-# hoeft niet in te loggen.
+# Auth), bijvoorbeeld zolang het nog niet openbaar is. Geldt voor de site en
+# alle subdomeinen; verkeer van de server zelf en uit de containers hoeft niet
+# in te loggen. Na het inloggen onthoudt de browser dat 30 dagen (een cookie
+# voor het hele domein).
 #
 #   sudo /opt/gemeenschap/server/afschermen.sh aan   vraagt gebruikersnaam en wachtwoord
 #   sudo /opt/gemeenschap/server/afschermen.sh uit   weer openbaar
@@ -17,6 +18,7 @@ HIER="$(cd "$(dirname "$0")" && pwd)"
 moet_root
 cd "$DG_MAP" || exit 1
 [ -s .env ] || stop "Nog niet geïnstalleerd."
+vul_env_aan .env DG_TOEGANG_COOKIE "$(geheim 32)" >/dev/null
 
 case "${1:-}" in
   aan)
@@ -31,6 +33,8 @@ case "${1:-}" in
     [[ "$HASH" == \$2* ]] || stop "Een hash maken lukte niet; draait de proxy? (sudo docker compose -f $DG_MAP/$COMPOSE ps proxy)"
     zet_env .env DG_TOEGANG_GEBRUIKER "$GEBRUIKER"
     zet_env .env DG_TOEGANG_HASH "$(printf '%s' "$HASH" | base64 -w0)"
+    # Een nieuw wachtwoord: ook een nieuw cookie, dan moet iedereen opnieuw inloggen.
+    zet_env .env DG_TOEGANG_COOKIE "$(geheim 32)"
     zet_env .env DG_TOEGANG dicht
     dc up -d proxy >/dev/null 2>&1 || stop "De proxy herstarten lukte niet; kijk met: sudo docker compose -f $DG_MAP/$COMPOSE logs proxy"
     ok "Afgeschermd: wie de site, aanmelden. of projecten. opent, moet eerst inloggen als $GEBRUIKER"

@@ -37,6 +37,8 @@ vul_env_aan .env GARAGE_RPC_GEHEIM "$(geheim 32)"
 vul_env_aan .env GARAGE_SLEUTEL "GK$(geheim 12)"
 vul_env_aan .env GARAGE_GEHEIM "$(geheim 32)"
 vul_env_aan .env DOC_BERICHT_GEHEIM "$(geheim 32)"
+# Sinds 0.12.1: het cookie van de afscherming (caddy/Caddyfile).
+vul_env_aan .env DG_TOEGANG_COOKIE "$(geheim 32)"
 # Sinds 0.12.0: beheer (dg-beheer).
 vul_env_aan .env BEHEER_CLIENT_SECRET "$(geheim 32)"
 vul_env_aan .env BEHEER_KEYCLOAK_SECRET "$(geheim 32)"
