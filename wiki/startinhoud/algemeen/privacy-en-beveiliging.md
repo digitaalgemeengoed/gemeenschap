@@ -30,8 +30,8 @@ Het platform gebruikt geen trackers en geen advertenties, en vraagt geen profiel
 
 ## Een fout of een lek gezien?
 
-- Een kwetsbaarheid in de software: meld haar **niet** in Redmine (dat is openbaar), maar rechtstreeks bij de kerngroep. [In te vullen: het adres voor beveiligingsmeldingen.]
-- Persoonsgegevens op een plek waar ze niet horen: meld het bij de kerngroep, dan halen we ze weg.
+- Een kwetsbaarheid in de software: meld haar **niet** in Redmine (dat is openbaar), maar per mail aan [info@digitaalgemeengoed.nl](mailto:info@digitaalgemeengoed.nl), met *Beveiliging* in het onderwerp.
+- Persoonsgegevens op een plek waar ze niet horen: meld het bij de kerngroep of via info@digitaalgemeengoed.nl, dan halen we ze weg.
 
 ## Beveiliging van je account
 

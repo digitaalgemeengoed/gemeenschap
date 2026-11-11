@@ -19,7 +19,7 @@ Versie 1, [IN TE VULLEN: datum].
 
 1. Ga respectvol om met anderen. Kritiek op ideeën en software mag; persoonlijke aanvallen niet.
 2. Zet geen persoonsgegevens van inwoners, cliënten of collega's op het platform, ook niet in een voorbeeld, een schermafdruk of een bijlage.
-3. Zet er geen vertrouwelijke informatie van je organisatie op, zoals beveiligingsproblemen die nog niet zijn opgelost. Meld die rechtstreeks aan [IN TE VULLEN: e-mailadres voor beveiligingsmeldingen].
+3. Zet er geen vertrouwelijke informatie van je organisatie op, zoals beveiligingsproblemen die nog niet zijn opgelost. Meld die rechtstreeks per mail aan [info@digitaalgemeengoed.nl](mailto:info@digitaalgemeengoed.nl).
 4. Geen reclame, geen werving van leden voor een commercieel doel zonder overleg met de kerngroep.
 5. Wat je plaatst, moet van jou zijn of je moet het mogen delen.
 
@@ -33,7 +33,7 @@ De kerngroep modereert. Een bericht dat in strijd is met deze voorwaarden, kunne
 
 ## Opzeggen
 
-Je kunt je account altijd laten verwijderen via [IN TE VULLEN: e-mailadres]. Wat er dan met je gegevens en berichten gebeurt, staat in de [privacyverklaring](privacy.md).
+Je kunt je account altijd laten verwijderen via [info@digitaalgemeengoed.nl](mailto:info@digitaalgemeengoed.nl). Wat er dan met je gegevens en berichten gebeurt, staat in de [privacyverklaring](privacy.md).
 
 ## Wijzigingen
 

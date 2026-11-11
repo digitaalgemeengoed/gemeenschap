@@ -28,7 +28,7 @@ Van iedereen. Alles is open source onder de EUPL 1.2: elke gemeente mag haar geb
 ## Account en rollen
 
 **Ik krijg geen bevestigingsmail.**  
-Kijk in je spamfolder. Komt hij na een kwartier nog niet, meld het dan in het forum *Algemeen* of bij de kerngroep.
+Kijk in je spamfolder. Komt hij na een kwartier nog niet, mail dan naar info@digitaalgemeengoed.nl.
 
 **Waarom moet ik mijn werkadres gebruiken?**  
 Dan koppelt het platform je vanzelf aan je gemeente. Dat is nodig om namens je gemeente iets te doen, zoals een toezegging voor crowdfunding.
@@ -40,7 +40,7 @@ Vraag het in het forum *Algemeen*. De kerngroep zet je in de juiste groep; bij j
 Via *Mijn account* op aanmelden.digitaalgemeengoed.nl. De wijziging komt bij je volgende login op de site.
 
 **Hoe zeg ik mijn lidmaatschap op?**  
-Vraag het de kerngroep; die verwijdert je account. Je berichten blijven staan zonder je naam, omdat anderen erop hebben gereageerd.
+Mail naar info@digitaalgemeengoed.nl; de kerngroep verwijdert je account. Je berichten blijven staan zonder je naam, omdat anderen erop hebben gereageerd.
 
 ## Werken op het platform
 

@@ -16,7 +16,7 @@ Dit platform (digitaalgemeengoed.nl, de fora en projecten.digitaalgemeengoed.nl)
 
 Wij zijn samen verantwoordelijk voor je gegevens (gezamenlijke verwerkingsverantwoordelijken, artikel 26 AVG). Wij hebben afgesproken dat [IN TE VULLEN: wie] je aanspreekpunt is. Je kunt je rechten bij ieder van ons uitoefenen.
 
-Contact over privacy: [IN TE VULLEN: e-mailadres].
+Contact over privacy: [info@digitaalgemeengoed.nl](mailto:info@digitaalgemeengoed.nl).
 
 ## Welke gegevens, en waarom
 

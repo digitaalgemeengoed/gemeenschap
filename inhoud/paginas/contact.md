@@ -13,7 +13,7 @@ Een vraag over een project of de community? In de fora lezen de meeste mensen me
 ::: kaarten
 ### Mail
 icoon: mail
-[IN TE VULLEN: e-mailadres]
+Voor al het andere: [info@digitaalgemeengoed.nl](mailto:info@digitaalgemeengoed.nl).
 
 ### Fora
 icoon: forum
@@ -25,5 +25,5 @@ Een fout of een wens voor een project meld je in [Redmine](https://projecten.dig
 
 ### Beveiliging
 icoon: schild
-Een beveiligingsprobleem meld je niet openbaar, maar aan [IN TE VULLEN: e-mailadres voor beveiligingsmeldingen].
+Een beveiligingsprobleem meld je niet openbaar, maar per mail aan [info@digitaalgemeengoed.nl](mailto:info@digitaalgemeengoed.nl), met *Beveiliging* in het onderwerp.
 :::
