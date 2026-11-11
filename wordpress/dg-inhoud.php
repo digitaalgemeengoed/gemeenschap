@@ -25,7 +25,7 @@
 defined( 'ABSPATH' ) || exit;
 
 /** Ophogen als de omzetting verandert: dan worden alle pagina's opnieuw opgeslagen. */
-const DG_INHOUD_VERSIE = 2;
+const DG_INHOUD_VERSIE = 3;
 
 // ---------------------------------------------------------------------------
 // Op slot: pagina's en afbeeldingen uit de repo wijzig je via GitHub
@@ -165,29 +165,115 @@ function dg_blok( string $naam, string $html, array $attributen = array() ): str
 }
 
 /** De vakken die een pagina kan gebruiken (::: naam … :::), zie inhoud/README.md. */
-const DG_VAKKEN = array( 'held', 'kaarten', 'stappen', 'kader' );
+const DG_VAKKEN = array( 'held', 'kaarten', 'stappen', 'kenmerken', 'projecten', 'kader' );
+
+/** Vakken waarin elke ### kop een kaart begint. */
+const DG_KAARTVAKKEN = array( 'kaarten', 'stappen', 'kenmerken', 'projecten' );
+
+/** De iconen in het thema (wordpress/thema/…/assets/iconen/<naam>.svg). */
+const DG_ICONEN = array( 'open', 'lagen', 'mensen', 'raket', 'plant', 'document', 'mail', 'werkplek', 'forum', 'boek', 'schild', 'stad', 'puzzel', 'hand', 'kompas', 'code', 'huis' );
+
+/** Regels "sleutel: waarde" bovenaan een vak of kaart. */
+const DG_KENMERKEN = array( 'label', 'beeld', 'icoon', 'link', 'soort' );
+
+/**
+ * Haalt de regels "sleutel: waarde" (label, beeld, icoon, link, soort) uit een
+ * stuk Markdown. Label mag vaker voorkomen.
+ *
+ * @return array{0: array<string, list<string>>, 1: string}
+ */
+function dg_inhoud_kenmerken( string $md ): array {
+	$kenmerken = array();
+	$rest      = array();
+	foreach ( explode( "\n", $md ) as $regel ) {
+		if ( preg_match( '/^\s*(' . implode( '|', DG_KENMERKEN ) . '):\s*(.+?)\s*$/', $regel, $m ) ) {
+			$kenmerken[ $m[1] ][] = $m[2];
+		} else {
+			$rest[] = $regel;
+		}
+	}
+	return array( $kenmerken, implode( "\n", $rest ) );
+}
+
+/** Een label als klasse: "Common Ground" → common-ground. */
+function dg_inhoud_slug( string $tekst ): string {
+	return trim( (string) preg_replace( '/[^a-z0-9]+/', '-', strtolower( remove_accents( $tekst ) ) ), '-' );
+}
+
+/** Het icoon als leeg element; het thema tekent het (style.css, .dg-icoon-<naam>). */
+function dg_inhoud_icoon( string $naam ): string {
+	return '<span class="dg-icoon dg-icoon-' . esc_attr( $naam ) . '" aria-hidden="true"></span>';
+}
 
 /**
  * Een vak: een groep blokken met een eigen vorm (in het thema, style.css).
  *
- *   held     de opening van een pagina: grote kop, inleiding, knop
- *   kaarten  elke ### kop met de tekst eronder wordt een kaart, naast elkaar
- *   stappen  als kaarten, maar genummerd: een proces in stappen
- *   kader    tekst in een gekleurd vlak
+ *   held       de opening van een pagina: grote kop, linten (label:), inleiding,
+ *              knoppen, en rechts een foto (beeld:)
+ *   kaarten    elke ### kop met de tekst eronder wordt een kaart, naast elkaar
+ *   stappen    als kaarten, maar genummerd: een proces in stappen
+ *   kenmerken  een strook met icoon, kop en een korte regel per kenmerk
+ *   projecten  kaarten met icoon of beeld, label en een pijl naar de pagina;
+ *              een kaart met "soort: oproep" wordt een blauw vlak ernaast
+ *   kader      tekst in een gekleurd vlak
  */
 function dg_inhoud_vak( string $soort, string $md, callable $link, callable $beeld ): string {
-	if ( in_array( $soort, array( 'kaarten', 'stappen' ), true ) ) {
-		$delen  = preg_split( '/^###\s+/m', "\n" . $md );
+	if ( in_array( $soort, DG_KAARTVAKKEN, true ) ) {
+		$delen   = preg_split( '/^###\s+/m', "\n" . $md );
 		$kaarten = array();
 		foreach ( array_slice( $delen, 1 ) as $deel ) {
-			[ $kop, $rest ] = array_pad( explode( "\n", $deel, 2 ), 2, '' );
-			$binnen         = dg_blok( 'heading', '<h3 class="wp-block-heading">' . dg_inhoud_regel( trim( $kop ), $link ) . '</h3>', array( 'level' => 3 ) ) . "\n\n" . dg_inhoud_blokken( $rest, $link, $beeld );
-			$kaarten[]      = dg_blok( 'group', '<div class="wp-block-group dg-kaart">' . $binnen . '</div>', array( 'className' => 'dg-kaart', 'layout' => array( 'type' => 'default' ) ) );
+			[ $kop, $rest ]       = array_pad( explode( "\n", $deel, 2 ), 2, '' );
+			[ $kenmerk, $rest ]   = dg_inhoud_kenmerken( $rest );
+			$klassen              = array( 'dg-kaart' );
+			$binnen               = '';
+			if ( ! empty( $kenmerk['beeld'] ) ) {
+				[ $id, $url ] = $beeld( $kenmerk['beeld'][0] );
+				$binnen      .= dg_blok( 'image', '<figure class="wp-block-image size-medium dg-kaart-beeld"><img src="' . esc_url( $url ) . '" alt="" class="wp-image-' . $id . '"/></figure>', array( 'id' => $id, 'sizeSlug' => 'medium', 'className' => 'dg-kaart-beeld' ) ) . "\n\n";
+				$klassen[]    = 'heeft-beeld';
+			}
+			foreach ( $kenmerk['label'] ?? array() as $label ) {
+				$binnen .= dg_blok( 'paragraph', '<p class="dg-label dg-label-' . dg_inhoud_slug( $label ) . '">' . esc_html( $label ) . '</p>', array( 'className' => 'dg-label dg-label-' . dg_inhoud_slug( $label ) ) ) . "\n\n";
+			}
+			$icoon   = ! empty( $kenmerk['icoon'] ) ? dg_inhoud_icoon( $kenmerk['icoon'][0] ) : '';
+			$binnen .= dg_blok( 'heading', '<h3 class="wp-block-heading">' . $icoon . dg_inhoud_regel( trim( $kop ), $link ) . '</h3>', array( 'level' => 3 ) ) . "\n\n" . dg_inhoud_blokken( $rest, $link, $beeld );
+			if ( ! empty( $kenmerk['link'] ) ) {
+				$binnen   .= "\n\n" . dg_blok( 'paragraph', '<p class="dg-kaart-link"><a href="' . esc_url( $link( $kenmerk['link'][0] ) ) . '"><span class="screen-reader-text">' . esc_html( trim( $kop ) ) . '</span></a></p>', array( 'className' => 'dg-kaart-link' ) );
+				$klassen[] = 'heeft-link';
+			}
+			if ( $icoon ) {
+				$klassen[] = 'heeft-icoon';
+			}
+			foreach ( $kenmerk['soort'] ?? array() as $extra ) {
+				$klassen[] = 'dg-kaart-' . dg_inhoud_slug( $extra );
+			}
+			$klasse    = implode( ' ', $klassen );
+			$kaarten[] = dg_blok( 'group', '<div class="wp-block-group ' . $klasse . '">' . $binnen . '</div>', array( 'className' => $klasse, 'layout' => array( 'type' => 'default' ) ) );
 		}
 		$klasse = 'dg-' . $soort;
 		return dg_blok( 'group', '<div class="wp-block-group ' . $klasse . '">' . implode( "\n\n", $kaarten ) . '</div>', array( 'className' => $klasse, 'layout' => array( 'type' => 'grid', 'minimumColumnWidth' => '15rem' ) ) );
 	}
 	$klasse = 'dg-' . $soort;
+	if ( 'held' === $soort ) {
+		[ $kenmerk, $md ] = dg_inhoud_kenmerken( $md );
+		$binnen           = dg_inhoud_blokken( $md, $link, $beeld );
+		if ( ! empty( $kenmerk['label'] ) ) {
+			$linten = '';
+			foreach ( $kenmerk['label'] as $nr => $label ) {
+				$linten .= dg_blok( 'paragraph', '<p class="dg-lint dg-lint-' . ( $nr % 2 ? 'groen' : 'blauw' ) . '">' . esc_html( $label ) . '</p>', array( 'className' => 'dg-lint dg-lint-' . ( $nr % 2 ? 'groen' : 'blauw' ) ) ) . "\n\n";
+			}
+			// De linten direct onder de eerste kop.
+			$na     = strpos( $binnen, '<!-- /wp:heading -->' );
+			$binnen = false === $na ? $linten . $binnen : substr( $binnen, 0, $na + 20 ) . "\n\n" . $linten . substr( $binnen, $na + 20 );
+		}
+		$tekst = dg_blok( 'group', '<div class="wp-block-group dg-held-tekst">' . $binnen . '</div>', array( 'className' => 'dg-held-tekst', 'layout' => array( 'type' => 'default' ) ) );
+		$foto  = '';
+		if ( ! empty( $kenmerk['beeld'] ) ) {
+			[ $id, $url ] = $beeld( $kenmerk['beeld'][0] );
+			$foto         = "\n\n" . dg_blok( 'image', '<figure class="wp-block-image size-full dg-held-beeld"><img src="' . esc_url( $url ) . '" alt="" class="wp-image-' . $id . '"/></figure>', array( 'id' => $id, 'sizeSlug' => 'full', 'className' => 'dg-held-beeld' ) );
+			$klasse      .= ' heeft-beeld';
+		}
+		return dg_blok( 'group', '<div class="wp-block-group ' . $klasse . '">' . $tekst . $foto . '</div>', array( 'className' => $klasse, 'align' => 'full', 'layout' => array( 'type' => 'default' ) ) );
+	}
 	return dg_blok( 'group', '<div class="wp-block-group ' . $klasse . '">' . dg_inhoud_blokken( $md, $link, $beeld ) . '</div>', array( 'className' => $klasse, 'layout' => array( 'type' => 'constrained' ) ) );
 }
 
@@ -205,7 +291,7 @@ function dg_inhoud_controleer_vakken( string $md ): array {
 				}
 				$open = array( $m[1], $nr + 1, false );
 			} elseif ( '' === $m[1] ) {
-				if ( in_array( $open[0], array( 'kaarten', 'stappen' ), true ) && ! $open[2] ) {
+				if ( in_array( $open[0], DG_KAARTVAKKEN, true ) && ! $open[2] ) {
 					$fouten[] = "regel {$open[1]}: in een vak \"{$open[0]}\" begint elke kaart met een kop ###.";
 				}
 				$open = null;
@@ -214,6 +300,8 @@ function dg_inhoud_controleer_vakken( string $md ): array {
 			}
 		} elseif ( null !== $open && preg_match( '/^###\s+/', $regel ) ) {
 			$open[2] = true;
+		} elseif ( null !== $open && preg_match( '/^\s*icoon:\s*(\S+)/', $regel, $m ) && ! in_array( $m[1], DG_ICONEN, true ) ) {
+			$fouten[] = 'regel ' . ( $nr + 1 ) . ": onbekend icoon \"{$m[1]}\" (kies uit " . implode( ', ', DG_ICONEN ) . ').';
 		}
 	}
 	if ( null !== $open ) {
@@ -364,8 +452,12 @@ function dg_inhoud_menus( string $md ): array {
 		if ( preg_match( '/^##\s+(.+?)\s*$/', $regel, $m ) ) {
 			$naam           = strtolower( preg_replace( '/[^a-z]/i', '', $m[1] ) );
 			$menus[ $naam ] = array();
-		} elseif ( null !== $naam && preg_match( '/^\s*[-*]\s+\[([^\]]+)\]\(([^)\s]+)\)\s*$/', $regel, $m ) ) {
-			$menus[ $naam ][] = array( $m[1], $m[2] );
+		} elseif ( null !== $naam && preg_match( '/^(\s*)[-*]\s+\[([^\]]+)\]\(([^)\s]+)\)\s*$/', $regel, $m ) ) {
+			// Ingesprongen (twee spaties of meer): een onderdeel van het punt erboven.
+			$menus[ $naam ][] = array( $m[2], $m[3], strlen( $m[1] ) >= 2 ? 1 : 0 );
+		} elseif ( null !== $naam && preg_match( '/^[-*]\s+([^\[].*?)\s*$/', $regel, $m ) ) {
+			// Een kopje zonder link, alleen om onderdelen onder te zetten.
+			$menus[ $naam ][] = array( $m[1], '#', 0 );
 		}
 	}
 	return $menus;
@@ -488,8 +580,8 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
 				$per_bestand[ basename( $p['bron'] ) ] = $adres;
 			}
 			foreach ( $paginas as $p ) {
-				preg_match_all( '/\]\(([^)\s]+)\)/', $p['tekst'], $m );
-				foreach ( $m[1] as $doel ) {
+				preg_match_all( '/\]\(([^)\s]+)\)|^\s*(?:beeld|link):\s*(\S+)/m', $p['tekst'], $m );
+				foreach ( array_filter( array_merge( $m[1], $m[2] ) ) as $doel ) {
 					if ( preg_match( '#^[^:/]+\.md(\#.*)?$#', $doel ) && ! isset( $per_bestand[ strtok( $doel, '#' ) ] ) ) {
 						$fouten[] = "{$p['bron']}: link naar $doel, maar die pagina bestaat niet.";
 					}
@@ -620,11 +712,16 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			if ( is_file( "$map/menu.md" ) ) {
 				$menus = dg_inhoud_menus( (string) file_get_contents( "$map/menu.md" ) );
 				foreach ( $menus as $naam => $items ) {
-					$links = array();
-					foreach ( $items as [ $label, $doel ] ) {
+					$links      = array();
+					$ouder_weg  = false;
+					foreach ( $items as [ $label, $doel, $niveau ] ) {
+						if ( $niveau && $ouder_weg ) {
+							continue;
+						}
 						if ( preg_match( '#^([^:/]+\.md)$#', $doel, $m ) ) {
 							$adres = $per_bestand[ $m[1] ];
 							if ( 'publish' !== $paginas[ $adres ]['status'] ) {
+								$ouder_weg = ! $niveau;
 								continue;
 							}
 							$url = home_url( '/' . $pad_van( $adres ) . '/' );
@@ -633,7 +730,10 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
 						} else {
 							$url = $doel;
 						}
-						$links[] = array( $label, $url );
+						if ( ! $niveau ) {
+							$ouder_weg = false;
+						}
+						$links[] = array( $label, $url, $niveau );
 					}
 					$hash = hash( 'sha256', (string) wp_json_encode( $links ) );
 					$menu = wp_get_nav_menu_object( (int) get_option( "dg_menu_$naam" ) );
@@ -652,8 +752,12 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
 					foreach ( (array) wp_get_nav_menu_items( $menu_id, array( 'post_status' => 'any' ) ) as $oud ) {
 						wp_delete_post( $oud->ID, true );
 					}
-					foreach ( $links as $volgorde => [ $label, $url ] ) {
-						wp_update_nav_menu_item( $menu_id, 0, array( 'menu-item-title' => $label, 'menu-item-url' => $url, 'menu-item-type' => 'custom', 'menu-item-status' => 'publish', 'menu-item-position' => $volgorde + 1 ) );
+					$ouder = 0;
+					foreach ( $links as $volgorde => [ $label, $url, $niveau ] ) {
+						$item = wp_update_nav_menu_item( $menu_id, 0, array( 'menu-item-title' => $label, 'menu-item-url' => $url, 'menu-item-type' => 'custom', 'menu-item-status' => 'publish', 'menu-item-position' => $volgorde + 1, 'menu-item-parent-id' => $niveau ? $ouder : 0 ) );
+						if ( ! $niveau && ! is_wp_error( $item ) ) {
+							$ouder = $item;
+						}
 					}
 					update_term_meta( $menu_id, '_dg_hash', $hash );
 					update_option( "dg_menu_$naam", $menu_id );

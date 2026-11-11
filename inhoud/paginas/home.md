@@ -4,25 +4,68 @@ adres: start
 voorpagina: ja
 ---
 ::: held
-# Samen grenzeloos sterk
+beeld: media/held-voorlopig.jpg
+label: Van publiek geld naar publieke waarde
+label: Samen grenzeloos sterk
+# Digitaal GemeenGoed
+De landelijke community van en voor gemeenten en overheden die samen werken aan open source software en Common Ground.
 
-Gemeenten werken met dezelfde wetten, dezelfde soorten stukken en vaak dezelfde vragen. Toch lost elke gemeente veel zelf op. **Digitaal GemeenGoed** brengt gemeenten samen om open software te maken, in te voeren en te beheren die van iedereen is. Want waarom moeilijk doen als het samen kan?
-
-[[Doe mee]](meedoen.md)
-[[Hoe we werken]](werkwijze.md)
+[[Word lid van de community →]](/lid-worden/)
+[[Ontdek de projecten]](projecten.md)
 :::
 
-## Van publiek geld naar publieke waarde
+::: kenmerken
+### Open source
+icoon: open
+Transparant, veilig en gemeenschappelijk
 
-Wat één gemeente laat bouwen, kan elke gemeente gebruiken. Wij zorgen dat dat ook gebeurt, met twee taken:
+### Common Ground
+icoon: lagen
+Modulair, flexibel en herbruikbaar
 
-::: kaarten
-### Kennis en software
-We ontwikkelen open source componenten die passen in de Common Ground-architectuur, en stellen ze beschikbaar aan alle gemeenten. We brengen kennis bij elkaar, zodat het werk niet versnippert.
+### Samen ontwikkelen
+icoon: mensen
+Met en voor overheden
 
-### Invoeren en beheren
-We helpen gemeenten bij het invoeren en het duurzaam beheer van die oplossingen. Zo kunnen ook gemeenten zonder eigen capaciteit digitaal meebewegen.
+### Van idee naar toepassing
+icoon: raket
+Ontwikkeling, invoering en beheer
+
+### Publieke waarde
+icoon: plant
+Duurzaam, soeverein en maatschappelijk relevant
 :::
+
+## Actuele projecten
+
+::: projecten
+### XENA – Open DMS/RMA
+label: Common Ground
+icoon: document
+link: xena.md
+Open document- en zaakbeheer voor gemeenten
+
+### E-mailarchivering
+label: Integratie
+icoon: mail
+link: e-mailarchivering.md
+Duurzame en veilige archivering van e-mail (VNG Selectielijst)
+
+### Object-native werkplek
+label: Platform
+icoon: lagen
+link: werkplek.md
+WebDAV, CardDAV en CalDAV voor de overheid
+
+### Word onderdeel van DGG
+soort: oproep
+icoon: mensen
+Werk samen met collega's uit gemeenten, decentrale overheden en de community aan betere, open digitale dienstverlening.
+
+[[Aanmelden bij de community →]](/lid-worden/)
+:::
+
+[Alle projecten →](projecten.md)
 
 ## Samenwerken is meer
 
@@ -30,28 +73,18 @@ Echte samenwerking vraagt niet alleen organisatie, maar vooral commitment.
 
 ::: kaarten
 ### Dezelfde werkwijze
+icoon: puzzel
 Eenduidige werkwijzen en formats, voor architectuur, beheer en projectaanpak, zodat we sneller en soepeler samenwerken.
 
 ### Groot helpt klein
+icoon: stad
 Grotere gemeenten begeleiden kleinere, met kennis en ervaring: een buddysysteem, zodat iedereen kan aansluiten.
 
 ### Samen kiezen
+icoon: kompas
 Leden stellen samen de prioriteiten en houden zich eraan. Zo voorkomen we versnippering en dubbel werk.
 
 ### Delen wat je hebt
+icoon: hand
 Gemeenten stellen kennis, expertise en ontwikkelcapaciteit beschikbaar voor gezamenlijke projecten.
-:::
-
-## Waar we aan werken
-
-De eerste projecten komen uit het portfolio van de gemeenten Haarlem en Zandvoort, en zijn bedoeld voor iedereen. Het eerste resultaat is de [Office Assistent](office-assistent.md).
-
-[[Alle projecten]](projecten.md)
-
-::: kader
-## Doen jullie mee?
-
-Werk je bij een gemeente aan informatiebeheer, architectuur, beheer of besluitvorming? Word lid van het netwerk, praat mee in de fora en help bepalen wat we samen maken.
-
-[dg_lid_worden]
 :::

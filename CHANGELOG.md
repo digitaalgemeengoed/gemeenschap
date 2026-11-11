@@ -1,5 +1,15 @@
 # Wijzigingen
 
+## 0.4.0 — 2026-11-11
+
+**De opmaak van het ontwerp** (schets van Erik, 11 november):
+- Kop met de uil, de naam op twee regels, de ondertitel *Community voor open source en Common Ground in de overheid*, een huisje voor Home, uitklapmenu's (Over DGG, Projecten, Community, Kennisbank) en een knop **Aanmelden**.
+- Opening over de hele breedte: grote kop, een blauw en een groen lint, knoppen, een stadsgezicht (eigen lijntekening) en rechts een foto met netwerklijnen. De foto is voorlopig: een uitsnede van de schets (`inhoud/media/held-voorlopig.jpg`).
+- Een strook met vijf kenmerken, kaarten voor de actuele projecten met label en pijl, en een oproep *Word onderdeel van DGG*.
+- Nieuwe pagina's: XENA – Open DMS/RMA, E-mailarchivering en Object-native werkplek, onder Projecten.
+- In Markdown: vakken `kenmerken` en `projecten`, en regels `icoon:`, `label:`, `link:`, `beeld:` en `soort:` in kaarten. Menu's met uitklapmenu's (inspringen). Zestien iconen in het thema.
+- Kleuren: marineblauw, blauw en groen, alle tekst volgens WCAG AA.
+
 ## 0.3.0 — 2026-11-11
 
 - **De site op basis van de introductiepresentatie** (mei 2025): start (*Samen grenzeloos sterk*), Over ons (de uitdaging, naast wat er al is, organisatie), Werkwijze (vier stappen), Projecten (vijf projecten uit het portfolio van Haarlem en Zandvoort, met de Office Assistent eronder), Het platform (zes onderdelen, met wat er al is en wat nog komt) en Meedoen (als persoon en als gemeente).

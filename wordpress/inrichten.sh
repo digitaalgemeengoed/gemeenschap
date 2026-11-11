@@ -21,7 +21,7 @@ fi
 wp core update --minor >/dev/null && wp core update-db >/dev/null
 wp language core install nl_NL --activate >/dev/null 2>&1 || true
 wp option update blogname 'Digitaal GemeenGoed' >/dev/null
-wp option update blogdescription 'Samen grenzeloos sterk' >/dev/null
+wp option update blogdescription 'Community voor open source en Common Ground in de overheid' >/dev/null
 wp option update timezone_string Europe/Amsterdam >/dev/null
 wp option update date_format 'j F Y' >/dev/null
 wp option update users_can_register 0 >/dev/null

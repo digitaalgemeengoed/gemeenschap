@@ -1,134 +1,354 @@
 /*
 Theme Name: Digitaal GemeenGoed
 Template: buddyx
-Description: Het thema van digitaalgemeengoed.nl: BuddyX (voor BuddyPress en bbPress) met het logo, de kleuren en de voet van Digitaal GemeenGoed. Kleuren en voet staan vast in functions.php; de menu's komen uit inhoud/menu.md in de repo digitaalgemeengoed/gemeenschap.
-Version: 1.0.0
+Description: Het thema van digitaalgemeengoed.nl: BuddyX (voor BuddyPress en bbPress) met het logo, de kleuren en de opmaak van Digitaal GemeenGoed. Kleuren en voet staan vast in functions.php; de menu's komen uit inhoud/menu.md in de repo digitaalgemeengoed/gemeenschap.
+Version: 1.1.0
 License: EUPL-1.2
 Text Domain: digitaalgemeengoed
 */
 
-/* Het logo: een staande uil, dus hoog en smal. */
-.site-branding .custom-logo { height: 64px; width: auto; max-width: none; }
-.site-branding .site-logo-wrapper { flex-shrink: 0; }
-@media (max-width: 960px) { .site-branding .custom-logo { height: 44px; } }
-
-/* De voet: de links uit het menu "Voet" op één regel. */
-.dg-voet { list-style: none; margin: 0 0 .5em; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: .25em 1.5em; }
-.dg-voet li { margin: 0; }
-
-/* De knop "Lid worden" in de tekst van een pagina. */
-.entry-content .wp-block-buttons { margin: 1.5em 0; }
-
-/* De naam naast de uil wat kleiner, zodat het hele menu naast de naam past. */
-.site-branding .site-title, .site-branding .site-title a { font-size: 1.5rem !important; line-height: 1.2; }
-
-
-/* Knoppen in de tekst in de kleur van het logo (BuddyX geeft blokken een eigen accentkleur). */
-.entry-content .wp-element-button, .entry-content .wp-block-button__link { background-color: var(--bx-color-button-bg, #0066cc); color: #fff; }
-.entry-content .wp-element-button:hover, .entry-content .wp-block-button__link:hover { background-color: var(--bx-color-button-bg-hover, #003c7a); color: #fff; }
+/* Kleuren uit het logo. Alle tekstkleuren halen WCAG AA op wit; lichtblauw
+   (#13aef3) en de hemelkleuren zijn alleen voor vlakken en versiering. */
+:root {
+  --dg-marine: #0a2654;
+  --dg-blauw: #14478f;
+  --dg-link: #1a56a8;
+  --dg-groen: #3f7f1d;
+  --dg-paars: #6d28d9;
+  --dg-teal: #0f766e;
+  --dg-lichtblauw: #13aef3;
+  --dg-ijs: #eef7fc;
+  --dg-hemel: #cfeaf7;
+  --dg-tekst: #2b3a4e;
+  --dg-grijs: #55657a;
+  --dg-rand: #dbe6f0;
+}
 
 /* ------------------------------------------------------------------------
-   Vakken uit inhoud/ (::: held, kaarten, stappen, kader), in de stijl van de
-   presentatie: wit dat overloopt in lichtblauw, de uil, ronde vlakken.
+   Kop: uil, naam op twee regels, ondertitel, menu, knop Aanmelden
    ------------------------------------------------------------------------ */
-:root {
-  --dg-blauw: #0066cc;
-  --dg-blauw-donker: #003c7a;
-  --dg-lichtblauw: #13aef3;   /* alleen decoratie: te licht voor tekst */
-  --dg-ijs: #e8f5fb;
-  --dg-hemel: #b9e3f3;
+.site-header { box-shadow: 0 1px 0 var(--dg-rand); }
+.site-branding .custom-logo { height: 64px; width: auto; max-width: none; }
+.site-branding .site-logo-wrapper { flex-shrink: 0; }
+.site-branding-inner { display: flex; align-items: center; gap: 1.1rem; }
+.site-branding .site-title, .site-branding .site-title a {
+  font-size: 1.5rem !important;
+  line-height: 1.02 !important;
+  font-weight: 800;
+  letter-spacing: -.01em;
+  color: var(--dg-marine) !important;
+}
+.site-branding .site-title a { display: block; max-width: 6.4em; }
+.site-branding .site-description {
+  margin: 0;
+  padding-left: 1.1rem;
+  border-left: 1px solid #c9d6e3;
+  max-width: 14.5rem;
+  font-size: .8rem;
+  line-height: 1.35;
+  color: var(--dg-tekst);
+}
+@media (max-width: 1400px) { .site-branding .site-description { display: none; } }
+@media (max-width: 960px) {
+  .site-branding .custom-logo { height: 46px; }
+  .site-branding .site-title, .site-branding .site-title a { font-size: 1.25rem !important; }
 }
 
+.main-navigation #primary-menu > li > a { font-weight: 650; color: var(--dg-marine); }
+.main-navigation #primary-menu > li.current-menu-item > a,
+.main-navigation #primary-menu > li > a:hover { color: var(--dg-link); }
+/* Het eerste punt (Home) als huisje. */
+.main-navigation #primary-menu > li.menu-item-home > a { font-size: 0; line-height: 0; display: inline-flex; align-items: center; min-height: 2.5rem; padding-inline: .5rem; }
+.main-navigation #primary-menu > li.menu-item-home > a::before {
+  content: ""; display: block; width: 22px; height: 22px;
+  background: var(--dg-marine);
+  -webkit-mask: url("assets/iconen/huis.svg") center / contain no-repeat;
+          mask: url("assets/iconen/huis.svg") center / contain no-repeat;
+}
+.main-navigation #primary-menu > li.menu-item-home.current-menu-item > a { box-shadow: inset 0 -3px 0 var(--dg-link); }
+
+/* Aanmelden: een knop. */
+.buddypress-icons-wrapper .btn-login {
+  display: inline-flex; align-items: center; gap: .5rem;
+  padding: .6rem 1.15rem;
+  border-radius: 10px;
+  background: var(--dg-blauw);
+  color: #fff !important;
+  font-weight: 650;
+}
+.buddypress-icons-wrapper .btn-login:hover { background: var(--dg-marine); }
+.buddypress-icons-wrapper .btn-login svg { fill: #fff; stroke: #fff; }
+@media (max-width: 600px) {
+  .buddypress-icons-wrapper .btn-login { font-size: 0; gap: 0; padding: .55rem .65rem; }
+  .buddypress-icons-wrapper .btn-login svg { width: 18px; height: 18px; }
+}
+
+/* ------------------------------------------------------------------------
+   Pagina's
+   ------------------------------------------------------------------------ */
+.entry-content h2 { color: var(--dg-marine); }
+.entry-content .wp-block-buttons { gap: .75rem; margin: 1.5rem 0; }
+.entry-content .wp-element-button, .entry-content .wp-block-button__link {
+  border-radius: 10px; background-color: var(--dg-blauw); color: #fff; font-weight: 650; padding: .75rem 1.4rem;
+}
+.entry-content .wp-element-button:hover, .entry-content .wp-block-button__link:hover { background-color: var(--dg-marine); color: #fff; }
+.entry-content .wp-block-button.is-style-outline .wp-block-button__link {
+  background: #fff; color: var(--dg-blauw); border: 2px solid var(--dg-blauw); padding: calc(.75rem - 2px) calc(1.4rem - 2px);
+}
+.entry-content .wp-block-button.is-style-outline .wp-block-button__link:hover { background: var(--dg-blauw); color: #fff; }
+
+/* De startpagina: geen ruimte boven de opening. */
+.home .site-wrapper, .home .site-content, .home #primary, .home .site-main, .home article.entry, .home .entry-content { padding-top: 0 !important; margin-top: 0 !important; }
+
+/* Iconen (assets/iconen/<naam>.svg), in de kleur van de tekst eromheen. */
+.dg-icoon {
+  display: inline-block; flex-shrink: 0;
+  width: 1.15em; height: 1.15em; margin-right: .45em; vertical-align: -.18em;
+  background: currentColor;
+  -webkit-mask: var(--dg-i) center / contain no-repeat;
+          mask: var(--dg-i) center / contain no-repeat;
+}
+.dg-icoon-open     { --dg-i: url("assets/iconen/open.svg"); }
+.dg-icoon-lagen    { --dg-i: url("assets/iconen/lagen.svg"); }
+.dg-icoon-mensen   { --dg-i: url("assets/iconen/mensen.svg"); }
+.dg-icoon-raket    { --dg-i: url("assets/iconen/raket.svg"); }
+.dg-icoon-plant    { --dg-i: url("assets/iconen/plant.svg"); }
+.dg-icoon-document { --dg-i: url("assets/iconen/document.svg"); }
+.dg-icoon-mail     { --dg-i: url("assets/iconen/mail.svg"); }
+.dg-icoon-werkplek { --dg-i: url("assets/iconen/werkplek.svg"); }
+.dg-icoon-forum    { --dg-i: url("assets/iconen/forum.svg"); }
+.dg-icoon-boek     { --dg-i: url("assets/iconen/boek.svg"); }
+.dg-icoon-schild   { --dg-i: url("assets/iconen/schild.svg"); }
+.dg-icoon-stad     { --dg-i: url("assets/iconen/stad.svg"); }
+.dg-icoon-puzzel   { --dg-i: url("assets/iconen/puzzel.svg"); }
+.dg-icoon-hand     { --dg-i: url("assets/iconen/hand.svg"); }
+.dg-icoon-kompas   { --dg-i: url("assets/iconen/kompas.svg"); }
+.dg-icoon-code     { --dg-i: url("assets/iconen/code.svg"); }
+
+/* ------------------------------------------------------------------------
+   Held: de opening, over de hele breedte, met stadsgezicht en foto
+   ------------------------------------------------------------------------ */
 .entry-content .dg-held {
   position: relative;
+  width: 100vw;
+  margin: 0 0 0 calc(50% - 50vw) !important;
+  max-width: none !important;
+  min-height: 34rem;
+  padding: 3.5rem max(1.5rem, calc(50vw - 590px)) 9rem;
+  background: linear-gradient(100deg, #ffffff 0%, #f6fbfe 40%, var(--dg-ijs) 100%);
   overflow: hidden;
-  margin: 0 0 3rem;
-  padding: clamp(2rem, 5vw, 4rem) clamp(1.5rem, 5vw, 4rem);
-  padding-right: clamp(1.5rem, 22vw, 18rem);
-  border-radius: 28px;
-  background: linear-gradient(115deg, #ffffff 0%, var(--dg-ijs) 55%, var(--dg-hemel) 100%);
+  box-sizing: border-box;
 }
-.entry-content .dg-held::after {
+/* Het stadsgezicht linksonder. */
+.entry-content .dg-held::before {
   content: "";
-  position: absolute;
-  right: clamp(1rem, 4vw, 3.5rem);
-  bottom: -1.5rem;
-  width: clamp(6rem, 16vw, 12rem);
-  height: 115%;
-  background: url("assets/uil.png") right bottom / contain no-repeat;
+  position: absolute; z-index: 1;
+  left: max(0rem, calc(50vw - 640px)); bottom: 0;
+  width: min(560px, 60vw); aspect-ratio: 600 / 180;
+  background: url("assets/stad.svg") left bottom / contain no-repeat;
   opacity: .9;
   pointer-events: none;
 }
-.entry-content .dg-held > * { position: relative; z-index: 1; max-width: 40em; margin-left: 0 !important; margin-right: 0 !important; }
-.entry-content .dg-held h2:first-child {
-  font-size: clamp(2.2rem, 5vw, 3.4rem);
-  line-height: 1.1;
-  margin: 0 0 1rem;
-  color: var(--dg-blauw-donker);
+/* Netwerklijnen over de onderkant. */
+.entry-content .dg-held::after {
+  content: "";
+  position: absolute; z-index: 3;
+  left: 30%; right: 0; bottom: -10px; height: 150px;
+  background: url("assets/netwerk.svg") center bottom / 100% 100% no-repeat;
+  pointer-events: none;
 }
-.entry-content .dg-held p { font-size: 1.2em; line-height: 1.6; }
-@media (max-width: 700px) {
-  .entry-content .dg-held { padding-right: 1.5rem; padding-bottom: 9rem; }
-  .entry-content .dg-held::after { height: 9rem; bottom: .5rem; }
+.entry-content .dg-held-tekst { position: relative; z-index: 4; max-width: min(40rem, 52%); margin: 0 !important; }
+.entry-content .dg-held:not(.heeft-beeld) .dg-held-tekst { max-width: 40rem; }
+.entry-content .dg-held-tekst > * { margin-left: 0 !important; margin-right: 0 !important; }
+.entry-content .dg-held h2:first-child {
+  font-size: clamp(2.2rem, 3.9vw, 3.5rem);
+  white-space: nowrap;
+  line-height: 1.04;
+  letter-spacing: -.02em;
+  font-weight: 800;
+  margin: 0 0 1rem;
+  color: var(--dg-marine);
+}
+.entry-content .dg-held-tekst p:not(.dg-lint) { font-size: 1.18rem; line-height: 1.55; color: var(--dg-tekst); max-width: 30rem; }
+.entry-content .dg-lint {
+  display: table;
+  margin: 0 0 .7rem !important;
+  padding: .35rem 1.3rem .4rem;
+  border-radius: 10px;
+  transform: skewX(-10deg);
+  color: #fff;
+  font-size: clamp(1.1rem, 2vw, 1.65rem);
+  white-space: nowrap;
+  font-weight: 800;
+  font-style: italic;
+  line-height: 1.25;
+  box-shadow: 0 6px 18px rgba(10, 38, 84, .18);
+}
+.entry-content .dg-lint-blauw { background: linear-gradient(90deg, var(--dg-blauw), #1f7bd1); }
+.entry-content .dg-lint-groen { background: linear-gradient(90deg, var(--dg-groen), #5c9b2c); margin-bottom: 1.4rem !important; }
+.entry-content .dg-held-beeld {
+  position: absolute; z-index: 2;
+  top: 0; right: 0; bottom: 0;
+  width: 58%;
+  margin: 0 !important;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 22%);
+          mask-image: linear-gradient(90deg, transparent 0, #000 22%);
+}
+.entry-content .dg-held-beeld img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
+@media (max-width: 900px) {
+  .entry-content .dg-held h2:first-child, .entry-content .dg-lint { white-space: normal; }
+  .entry-content .dg-held { padding-top: 2rem; padding-bottom: 0; min-height: 0; }
+  .entry-content .dg-held-tekst { max-width: none; }
+  .entry-content .dg-held::before { display: none; }
+  .entry-content .dg-held::after { left: 0; bottom: 0; height: 90px; }
+  .entry-content .dg-held-beeld {
+    position: relative; width: calc(100% + 3rem); margin: 1.5rem -1.5rem 0 !important; height: 15rem;
+    -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 25%); mask-image: linear-gradient(180deg, transparent 0, #000 25%);
+  }
 }
 
-.entry-content .dg-kaarten,
-.entry-content .dg-stappen {
-  gap: 1.25rem; margin: 1.5rem 0 2.5rem; counter-reset: dg-stap;
+/* ------------------------------------------------------------------------
+   Kaarten, stappen, kenmerken, projecten
+   ------------------------------------------------------------------------ */
+.entry-content .dg-kaarten, .entry-content .dg-stappen, .entry-content .dg-projecten {
+  gap: 1.25rem; margin: 1.5rem 0 2.75rem; counter-reset: dg-stap;
   grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr)) !important;
   align-items: stretch !important;
 }
 .entry-content .dg-kaart {
+  position: relative;
   margin: 0 !important;
-  align-self: stretch;
-  height: 100%;
-  box-sizing: border-box;
-  padding: 1.25rem 1.5rem 1.4rem;
-  border-radius: 18px;
+  align-self: stretch; height: 100%; box-sizing: border-box;
+  padding: 1.35rem 1.5rem 1.5rem;
+  border-radius: 16px;
   background: #fff;
-  border: 1px solid #d5e8f4;
-  border-top: 5px solid var(--dg-lichtblauw);
-  box-shadow: 0 6px 20px rgba(0, 60, 122, .06);
+  border: 1px solid var(--dg-rand);
+  box-shadow: 0 8px 24px rgba(10, 38, 84, .06);
 }
 .entry-content .dg-kaart > :first-child { margin-top: 0; }
 .entry-content .dg-kaart > :last-child { margin-bottom: 0; }
-.entry-content .dg-kaart h3 { font-size: 1.2rem; color: var(--dg-blauw-donker); margin-bottom: .5rem; }
+.entry-content .dg-kaart h3 { font-size: 1.15rem; color: var(--dg-marine); margin: 0 0 .5rem; }
+.entry-content .dg-kaart h3 .dg-icoon { color: var(--dg-link); width: 1.4em; height: 1.4em; vertical-align: -.3em; }
+.entry-content .dg-kaart p, .entry-content .dg-kaart li { color: var(--dg-tekst); }
 .entry-content .dg-kaart ul { padding-left: 1.1em; }
-.entry-content .dg-kaart em { color: #5b6b7a; }
+.entry-content .dg-kaart em { color: var(--dg-grijs); }
+.entry-content .dg-kaarten .dg-kaart, .entry-content .dg-stappen .dg-kaart { border-top: 4px solid var(--dg-lichtblauw); }
 .entry-content .dg-stappen .dg-kaart { counter-increment: dg-stap; }
 .entry-content .dg-stappen .dg-kaart h3::before {
   content: counter(dg-stap);
-  display: inline-grid;
-  place-items: center;
-  width: 2rem;
-  height: 2rem;
-  margin-right: .6rem;
-  border-radius: 50%;
-  background: var(--dg-blauw);
-  color: #fff;
-  font-size: 1rem;
-  vertical-align: middle;
+  display: inline-grid; place-items: center;
+  width: 2rem; height: 2rem; margin-right: .6rem; border-radius: 50%;
+  background: var(--dg-blauw); color: #fff; font-size: 1rem; vertical-align: middle;
 }
 
+/* Een kaart met link: de hele kaart is aanklikbaar, met een pijl rechtsonder. */
+.entry-content .dg-kaart.heeft-link { padding-bottom: 2.6rem; transition: box-shadow .15s, transform .15s; }
+.entry-content .dg-kaart.heeft-link:hover { box-shadow: 0 12px 30px rgba(10, 38, 84, .13); transform: translateY(-2px); }
+.entry-content .dg-kaart-link { margin: 0 !important; }
+.entry-content .dg-kaart-link a::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
+.entry-content .dg-kaart-link a::before {
+  content: "→"; position: absolute; right: 1.2rem; bottom: .8rem;
+  font-size: 1.5rem; line-height: 1; color: var(--dg-marine);
+}
+.entry-content .dg-kaart-link a:focus-visible::after { outline: 3px solid var(--dg-link); outline-offset: 2px; }
+
+/* Labels op kaarten. */
+.entry-content .dg-kaart p.dg-label, .entry-content .dg-label {
+  display: block; width: fit-content; white-space: nowrap; color: #fff; margin: 0 0 .55rem !important;
+  padding: .18rem .65rem; border-radius: 999px;
+  background: var(--dg-link); color: #fff;
+  font-size: .74rem; font-weight: 700; letter-spacing: .01em;
+}
+.entry-content .dg-label-integratie { background: var(--dg-paars); }
+.entry-content .dg-label-platform { background: var(--dg-teal); }
+.entry-content .dg-label-common-ground { background: var(--dg-blauw); }
+.entry-content .dg-label-verkenning { background: var(--dg-groen); }
+
+/* Kenmerken: een strook met grote iconen, gescheiden door lijntjes. */
+.entry-content .dg-kenmerken {
+  grid-template-columns: repeat(auto-fit, minmax(min(12rem, 100%), 1fr)) !important;
+  gap: 0 !important;
+  margin: 0 0 3rem;
+  padding: 1.6rem 0;
+  border-bottom: 1px solid var(--dg-rand);
+}
+.entry-content .dg-kenmerken .dg-kaart {
+  background: none; border: 0; border-left: 1px solid var(--dg-rand); border-radius: 0; box-shadow: none;
+  padding: .3rem 1rem .3rem 4rem;
+  min-height: 3.6rem;
+}
+.entry-content .dg-kenmerken .dg-kaart:first-child { border-left: 0; }
+.entry-content .dg-kenmerken .dg-kaart h3 { font-size: 1.05rem; margin: 0 0 .2rem; }
+.entry-content .dg-kenmerken .dg-kaart h3 .dg-icoon {
+  position: absolute; left: 1rem; top: .3rem; width: 2.4rem; height: 2.4rem; margin: 0; color: var(--dg-link);
+}
+.entry-content .dg-kenmerken .dg-kaart h3 .dg-icoon-open,
+.entry-content .dg-kenmerken .dg-kaart h3 .dg-icoon-plant { color: var(--dg-groen); }
+.entry-content .dg-kenmerken .dg-kaart p { font-size: .9rem; line-height: 1.4; color: var(--dg-grijs); margin: 0; }
+@media (max-width: 700px) {
+  .entry-content .dg-kenmerken .dg-kaart { border-left: 0; border-top: 1px solid var(--dg-rand); padding-top: 1rem; padding-bottom: 1rem; }
+  .entry-content .dg-kenmerken .dg-kaart h3 .dg-icoon { top: 1rem; }
+}
+
+/* Projecten: kaarten met een tegel links (icoon of beeld). Een kaart met
+   "soort: oproep" komt als brede balk onder de projecten. */
+.entry-content .dg-projecten { grid-template-columns: repeat(auto-fit, minmax(min(17rem, 100%), 1fr)) !important; }
+.entry-content .dg-projecten .dg-kaart.heeft-icoon, .entry-content .dg-projecten .dg-kaart.heeft-beeld { padding-left: 7.1rem; min-height: 7.6rem; }
+.entry-content .dg-projecten .dg-kaart.heeft-icoon::before {
+  content: ""; position: absolute; left: .9rem; top: .9rem; width: 5.3rem; height: 5.3rem;
+  border-radius: 12px;
+  background: linear-gradient(150deg, #dceefa, #8cc3e6);
+}
+.entry-content .dg-projecten .dg-kaart.heeft-icoon h3 .dg-icoon {
+  position: absolute; left: 1.95rem; top: 1.95rem; width: 3.2rem; height: 3.2rem; margin: 0; color: #fff;
+  filter: drop-shadow(0 2px 3px rgba(10, 38, 84, .25));
+}
+.entry-content .dg-projecten .dg-kaart-beeld { position: absolute; left: .9rem; top: .9rem; width: 5.3rem; height: 5.3rem; margin: 0 !important; }
+.entry-content .dg-projecten .dg-kaart-beeld img { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; }
+.entry-content .dg-projecten .dg-kaart h3 { font-size: 1.08rem; }
+.entry-content .dg-projecten .dg-kaart p:not(.dg-label) { font-size: .92rem; line-height: 1.45; }
+.entry-content .dg-projecten .dg-kaart-oproep {
+  grid-column: 1 / -1;
+  display: grid; grid-template-columns: 1fr auto; column-gap: 2rem; align-items: center;
+  padding: 1.5rem 2rem !important;
+  background: linear-gradient(115deg, #f3f9fd, #d6ecf9) !important;
+  border-color: #cfe4f2;
+}
+.entry-content .dg-projecten .dg-kaart-oproep::before { display: none; }
+.entry-content .dg-projecten .dg-kaart-oproep > h3 { grid-column: 1; font-size: 1.45rem; display: flex; align-items: center; margin: 0 0 .3rem; }
+.entry-content .dg-projecten .dg-kaart-oproep > p { grid-column: 1; margin: 0; }
+.entry-content .dg-projecten .dg-kaart-oproep > .wp-block-buttons { grid-column: 2; grid-row: 1 / span 2; margin: 0; }
+.entry-content .dg-projecten .dg-kaart.dg-kaart-oproep h3 .dg-icoon {
+  position: static; margin: 0 .6rem 0 0; width: 2.2rem; height: 2.2rem; color: var(--dg-blauw); filter: none;
+}
+@media (max-width: 700px) {
+  .entry-content .dg-projecten .dg-kaart-oproep { display: block; }
+  .entry-content .dg-projecten .dg-kaart-oproep > .wp-block-buttons { margin-top: 1rem; }
+}
+
+/* Kader: een oproep in een lichtblauw vlak. */
 .entry-content .dg-kader {
   margin: 3rem 0 1rem;
   padding: 2rem clamp(1.5rem, 4vw, 3rem);
-  border-radius: 24px;
+  border-radius: 20px;
   background: linear-gradient(115deg, var(--dg-ijs), var(--dg-hemel));
 }
 .entry-content .dg-kader > :first-child { margin-top: 0; }
 .entry-content .dg-kader > * { margin-left: 0 !important; margin-right: 0 !important; max-width: 46em; }
 
-/* Knoppen: de tweede en volgende als omlijning. */
-.entry-content .wp-block-button.is-style-outline .wp-block-button__link {
-  background: transparent; color: var(--dg-blauw); border: 2px solid var(--dg-blauw);
-}
-.entry-content .wp-block-button.is-style-outline .wp-block-button__link:hover { background: var(--dg-blauw); color: #fff; }
-.entry-content .wp-block-buttons { gap: .75rem; }
+/* ------------------------------------------------------------------------
+   Voet
+   ------------------------------------------------------------------------ */
+.dg-voet { list-style: none; margin: 0 0 .5em; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: .25em 1.5em; }
+.dg-voet li { margin: 0; }
 
-/* Donkere modus van BuddyX: vlakken donker, tekst licht. */
-[data-bx-mode="dark"] .entry-content .dg-held,
-[data-bx-mode="dark"] .entry-content .dg-kader { background: linear-gradient(115deg, #0d1a2a, #10304f); }
-[data-bx-mode="dark"] .entry-content .dg-held h2:first-child,
-[data-bx-mode="dark"] .entry-content .dg-kaart h3 { color: #cfe8ff; }
-[data-bx-mode="dark"] .entry-content .dg-kaart { background: #13202f; border-color: #1f3b57; }
+/* ------------------------------------------------------------------------
+   Donkere modus van BuddyX
+   ------------------------------------------------------------------------ */
+[data-bx-mode="dark"] { --dg-marine: #dbe9ff; --dg-tekst: #c9d5e3; --dg-grijs: #a9b7c8; --dg-rand: #23384f; --dg-link: #8cc4ff; }
+[data-bx-mode="dark"] .entry-content .dg-held { background: linear-gradient(100deg, #0b1626, #102a47); }
+[data-bx-mode="dark"] .entry-content .dg-held::before { opacity: .35; }
+[data-bx-mode="dark"] .entry-content .dg-kaart { background: #13202f; }
+[data-bx-mode="dark"] .entry-content .dg-kader,
+[data-bx-mode="dark"] .entry-content .dg-projecten .dg-kaart-oproep { background: linear-gradient(115deg, #0d1a2a, #10304f) !important; }
+[data-bx-mode="dark"] .entry-content .wp-block-button.is-style-outline .wp-block-button__link { background: transparent; color: #cfe3ff; border-color: #cfe3ff; }

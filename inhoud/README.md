@@ -65,12 +65,25 @@ Tekst van de tweede kaart.
 
 | Vak | Wat het doet |
 |---|---|
-| `held` | de opening van een pagina: grote kop, inleiding en knoppen, met de uil op de achtergrond |
+| `held` | de opening van de startpagina over de hele breedte: grote kop, linten, inleiding, knoppen, stadsgezicht, en rechts een foto |
+| `kenmerken` | een strook met per `###` kop een groot icoon en een korte regel |
 | `kaarten` | elke `###` kop met de tekst eronder wordt een kaart; de kaarten staan naast elkaar |
 | `stappen` | als kaarten, maar genummerd: een proces in stappen |
+| `projecten` | kaarten met een tegel (icoon of beeld), een label en een pijl naar de pagina |
 | `kader` | tekst in een lichtblauw vlak, bijvoorbeeld een oproep |
 
 Een vak in een vak kan niet.
+
+Direct onder de `###` kop van een kaart (of bovenin een `held`) kun je regels
+`sleutel: waarde` zetten:
+
+| Regel | Wat het doet |
+|---|---|
+| `icoon: lagen` | een icoon: open, lagen, mensen, raket, plant, document, mail, werkplek, forum, boek, schild, stad, puzzel, hand, kompas, code |
+| `label: Common Ground` | een gekleurd label (Common Ground, Integratie, Platform en Verkenning hebben een eigen kleur); in een `held` worden labels de blauwe en groene linten |
+| `link: xena.md` | de hele kaart wordt een link, met een pijl |
+| `beeld: media/foto.jpg` | een foto: in een `held` rechts over de hele hoogte, op een kaart als tegel |
+| `soort: oproep` | in `projecten`: een brede balk onder de kaarten, voor een oproep met knop |
 
 Een pagina weghalen: verwijder het bestand. Op de site wordt het dan een
 concept; het verdwijnt niet.

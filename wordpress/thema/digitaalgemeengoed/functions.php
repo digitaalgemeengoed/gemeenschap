@@ -60,3 +60,11 @@ add_action(
 	},
 	20
 );
+
+// "Log in" in de kop heet bij ons "Aanmelden" (het ontwerp; zo heet het ook in Keycloak).
+add_filter(
+	'gettext_buddyx',
+	static fn( $vertaling, $tekst ) => 'Log in' === $tekst ? 'Aanmelden' : $vertaling,
+	10,
+	2
+);

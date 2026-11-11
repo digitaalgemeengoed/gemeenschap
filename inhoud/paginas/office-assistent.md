@@ -1,7 +1,7 @@
 ---
 titel: Office Assistent
 ouder: projecten
-volgorde: 1
+volgorde: 5
 ---
 De Office Assistent helpt een medewerker een stuk goed vast te leggen, op het moment dat het ontstaat: in de tekstverwerker, niet achteraf in een archiefsysteem. De assistent werkt in **Word**, **LibreOffice** en **Collabora Online**.
 
