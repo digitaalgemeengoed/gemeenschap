@@ -69,6 +69,15 @@ Werk samen met collega's uit gemeenten, decentrale overheden en de community aan
 
 [Alle projecten →](projecten.md)
 
+::: kader
+## Gebouwd op Common Ground
+
+Common Ground is de visie van de Nederlandse gemeenten op een nieuwe manier van werken met informatie: gegevens bij de bron, losse bouwstenen en open standaarden. De Vereniging van Nederlandse Gemeenten (VNG) brengt gemeenten daarin samen in het programma Common Ground. Digitaal GemeenGoed bouwt daarop voort en brengt in wat we samen maken.
+
+[[Programma Common Ground bij de VNG →]](https://vng.nl/projecten/programma-common-ground)
+[[Wat Common Ground voor ons betekent]](common-ground.md)
+:::
+
 ## Samenwerken is meer
 
 Echte samenwerking vraagt niet alleen organisatie, maar vooral commitment.
@@ -89,4 +98,24 @@ Leden stellen samen de prioriteiten en houden zich eraan. Zo voorkomen we versni
 ### Delen wat je hebt
 icoon: hand
 Gemeenten stellen kennis, expertise en ontwikkelcapaciteit beschikbaar voor gezamenlijke projecten.
+:::
+
+::: kader
+## Niet telkens opnieuw beginnen. Samen verder bouwen.
+
+De kracht van DGG zit niet alleen in broncode. We organiseren afstemming, kennisdeling, gezamenlijke prioriteiten en ondersteuning bij de invoering en het beheer.
+
+- Gezamenlijk bepalen wat waarde toevoegt
+- Kennis, capaciteit en middelen delen
+- Ook kleinere gemeenten laten aansluiten
+
+[[Lees ons verhaal]](over.md)
+:::
+
+::: band
+## Goede software maken we samen.
+
+Je hoeft niet alles alleen te kunnen. Breng je vraag, je expertise of je project in.
+
+[[Word onderdeel van DGG →]](/lid-worden/)
 :::

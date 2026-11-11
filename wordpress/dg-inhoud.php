@@ -25,7 +25,7 @@
 defined( 'ABSPATH' ) || exit;
 
 /** Ophogen als de omzetting verandert: dan worden alle pagina's opnieuw opgeslagen. */
-const DG_INHOUD_VERSIE = 3;
+const DG_INHOUD_VERSIE = 4;
 
 // ---------------------------------------------------------------------------
 // Op slot: pagina's en afbeeldingen uit de repo wijzig je via GitHub
@@ -165,7 +165,7 @@ function dg_blok( string $naam, string $html, array $attributen = array() ): str
 }
 
 /** De vakken die een pagina kan gebruiken (::: naam … :::), zie inhoud/README.md. */
-const DG_VAKKEN = array( 'held', 'kaarten', 'stappen', 'kenmerken', 'projecten', 'kader' );
+const DG_VAKKEN = array( 'held', 'kaarten', 'stappen', 'kenmerken', 'projecten', 'kader', 'band', 'feiten' );
 
 /** Vakken waarin elke ### kop een kaart begint. */
 const DG_KAARTVAKKEN = array( 'kaarten', 'stappen', 'kenmerken', 'projecten' );
@@ -174,7 +174,7 @@ const DG_KAARTVAKKEN = array( 'kaarten', 'stappen', 'kenmerken', 'projecten' );
 const DG_ICONEN = array( 'open', 'lagen', 'mensen', 'raket', 'plant', 'document', 'mail', 'werkplek', 'forum', 'boek', 'schild', 'stad', 'puzzel', 'hand', 'kompas', 'code', 'huis', 'kalender', 'instellingen' );
 
 /** Regels "sleutel: waarde" bovenaan een vak of kaart. */
-const DG_KENMERKEN = array( 'label', 'beeld', 'icoon', 'link', 'soort' );
+const DG_KENMERKEN = array( 'label', 'beeld', 'icoon', 'link', 'soort', 'doel', 'toegezegd', 'deelnemers' );
 
 /**
  * Haalt de regels "sleutel: waarde" (label, beeld, icoon, link, soort) uit een
@@ -236,6 +236,9 @@ function dg_inhoud_vak( string $soort, string $md, callable $link, callable $bee
 			}
 			$icoon   = ! empty( $kenmerk['icoon'] ) ? dg_inhoud_icoon( $kenmerk['icoon'][0] ) : '';
 			$binnen .= dg_blok( 'heading', '<h3 class="wp-block-heading">' . $icoon . dg_inhoud_regel( trim( $kop ), $link ) . '</h3>', array( 'level' => 3 ) ) . "\n\n" . dg_inhoud_blokken( $rest, $link, $beeld );
+			if ( ! empty( $kenmerk['doel'] ) ) {
+				$binnen .= "\n\n" . dg_inhoud_campagne( $kenmerk );
+			}
 			if ( ! empty( $kenmerk['link'] ) ) {
 				$binnen   .= "\n\n" . dg_blok( 'paragraph', '<p class="dg-kaart-link"><a href="' . esc_url( $link( $kenmerk['link'][0] ) ) . '"><span class="screen-reader-text">' . esc_html( trim( $kop ) ) . '</span></a></p>', array( 'className' => 'dg-kaart-link' ) );
 				$klassen[] = 'heeft-link';
@@ -253,6 +256,16 @@ function dg_inhoud_vak( string $soort, string $md, callable $link, callable $bee
 		return dg_blok( 'group', '<div class="wp-block-group ' . $klasse . '">' . implode( "\n\n", $kaarten ) . '</div>', array( 'className' => $klasse, 'layout' => array( 'type' => 'grid', 'minimumColumnWidth' => '15rem' ) ) );
 	}
 	$klasse = 'dg-' . $soort;
+	if ( 'feiten' === $soort ) {
+		// Regels "Sleutel: waarde" als een tabel met twee kolommen.
+		$rijen = '';
+		foreach ( explode( "\n", $md ) as $regel ) {
+			if ( preg_match( '/^\s*([^:]{1,40}):\s*(.+?)\s*$/', $regel, $m ) ) {
+				$rijen .= '<tr><th>' . dg_inhoud_regel( $m[1], $link ) . '</th><td>' . dg_inhoud_regel( $m[2], $link ) . '</td></tr>';
+			}
+		}
+		return dg_blok( 'table', '<figure class="wp-block-table dg-feiten"><table><tbody>' . $rijen . '</tbody></table></figure>', array( 'hasFixedLayout' => false, 'className' => 'dg-feiten' ) );
+	}
 	if ( 'held' === $soort ) {
 		[ $kenmerk, $md ] = dg_inhoud_kenmerken( $md );
 		$binnen           = dg_inhoud_blokken( $md, $link, $beeld );
@@ -275,6 +288,22 @@ function dg_inhoud_vak( string $soort, string $md, callable $link, callable $bee
 		return dg_blok( 'group', '<div class="wp-block-group ' . $klasse . '">' . $tekst . $foto . '</div>', array( 'className' => $klasse, 'align' => 'full', 'layout' => array( 'type' => 'default' ) ) );
 	}
 	return dg_blok( 'group', '<div class="wp-block-group ' . $klasse . '">' . dg_inhoud_blokken( $md, $link, $beeld ) . '</div>', array( 'className' => $klasse, 'layout' => array( 'type' => 'constrained' ) ) );
+}
+
+/**
+ * Een voortgangsbalk voor crowdfunding: doel en toegezegd in euro's, en
+ * eventueel het aantal deelnemende organisaties.
+ */
+function dg_inhoud_campagne( array $kenmerk ): string {
+	$getal     = static fn( string $tekst ): int => (int) preg_replace( '/\D/', '', $tekst );
+	$euro      = static fn( int $bedrag ): string => '€ ' . number_format( $bedrag, 0, ',', '.' );
+	$doel      = $getal( $kenmerk['doel'][0] );
+	$toegezegd = $getal( $kenmerk['toegezegd'][0] ?? '0' );
+	$procent   = $doel ? min( 100, (int) round( 100 * $toegezegd / $doel ) ) : 0;
+	$deel      = ! empty( $kenmerk['deelnemers'] ) ? ' · ' . esc_html( $kenmerk['deelnemers'][0] ) : '';
+	$html      = '<p class="dg-campagne"><span class="dg-balk" role="img" aria-label="' . $procent . ' procent toegezegd"><span class="dg-balk-vul" style="width:' . $procent . '%"></span></span>'
+		. '<span class="dg-bedragen"><strong>' . $euro( $toegezegd ) . '</strong> toegezegd van ' . $euro( $doel ) . $deel . '</span></p>';
+	return dg_blok( 'paragraph', $html, array( 'className' => 'dg-campagne' ) );
 }
 
 /** Fouten in de vakken van een pagina: onbekende naam, niet afgesloten, kaarten zonder ### kop. */

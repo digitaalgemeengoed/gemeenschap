@@ -1,5 +1,17 @@
 # Wijzigingen
 
+## 0.6.0 — 2026-11-11
+
+Naar aanleiding van de paginaset (prototype) en met een duidelijke verwijzing naar de VNG en Common Ground:
+- **Common Ground**: een eigen pagina (onder Over DGG) en een blok op de startpagina, met links naar het programma Common Ground bij de VNG en naar commonground.nl; ook in de voet en op Over ons.
+- **Werkgroepen** als BuddyPress-groepen, elk met een eigen forum: Common Ground, Open Overheid, Records Management, Projectportfolio, Developers & contributors, en Implementatie & beheer. Groepen aanmaken kan alleen een beheerder.
+- **Projectpagina's** voor Anonimiseren bij de bron, Open overheid en Datafundament; elke projectpagina heeft nu een feitenblok (fase uit Redmine, werkwijze, financiering) en "Hoe je bijdraagt". Redmine krijgt die drie projecten erbij.
+- **Crowdfunding**: kaarten met een voortgangsbalk (`doel:`, `toegezegd:`, `deelnemers:`).
+- **Voet** in drie kolommen (Ontdekken, Deelnemen, Goed om te weten) met het logo en een korte omschrijving.
+- Startpagina voor gasten: "Niet telkens opnieuw beginnen. Samen verder bouwen." met vinkjes, en de balk "Goede software maken we samen."
+- Pagina's **Open source** en **Implementatie** onder Kennisbank.
+- Oplossing: de tabellen van de BuddyPress-onderdelen (groepen, activiteit, berichten, meldingen) worden nu echt aangemaakt; alleen de instelling zetten deed dat niet.
+
 ## 0.5.0 — 2026-11-11
 
 **Dashboard voor leden** op de startpagina, naar het ontwerp van Erik (shortcode `[dg_dashboard]`, `wordpress/dg-dashboard.php`):

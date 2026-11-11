@@ -34,24 +34,39 @@ add_filter(
 );
 
 // De voet: het menu "Voet" uit inhoud/menu.md en een regel over wie we zijn.
-add_filter(
-	'theme_mod_site_copyright_text',
-	static function () {
-		$menu = wp_get_nav_menu_object( 'Voet' )
-			? wp_nav_menu(
-				array(
-					'menu'        => 'Voet',
-					'depth'       => 1,
-					'container'   => false,
-					'menu_class'  => 'dg-voet',
-					'echo'        => false,
-					'fallback_cb' => false,
-				)
-			)
-			: '';
-		return $menu . '<p>Een netwerk van Digitaal GemeenGoed en NL-Dit. Open source, onder de EUPL.</p>';
+add_filter( 'theme_mod_site_copyright_text', 'dg_voet' );
+
+/**
+ * De voet uit het menu "Voet" (inhoud/menu.md): links het logo met een korte
+ * omschrijving, dan een kolom per punt zonder link met de punten eronder, en
+ * onderaan de punten met een link.
+ */
+function dg_voet(): string {
+	$items    = wp_get_nav_menu_object( 'Voet' ) ? (array) wp_get_nav_menu_items( 'Voet' ) : array();
+	$kolommen = array();
+	$onder    = array();
+	foreach ( $items as $item ) {
+		if ( (int) $item->menu_item_parent ) {
+			$kolommen[ (int) $item->menu_item_parent ]['links'][] = $item;
+		} elseif ( '#' === $item->url ) {
+			$kolommen[ (int) $item->ID ]['titel'] = $item->title;
+		} else {
+			$onder[] = $item;
+		}
 	}
-);
+	$link = static fn( $item ) => '<a href="' . esc_url( $item->url ) . '">' . esc_html( $item->title ) . '</a>';
+	$html = '<div class="dg-voet-boven"><div class="dg-voet-merk"><img src="' . esc_url( get_stylesheet_directory_uri() . '/assets/uil.png' ) . '" alt="" width="40" height="78"><div><strong>Digitaal<br>GemeenGoed</strong><span>Samen grenzeloos sterk</span></div>'
+		. '<p>Een community voor kennisdeling, gezamenlijke ontwikkeling en duurzaam beheer van open source oplossingen voor de overheid.</p></div>';
+	foreach ( $kolommen as $kolom ) {
+		if ( empty( $kolom['titel'] ) || empty( $kolom['links'] ) ) {
+			continue;
+		}
+		$html .= '<div class="dg-voet-kolom"><h3>' . esc_html( $kolom['titel'] ) . '</h3><ul>' . implode( '', array_map( static fn( $i ) => '<li>' . $link( $i ) . '</li>', $kolom['links'] ) ) . '</ul></div>';
+	}
+	$html .= '</div><div class="dg-voet-onder"><span>© ' . esc_html( wp_date( 'Y' ) ) . ' Stichting Digitaal GemeenGoed · in samenwerking met NL-Dit · open source onder de EUPL</span>'
+		. ( $onder ? '<span class="dg-voet-links">' . implode( '', array_map( $link, $onder ) ) . '</span>' : '' ) . '</div>';
+	return $html;
+}
 
 add_action(
 	'wp_enqueue_scripts',

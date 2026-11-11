@@ -5,6 +5,13 @@ volgorde: 5
 ---
 De Office Assistent helpt een medewerker een stuk goed vast te leggen, op het moment dat het ontstaat: in de tekstverwerker, niet achteraf in een archiefsysteem. De assistent werkt in **Word**, **LibreOffice** en **Collabora Online**.
 
+::: feiten
+Fase: [dg_fase project=office-assistent]
+Werkwijze: Open source, onder de EUPL
+Financiering: Te bepalen
+Volgen: [Redmine](https://projecten.digitaalgemeengoed.nl/projects/office-assistent)
+:::
+
 ## Wat de assistent doet
 
 - **Metadateren.** De gegevens die bij een stuk horen (zoals onderwerp, zaak, status en Woo-informatiecategorie) vult de medewerker in een paneel naast het stuk in, met voorstellen van de assistent. Ze komen in het bestand zelf mee.

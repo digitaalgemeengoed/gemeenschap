@@ -78,7 +78,9 @@ Tekst van de tweede kaart.
 | `kaarten` | elke `###` kop met de tekst eronder wordt een kaart; de kaarten staan naast elkaar |
 | `stappen` | als kaarten, maar genummerd: een proces in stappen |
 | `projecten` | kaarten met een tegel (icoon of beeld), een label en een pijl naar de pagina |
-| `kader` | tekst in een lichtblauw vlak, bijvoorbeeld een oproep |
+| `kader` | tekst in een lichtblauw vlak, bijvoorbeeld een oproep; een lijst erin krijgt groene vinkjes |
+| `band` | een donkerblauwe balk met een kop, een regel en een knop rechts |
+| `feiten` | regels `Sleutel: waarde` als een tabelletje, zoals Fase, Werkwijze en Financiering op een projectpagina |
 
 Een vak in een vak kan niet.
 
@@ -92,6 +94,10 @@ Direct onder de `###` kop van een kaart (of bovenin een `held`) kun je regels
 | `link: xena.md` | de hele kaart wordt een link, met een pijl |
 | `beeld: media/foto.jpg` | een foto: in een `held` rechts over de hele hoogte, op een kaart als tegel |
 | `soort: oproep` | in `projecten`: een brede balk onder de kaarten, voor een oproep met knop |
+| `doel: 50000`, `toegezegd: 31000`, `deelnemers: 4 gemeenten` | crowdfunding: een voortgangsbalk met de bedragen. Alleen echte toezeggingen invullen. |
+
+`[dg_fase project=xena]` (bijvoorbeeld in een `feiten`-vak) toont de fase van
+het project zoals die in Redmine staat, in het veld Fase.
 
 Een pagina weghalen: verwijder het bestand. Op de site wordt het dan een
 concept; het verdwijnt niet.

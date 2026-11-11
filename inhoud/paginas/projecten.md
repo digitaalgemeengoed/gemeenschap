@@ -37,18 +37,21 @@ Metadata, anonimiseren en bewaren, in Word, LibreOffice en Collabora
 ::: kaarten
 ### Anonimiseren bij de bron
 icoon: schild
+link: anonimiseren.md
 - Versleutelen in plaats van lakken
 - Het Zwitserse-kaasmodel: meer lagen van bescherming
 - Ingebouwd in het systeem waar het stuk ontstaat
 
 ### Open overheid
 icoon: boek
+link: open-overheid.md
 - Bronsystemen ontsluiten
 - Het proces van openbaar maken
 - Een kanaal om te publiceren
 
 ### Datafundament
 icoon: lagen
+link: datafundament.md
 - Een dataplatform
 - ETL: gegevens ophalen, omzetten en laden
 - Rapportage en presentatie

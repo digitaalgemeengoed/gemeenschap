@@ -576,6 +576,8 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			// Logo en sitepictogram uit het thema (wordpress/thema/…/assets/).
 			dg_thema_beeld( 'uil.png', static fn( $id ) => set_theme_mod( 'custom_logo', $id ) );
 			dg_thema_beeld( 'icoon.png', static fn( $id ) => update_option( 'site_icon', $id ) );
+			// Werkgroepen: BuddyPress-groepen, elk met een eigen forum onder "Werkgroepen".
+			dg_werkgroepen();
 			// De adressen van BuddyPress in het Nederlands.
 			if ( function_exists( 'bp_core_get_directory_page_ids' ) ) {
 				$adressen = array( 'members' => 'leden', 'groups' => 'groepen', 'activity' => 'activiteit' );
@@ -614,6 +616,71 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			WP_CLI::success( 'Ingericht.' );
 		}
 	);
+
+	/**
+	 * De werkgroepen. Een groep die al bestaat, blijft zoals beheerders hem
+	 * hebben gemaakt; een groep die ontbreekt, komt erbij, met een forum.
+	 */
+	function dg_werkgroepen(): void {
+		if ( ! function_exists( 'groups_create_group' ) || ! function_exists( 'bbp_insert_forum' ) ) {
+			WP_CLI::log( 'Werkgroepen overgeslagen: BuddyPress-groepen of bbPress staan niet aan.' );
+			return;
+		}
+		$groepen  = array(
+			'common-ground'      => array( 'Common Ground', 'Architectuur, API\'s en herbruikbare bouwstenen.' ),
+			'open-overheid'      => array( 'Open Overheid', 'Openbaarmaking, toegankelijkheid en publicatie.' ),
+			'records-management' => array( 'Records Management', 'Metadata, archivering en duurzame toegankelijkheid.' ),
+			'projectportfolio'   => array( 'Projectportfolio', 'Gezamenlijke prioriteiten en het starten van projecten.' ),
+			'developers'         => array( 'Developers & contributors', 'Code, reviews en open samenwerking.' ),
+			'implementatie'      => array( 'Implementatie & beheer', 'Van pilot naar dagelijkse dienstverlening.' ),
+		);
+		$beheer   = get_users( array( 'role' => 'administrator', 'number' => 1, 'orderby' => 'ID', 'fields' => 'ID' ) );
+		$maker    = (int) ( $beheer[0] ?? 0 );
+		$wortel   = get_page_by_path( 'werkgroepen', OBJECT, bbp_get_forum_post_type() );
+		$wortelid = $wortel ? $wortel->ID : bbp_insert_forum(
+			array(
+				'post_name'    => 'werkgroepen',
+				'post_title'   => 'Werkgroepen',
+				'post_content' => 'De fora van de werkgroepen. Word lid van een werkgroep om mee te praten.',
+			)
+		);
+		update_option( '_bbp_enable_group_forums', 1 );
+		update_option( '_bbp_group_forums_root_id', $wortelid );
+		foreach ( $groepen as $slug => [ $naam, $omschrijving ] ) {
+			$gid = (int) groups_get_id( $slug );
+			if ( ! $gid ) {
+				$gid = (int) groups_create_group(
+					array(
+						'creator_id'   => $maker,
+						'name'         => $naam,
+						'slug'         => $slug,
+						'description'  => $omschrijving,
+						'status'       => 'public',
+						'enable_forum' => 1,
+					)
+				);
+				if ( $gid ) {
+					WP_CLI::log( "Werkgroep $naam aangemaakt." );
+				}
+			}
+			if ( ! $gid || ! empty( groups_get_groupmeta( $gid, 'forum_id' ) ) ) {
+				continue;
+			}
+			$fid = bbp_insert_forum(
+				array(
+					'post_parent'  => $wortelid,
+					'post_name'    => $slug,
+					'post_title'   => $naam,
+					'post_content' => $omschrijving,
+				)
+			);
+			if ( $fid ) {
+				bbp_add_forum_id_to_group( $gid, $fid );
+				bbp_add_group_id_to_forum( $fid, $gid );
+				WP_CLI::log( "Forum voor werkgroep $naam." );
+			}
+		}
+	}
 
 	/**
 	 * Zet een afbeelding uit de map assets/ van het thema in de mediabibliotheek

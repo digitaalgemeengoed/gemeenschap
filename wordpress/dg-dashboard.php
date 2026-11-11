@@ -17,6 +17,31 @@ const DG_DASHBOARD_CACHE = 600;
 
 add_shortcode( 'dg_dashboard', 'dg_dashboard' );
 
+/**
+ * [dg_fase project="xena"]: de fase van een project uit Redmine (veld Fase),
+ * of "nog niet bepaald".
+ */
+add_shortcode(
+	'dg_fase',
+	static function ( $attr ) {
+		$id    = sanitize_title( (string) ( $attr['project'] ?? '' ) );
+		$fasen = get_transient( 'dg_db_fasen' );
+		if ( ! is_array( $fasen ) ) {
+			$fasen = array();
+			foreach ( ( dg_db_redmine( '/projects.json?limit=100' ) ?? array() )['projects'] ?? array() as $p ) {
+				foreach ( $p['custom_fields'] ?? array() as $veld ) {
+					if ( 'Fase' === ( $veld['name'] ?? '' ) && ! empty( $veld['value'] ) ) {
+						$fasen[ (string) $p['identifier'] ] = (string) $veld['value'];
+					}
+				}
+			}
+			set_transient( 'dg_db_fasen', $fasen, DG_DASHBOARD_CACHE );
+		}
+		$fase = $fasen[ $id ] ?? '';
+		return $fase ? '<span class="dg-db-fase dg-db-fase-' . esc_attr( sanitize_title( $fase ) ) . '">' . esc_html( $fase ) . '</span>' : 'nog niet bepaald';
+	}
+);
+
 /** Het hele dashboard. */
 function dg_dashboard(): string {
 	if ( ! is_user_logged_in() ) {

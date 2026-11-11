@@ -8,6 +8,13 @@ volgorde: 2
 **Open document- en zaakbeheer voor gemeenten.** XENA is de referentiearchitectuur voor een Open Digital Object Platform (OpenDOP): een fundament voor de informatiehuishouding waarin de informatie zelf, als object, de eenheid van beheer is. Geen product, maar een manier van denken en een model, gebouwd met bestaande, open technologie.
 :::
 
+::: feiten
+Fase: [dg_fase project=xena]
+Werkwijze: Open source, onder de EUPL
+Financiering: Te bepalen
+Volgen: [Redmine](https://projecten.digitaalgemeengoed.nl/projects/xena)
+:::
+
 ## Het probleem
 
 Vrijwel elke overheidsorganisatie beheert haar informatie als bestanden, en daarmee als eigendom van de applicatie die die bestanden beheert. Hetzelfde besluit bestaat in drie of meer systemen, en niemand kan aantonen welke versie telt. Elke systeemvervanging wordt een reconstructieproject. Een nieuw documentmanagementsysteem lost dat niet op; het herhaalt het probleem met andere techniek.
@@ -30,6 +37,26 @@ Elke stap laat een bewijsbare geschiedenis achter. Een export naar een e-Depot s
 ### Open technologie
 icoon: code
 Een referentie-implementatie met bestaande open componenten, als voorbeeld, niet als voorschrift.
+:::
+
+## Hoe je bijdraagt
+
+::: kaarten
+### Kennis en ervaring
+icoon: boek
+Vertel hoe jouw gemeente dit nu doet, wat er goed gaat en wat schuurt.
+
+### Eisen en architectuur
+icoon: lagen
+Denk mee over wat de oplossing moet kunnen en hoe ze past in Common Ground.
+
+### Ontwikkeling
+icoon: code
+Bouw mee, test, of beoordeel bijdragen van anderen.
+
+### Een pilot
+icoon: raket
+Probeer de oplossing uit bij je eigen gemeente en deel wat je leert.
 :::
 
 ## Meedoen

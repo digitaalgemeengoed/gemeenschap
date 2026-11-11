@@ -46,7 +46,10 @@ wp option update openid_connect_generic_settings --format=json \
 # BuddyPress: leden, profielen, groepen, activiteit, berichten, meldingen.
 wp option update bp-active-components --format=json \
   '{"members":1,"xprofile":1,"groups":1,"activity":1,"settings":1,"notifications":1,"messages":1}' >/dev/null
-wp eval 'bp_core_add_page_mappings( bp_get_option( "bp-active-components" ), "keep" );' >/dev/null
+# De tabellen van de onderdelen (alleen de optie zetten maakt ze niet aan) en de pagina's.
+wp eval 'require_once ABSPATH . "wp-admin/includes/upgrade.php"; require_once buddypress()->plugin_dir . "bp-core/admin/bp-core-admin-schema.php"; bp_core_install( bp_get_option( "bp-active-components" ) ); bp_core_add_page_mappings( bp_get_option( "bp-active-components" ), "keep" );' >/dev/null
+# Groepen maken alleen beheerders; leden worden lid van een werkgroep.
+wp option update bp_restrict_group_creation 1 >/dev/null
 log "BuddyPress-onderdelen en -pagina's"
 
 # --- CiviCRM ------------------------------------------------------------------

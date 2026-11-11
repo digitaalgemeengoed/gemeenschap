@@ -87,7 +87,7 @@ Text Domain: digitaalgemeengoed
    Pagina's
    ------------------------------------------------------------------------ */
 .entry-content h2 { color: var(--dg-marine); }
-.entry-content .wp-block-buttons { gap: .75rem; margin: 1.5rem 0; }
+.entry-content .wp-block-buttons { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; margin: 1.5rem 0; }
 .entry-content .wp-element-button, .entry-content .wp-block-button__link {
   border-radius: 10px; background-color: var(--dg-blauw); color: #fff; font-weight: 650; padding: .75rem 1.4rem;
 }
@@ -468,10 +468,84 @@ Text Domain: digitaalgemeengoed
 [data-bx-mode="dark"] .dg-db-nav a:hover, [data-bx-mode="dark"] .dg-db-nav li.is-actief a { background: #1c3047; }
 
 /* ------------------------------------------------------------------------
-   Voet
+   Voet: merk, kolommen, onderste regel (functions.php, dg_voet)
    ------------------------------------------------------------------------ */
-.dg-voet { list-style: none; margin: 0 0 .5em; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: .25em 1.5em; }
-.dg-voet li { margin: 0; }
+.site-footer-copyright, .copyright, .site-info { text-align: left; }
+.dg-voet-boven {
+  display: grid; grid-template-columns: minmax(16rem, 1.4fr) repeat(3, minmax(10rem, 1fr)); gap: 2rem;
+  padding: 2.5rem 0 2rem; text-align: left;
+}
+@media (max-width: 900px) { .dg-voet-boven { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 560px) { .dg-voet-boven { grid-template-columns: 1fr; } }
+.dg-voet-merk { display: grid; grid-template-columns: auto 1fr; column-gap: .7rem; align-items: center; align-content: start; }
+.dg-voet-merk > div { display: flex; flex-direction: column; }
+.dg-voet-merk p { grid-column: 1 / -1; }
+.dg-voet-merk img { height: 64px; width: auto; vertical-align: middle; }
+.dg-voet-merk strong { font-size: 1.35rem; line-height: 1.05; color: var(--dg-marine); }
+.dg-voet-merk span { font-size: .78rem; color: var(--dg-link); margin-top: .2rem; }
+.dg-voet-merk p { margin: .9rem 0 0; font-size: .92rem; color: var(--dg-grijs); max-width: 24rem; }
+.dg-voet-kolom h3 { font-size: 1rem; margin: .3rem 0 .8rem; color: var(--dg-marine); }
+.dg-voet-kolom ul { list-style: none; margin: 0; padding: 0; }
+.dg-voet-kolom li { margin: 0 0 .55rem; }
+.dg-voet-kolom a, .dg-voet-onder a { color: var(--dg-tekst) !important; text-decoration: none !important; }
+.dg-voet-kolom a:hover, .dg-voet-onder a:hover { color: var(--dg-link) !important; text-decoration: underline !important; }
+.dg-voet-onder {
+  display: flex; flex-wrap: wrap; justify-content: space-between; gap: .5rem 1.5rem;
+  padding: 1.1rem 0 .4rem; border-top: 1px solid var(--dg-rand); font-size: .84rem; color: var(--dg-grijs); text-align: left;
+}
+.dg-voet-links { display: inline-flex; flex-wrap: wrap; gap: .3rem 1.2rem; }
+
+/* ------------------------------------------------------------------------
+   Feiten, voortgang, vinkjes, band
+   ------------------------------------------------------------------------ */
+.entry-content .dg-feiten { margin: 0 0 2.5rem; }
+.entry-content .dg-feiten table { border: 1px solid var(--dg-rand); border-radius: 14px; overflow: hidden; border-collapse: separate; border-spacing: 0; background: #fff; max-width: 40rem; }
+.entry-content .dg-feiten th, .entry-content .dg-feiten td { border: 0; border-top: 1px solid var(--dg-rand); padding: .7rem 1.1rem; text-align: left; vertical-align: middle; }
+.entry-content .dg-feiten tr:first-child th, .entry-content .dg-feiten tr:first-child td { border-top: 0; }
+.entry-content .dg-feiten th { width: 9rem; color: var(--dg-grijs); font-weight: 600; background: var(--dg-ijs); }
+
+.entry-content .dg-campagne { margin: 1rem 0 0 !important; }
+.entry-content .dg-balk { display: block; height: 10px; border-radius: 999px; background: #e3ebf3; overflow: hidden; margin-bottom: .55rem; }
+.entry-content .dg-balk-vul { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #12a39a, #5c9b2c); }
+.entry-content .dg-bedragen { font-size: .9rem; color: var(--dg-tekst); }
+.entry-content .dg-bedragen strong { color: var(--dg-marine); font-size: 1.05rem; }
+
+/* Lijsten in een kader: vinkjes. */
+.entry-content .dg-kader ul { list-style: none; padding-left: 0; }
+.entry-content .dg-kader ul li { position: relative; padding-left: 1.8rem; margin: .45rem 0; font-weight: 600; color: var(--dg-marine); }
+.entry-content .dg-kader ul li::before {
+  content: ""; position: absolute; left: 0; top: .2em; width: 1.15rem; height: 1.15rem; border-radius: 50%;
+  background: var(--dg-groen) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 12.5 4 4 8-9'/%3E%3C/svg%3E") center / 70% no-repeat;
+}
+
+/* Band: een donkere oproep over de breedte van de inhoud. */
+.entry-content .dg-band {
+  position: relative; overflow: hidden;
+  margin: 3.5rem 0 1rem !important; max-width: none !important;
+  padding: 2.6rem clamp(1.5rem, 5vw, 3.5rem);
+  border-radius: 22px;
+  background: linear-gradient(110deg, var(--dg-marine) 0%, var(--dg-blauw) 55%, #0e8f8a 100%);
+  color: #fff;
+  display: grid; grid-template-columns: 1fr auto; align-items: center; column-gap: 2rem;
+}
+.entry-content .dg-band > * { margin-left: 0 !important; margin-right: 0 !important; grid-column: 1; }
+.entry-content .dg-band h2 { color: #fff !important; font-size: clamp(1.6rem, 3vw, 2.3rem); margin: 0 0 .5rem; }
+.entry-content .dg-band p { color: #e6f0fb; margin: 0; }
+.entry-content .dg-band .wp-block-buttons { grid-column: 2; grid-row: 1 / span 2; margin: 0; }
+.entry-content .dg-band .wp-block-button__link { background: #fff; color: var(--dg-marine); }
+.entry-content .dg-band .wp-block-button__link:hover { background: var(--dg-ijs); color: var(--dg-marine); }
+.entry-content .dg-band::after {
+  content: ""; position: absolute; right: -10%; bottom: -30px; width: 60%; height: 140px; opacity: .55;
+  background: url("assets/netwerk.svg") center / 100% 100% no-repeat; pointer-events: none;
+}
+@media (max-width: 760px) {
+  .entry-content .dg-band { display: block; }
+  .entry-content .dg-band .wp-block-buttons { margin-top: 1.2rem; }
+}
+
+/* Kenmerken met een link: geen pijl, de kaart is klein. */
+.entry-content .dg-kenmerken .dg-kaart.heeft-link { padding-bottom: .3rem; }
+.entry-content .dg-kenmerken .dg-kaart-link a::before { display: none; }
 
 /* ------------------------------------------------------------------------
    Donkere modus van BuddyX

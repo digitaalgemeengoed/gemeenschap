@@ -116,7 +116,10 @@ projecten = {
   'office-assistent' => ['Office Assistent', 'Metadata, anonimiseren en bewaren in Word, LibreOffice en Collabora.'],
   'xena' => ['XENA – Open DMS/RMA', 'Open document- en zaakbeheer voor gemeenten.'],
   'e-mailarchivering' => ['E-mailarchivering', 'Duurzame en veilige archivering van e-mail (VNG Selectielijst).'],
-  'werkplek' => ['Object-native werkplek', 'WebDAV, CardDAV en CalDAV voor de overheid.']
+  'werkplek' => ['Object-native werkplek', 'WebDAV, CardDAV en CalDAV voor de overheid.'],
+  'anonimiseren' => ['Anonimiseren bij de bron', 'Persoonsgegevens beschermen waar een stuk ontstaat.'],
+  'open-overheid' => ['Open overheid', 'Van bronsysteem naar een zorgvuldig publicatieproces.'],
+  'datafundament' => ['Datafundament', 'Een gedeelde basis voor gegevens, ETL en rapportage.']
 }
 projecten.each do |id, (naam, omschrijving)|
   project = Project.find_by(identifier: id) || Project.create!(

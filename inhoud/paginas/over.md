@@ -25,6 +25,8 @@ Veel gemeenten, vooral kleinere, hebben zelf niet de mensen en de kennis om vern
 
 ## Naast wat er al is
 
+Digitaal GemeenGoed bouwt op [Common Ground](common-ground.md), de visie van de gemeenten waarin de VNG hen samenbrengt in het [programma Common Ground](https://vng.nl/projecten/programma-common-ground).
+
 Er wordt al veel samengewerkt, bijvoorbeeld in Dimpact, in de G4 en in thematische communities. Die samenwerkingen richten zich vaak op het delen van broncode, of op een deel van het werkveld. Digitaal GemeenGoed vult dat aan: een organisatie die meegroeit met het aantal gemeenten, die ook invoering en beheer regelt, en die er is voor gemeenten van elke grootte. Van de ruim 340 gemeenten in Nederland heeft het grootste deel minder dan 50.000 inwoners.
 
 ## Hoe we zijn georganiseerd
