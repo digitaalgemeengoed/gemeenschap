@@ -11,7 +11,9 @@
 - `herstellen.sh [--proef] [map] [onderdelen]`: een back-up terugzetten per onderdeel (Keycloak, WordPress, Redmine, kennisbank). Controleert eerst of de bestanden heel zijn, maakt een back-up van nu, pauzeert de uitrol en vraagt om bevestiging. Met `--proef` zie je alleen wat er zou gebeuren.
 - De gezondheidscontrole (`gezond`) staat nu in `lib.sh`, voor `uitrol.sh` en `terugzetten.sh` samen.
 
-**Opmaak:** de hoofdpagina's (Over ons, Werkwijze, Projecten, Het platform, Meedoen, Crowdfunding, Contact) beginnen nu met een opening in de stijl van de startpagina: titel, lint, inleiding, knoppen, stadsgezicht en (waar er een is) een foto. Op zo'n pagina vervalt de titelbalk van BuddyX met het kruimelpad. De opening is daar wat lager dan op de startpagina. Foto's: *Projecten* (Mizuno Kozuki), *Over ons* (Austin Distel), *Het platform* (Annie Spratt). De knoppen in een opening blijven nu zichtbaar voor wie is ingelogd, behalve op de startpagina.
+**Opmaak:** de hoofdpagina's (Over ons, Werkwijze, Projecten, Het platform, Meedoen, Crowdfunding, Contact) beginnen nu met een opening in de stijl van de startpagina: titel, lint, inleiding, knoppen, stadsgezicht en (waar er een is) een foto. Op zo'n pagina vervalt de titelbalk van BuddyX met het kruimelpad. De opening is daar wat lager dan op de startpagina. Beelden: *Projecten* (foto Mizuno Kozuki), *Over ons* (Austin Distel), *Het platform* (Annie Spratt); *Werkwijze*, *Meedoen*, *Crowdfunding* en *Contact* met een gegenereerde afbeelding (ChatGPT). Herkomst en licenties in `ontwerp/LICENTIES.md`. De knoppen in een opening blijven nu zichtbaar voor wie is ingelogd, behalve op de startpagina.
+
+**Teksten:** het adres info@digitaalgemeengoed.nl staat nu op Contact (ook voor het melden van beveiligingsproblemen), Privacy en Voorwaarden.
 
 ## 0.8.0 — 2026-11-11
 
