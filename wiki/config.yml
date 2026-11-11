@@ -1,0 +1,18 @@
+# Wiki.js, de kennisbank van Digitaal GemeenGoed. De waarden tussen $( ) komen
+# uit de omgeving (compose.yml).
+port: 3000
+bindIP: 0.0.0.0
+db:
+  type: postgres
+  host: wiki-db
+  port: 5432
+  user: wiki
+  pass: '$(DB_PASS)'
+  db: wiki
+  ssl: false
+logLevel: info
+logFormat: default
+# Geen contact met de dienst van Wiki.js: de vertalingen zitten in de image.
+offline: true
+ha: false
+dataPath: ./data

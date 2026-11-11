@@ -64,3 +64,35 @@ projecten.{$DOMEIN} {
 	encode zstd gzip
 	reverse_proxy redmine:3000
 }
+
+# De kennisbank (Wiki.js). Alleen voor leden: dat regelt de wiki zelf (gasten
+# mogen niets en worden naar het inloggen via Keycloak gestuurd).
+kennis.{$DOMEIN} {
+	import beveiliging
+	import toegang-{$DG_TOEGANG:open}
+	encode zstd gzip
+	reverse_proxy wiki:3000
+}
+
+# De architectuurmodellen: de HTML-rapporten van Archi (server/architectuur.sh
+# bouwt ze in /srv/dg-architectuur). Alleen voor leden: oauth2-proxy vraagt
+# Keycloak wie er is; wie niet is ingelogd, gaat eerst naar het inloggen.
+architectuur.{$DOMEIN} {
+	import beveiliging
+	import toegang-{$DG_TOEGANG:open}
+	encode zstd gzip
+	handle /oauth2/* {
+		reverse_proxy oauth2-proxy:4180
+	}
+	handle {
+		forward_auth oauth2-proxy:4180 {
+			uri /oauth2/auth
+			@niet_ingelogd status 401
+			handle_response @niet_ingelogd {
+				redir * /oauth2/start?rd={scheme}://{hostport}{uri} 302
+			}
+		}
+		root * /srv/architectuur
+		file_server
+	}
+}

@@ -21,8 +21,22 @@ cd "$DG_MAP" || exit 1
 meld "Bijwerken naar $(git describe --tags --always 2>/dev/null || echo onbekend)"
 vul_env_aan .env CIVICRM_VERSIE 6.20.0
 vul_env_aan .env UITROL_MELDEN ""
+# Sinds 0.8.0: de kennisbank (Wiki.js) en de architectuurmodellen.
+vul_env_aan .env WIKI_DB_WACHTWOORD "$(geheim 24)"
+vul_env_aan .env WIKI_BEHEER_WACHTWOORD "$(geheim 12)"
+vul_env_aan .env WIKI_CLIENT_SECRET "$(geheim 32)"
+vul_env_aan .env KENNISBANK_REPO ""
+vul_env_aan .env ARCH_CLIENT_SECRET "$(geheim 32)"
+vul_env_aan .env ARCH_COOKIE_SECRET "$(geheim 16)"
+vul_env_aan .env ARCH_GITHUB_TOKEN ""
+# De sleutel waarmee de wiki zijn pagina's naar GitHub schrijft (deploy key).
+install -d -m 700 "$DG_MAP/geheimen"
+if [ ! -f "$DG_MAP/geheimen/kennisbank" ]; then
+  ssh-keygen -q -t ed25519 -N "" -C "kennisbank@$(hostname)" -f "$DG_MAP/geheimen/kennisbank"
+  ok "Nieuwe sleutel voor de kennisbank-repo (geheimen/kennisbank.pub)"
+fi
 dc pull --quiet --ignore-buildable --ignore-pull-failures 2>/dev/null || true
-dc --profile gereedschap pull --quiet keycloak-config wpcli 2>/dev/null || true
+dc --profile gereedschap pull --quiet keycloak-config wpcli wiki-inrichten 2>/dev/null || true
 dc build --quiet || stop "Bouwen mislukt."
 dc up -d --remove-orphans || stop "Starten mislukt."
 if dc exec -T proxy caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile >/dev/null 2>&1; then
@@ -39,6 +53,14 @@ dc run --rm -T -e SMTP_SSL="$SMTP_SSL" -e SMTP_STARTTLS="$SMTP_STARTTLS" keycloa
   || { tail -n 30 /tmp/dg-keycloak-config.log; stop "Keycloak inrichten mislukt (zie hierboven)."; }
 ok "Realm bijgewerkt"
 
+meld "Kennisbank (Wiki.js) bijwerken"
+dc run --rm -T wiki-inrichten || stop "Kennisbank inrichten mislukt; kijk in de uitvoer hierboven en met: sudo docker compose -f $DG_MAP/$COMPOSE logs wiki"
+if ! grep -qE '^KENNISBANK_REPO=.+' .env; then
+  waarschuw "De pagina's van de kennisbank gaan nog niet naar GitHub. Zet deze sleutel als deploy key (met schrijfrechten) bij de repo kennisbank:"
+  printf '      %s\n' "$(cat "$DG_MAP/geheimen/kennisbank.pub")"
+  waarschuw "en zet daarna KENNISBANK_REPO=git@github.com:digitaalgemeengoed/kennisbank.git in .env (README, Kennisbank)."
+fi
+
 wacht "WordPress" 36 wordpress_klaar || stop "WordPress start niet. Kijk met: sudo docker compose -f $DG_MAP/$COMPOSE logs wordpress"
 meld "WordPress bijwerken (BuddyPress, bbPress, CiviCRM, thema)"
 dc run --rm -T wpcli dg-inrichten || stop "WordPress bijwerken mislukt; kijk in de uitvoer hierboven."
@@ -47,6 +69,14 @@ wacht "Redmine" 60 redmine_klaar || stop "Redmine start niet. Kijk met: sudo doc
 meld "Redmine bijwerken"
 dc exec -T -u redmine redmine bundle exec rails runner /usr/local/share/dg/inrichten.rb >/dev/null || stop "Redmine inrichten mislukt. Kijk met: sudo docker compose -f $DG_MAP/$COMPOSE logs redmine"
 dc restart redmine-groepen >/dev/null
+
+# Architectuurmodellen: elk kwartier bouwen wat nieuw is (architectuur/repos.txt).
+install -d -m 755 /srv/dg-architectuur
+install -m 644 "$DG_MAP/server/systemd/dg-architectuur.service" "$DG_MAP/server/systemd/dg-architectuur.timer" /etc/systemd/system/
+systemctl daemon-reload
+systemctl enable --now dg-architectuur.timer >/dev/null 2>&1 || waarschuw "Timer dg-architectuur starten lukte niet"
+systemctl start --no-block dg-architectuur.service || true
+ok "Architectuurmodellen: elk kwartier bijwerken (systemd-timer dg-architectuur)"
 docker image prune -f >/dev/null
 ok "Bijgewerkt"
 echo

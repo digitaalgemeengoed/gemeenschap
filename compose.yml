@@ -72,7 +72,9 @@ services:
     volumes:
       - ./caddy:/etc/caddy:ro
       - caddydata:/data
-    depends_on: [wordpress, keycloak, redmine]
+      # De HTML-rapporten van de architectuurmodellen (server/architectuur.sh).
+      - /srv/dg-architectuur:/srv/architectuur:ro
+    depends_on: [wordpress, keycloak, redmine, wiki, oauth2-proxy]
 
   # --- Keycloak: de bron voor leden, organisaties, groepen en toestemmingen ----
   keycloak-db:
@@ -138,6 +140,10 @@ services:
       WP_CLIENT_SECRET: ${WP_CLIENT_SECRET:?}
       REDMINE_CLIENT_SECRET: ${REDMINE_CLIENT_SECRET:?}
       REDMINE_SYNC_SECRET: ${REDMINE_SYNC_SECRET:?}
+      WIKI_BASIS_URL: https://kennis.${DOMEIN}
+      WIKI_CLIENT_SECRET: ${WIKI_CLIENT_SECRET:?}
+      ARCH_BASIS_URL: https://architectuur.${DOMEIN}
+      ARCH_CLIENT_SECRET: ${ARCH_CLIENT_SECRET:?}
     volumes:
       - ./keycloak/realm:/config:ro
     depends_on: [keycloak]
@@ -260,7 +266,100 @@ services:
     security_opt: ["no-new-privileges:true"]
     depends_on: [keycloak, redmine]
 
+  # --- Kennisbank: Wiki.js (kennis.<domein>), alleen voor leden ------------------
+  wiki-db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: wiki
+      POSTGRES_PASSWORD: ${WIKI_DB_WACHTWOORD:?}
+      POSTGRES_DB: wiki
+    volumes:
+      - wikidb:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U wiki"]
+      interval: 5s
+      retries: 20
+
+  wiki:
+    build:
+      context: .
+      dockerfile: wiki/Dockerfile
+      args:
+        WIKI_VERSIE: ${WIKI_VERSIE:-2}
+    image: dg/wiki:${WIKI_VERSIE:-2}
+    restart: unless-stopped
+    environment:
+      DB_PASS: ${WIKI_DB_WACHTWOORD:?}
+    volumes:
+      # Geüploade bestanden en de werkkopie van de Git-opslag (kennisbank-repo).
+      - wikidata:/wiki/data/content
+      - wikirepo:/wiki/data/repo
+    depends_on:
+      wiki-db: { condition: service_healthy }
+
+  # Wiki.js inrichten (wiki/inrichten.py): bij elke bijwerken.sh.
+  wiki-inrichten:
+    image: python:3.13-alpine
+    profiles: ["gereedschap"]
+    command: ["python", "-I", "/opt/inrichten.py"]
+    environment:
+      DOMEIN: ${DOMEIN}
+      WIKI_INTERN: http://wiki:3000
+      KEYCLOAK_INTERN: http://keycloak:8080
+      WIKI_BEHEER_WACHTWOORD: ${WIKI_BEHEER_WACHTWOORD:?}
+      WIKI_CLIENT_SECRET: ${WIKI_CLIENT_SECRET:?}
+      KENNISBANK_REPO: ${KENNISBANK_REPO:-}
+      KENNISBANK_SLEUTEL: /geheimen/kennisbank
+    volumes:
+      - ./wiki/inrichten.py:/opt/inrichten.py:ro
+      - ./geheimen:/geheimen:ro
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    depends_on: [wiki, keycloak]
+
+  # --- Architectuurmodellen: alleen voor leden (architectuur.<domein>) --------------
+  # Caddy vraagt bij elke aanvraag aan oauth2-proxy of iemand is ingelogd bij
+  # Keycloak en lid is (groep /netwerk/gebruikers).
+  oauth2-proxy:
+    image: quay.io/oauth2-proxy/oauth2-proxy:${OAUTH2_PROXY_VERSIE:-v7.15.6}
+    restart: unless-stopped
+    environment:
+      OAUTH2_PROXY_PROVIDER: keycloak-oidc
+      OAUTH2_PROXY_CLIENT_ID: architectuur
+      OAUTH2_PROXY_CLIENT_SECRET: ${ARCH_CLIENT_SECRET:?}
+      OAUTH2_PROXY_OIDC_ISSUER_URL: https://aanmelden.${DOMEIN}/realms/gemeenschap
+      # Geen discovery via internet: inloggen gaat via het publieke adres,
+      # tokens en sleutels rechtstreeks bij Keycloak.
+      OAUTH2_PROXY_SKIP_OIDC_DISCOVERY: "true"
+      OAUTH2_PROXY_LOGIN_URL: https://aanmelden.${DOMEIN}/realms/gemeenschap/protocol/openid-connect/auth
+      OAUTH2_PROXY_REDEEM_URL: http://keycloak:8080/realms/gemeenschap/protocol/openid-connect/token
+      OAUTH2_PROXY_OIDC_JWKS_URL: http://keycloak:8080/realms/gemeenschap/protocol/openid-connect/certs
+      OAUTH2_PROXY_VALIDATE_URL: http://keycloak:8080/realms/gemeenschap/protocol/openid-connect/userinfo
+      OAUTH2_PROXY_REDIRECT_URL: https://architectuur.${DOMEIN}/oauth2/callback
+      OAUTH2_PROXY_WHITELIST_DOMAINS: architectuur.${DOMEIN}
+      OAUTH2_PROXY_SCOPE: openid email profile
+      OAUTH2_PROXY_CODE_CHALLENGE_METHOD: S256
+      OAUTH2_PROXY_EMAIL_DOMAINS: "*"
+      OAUTH2_PROXY_ALLOWED_GROUPS: /netwerk/gebruikers
+      OAUTH2_PROXY_COOKIE_SECRET: ${ARCH_COOKIE_SECRET:?}
+      OAUTH2_PROXY_COOKIE_NAME: _dg_architectuur
+      OAUTH2_PROXY_COOKIE_SECURE: "true"
+      OAUTH2_PROXY_COOKIE_EXPIRE: 8h
+      OAUTH2_PROXY_SKIP_PROVIDER_BUTTON: "true"
+      OAUTH2_PROXY_REVERSE_PROXY: "true"
+      OAUTH2_PROXY_HTTP_ADDRESS: 0.0.0.0:4180
+      OAUTH2_PROXY_UPSTREAMS: static://202
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    depends_on: [keycloak]
+
 volumes:
+  wikidb:
+  wikidata:
+  wikirepo:
   caddydata:
   kcdata:
   wpdbdata:

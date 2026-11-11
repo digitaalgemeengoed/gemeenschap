@@ -1,0 +1,15 @@
+# De architectuurmodellen op architectuur.<domein>: één repo per project of domein.
+#
+# Per regel: naam, adres van de repo en de titel op de site, gescheiden door
+# een of meer spaties. De naam (kleine letters, cijfers, koppeltekens) wordt het
+# adres: architectuur.<domein>/<naam>/. Elke repo is een Archi-model in het
+# formaat van coArchi (de map model/ met folder.xml).
+#
+# Een regel toevoegen of weghalen werkt na samenvoegen op main, zonder nieuwe
+# versie: server/architectuur.sh leest dit bestand van main en bouwt elk
+# kwartier wat er nieuw is. Is een repo privé, zet dan ARCH_GITHUB_TOKEN in .env
+# (een fine-grained token met alleen leesrechten op die repo's).
+#
+# Voorbeeld (haal het hekje weg als de repo bestaat):
+# xena                https://github.com/digitaalgemeengoed/architectuur-xena               XENA – Open DMS/RMA
+# office-assistent    https://github.com/digitaalgemeengoed/architectuur-office-assistent   Office Assistent

@@ -1,5 +1,21 @@
 # Wijzigingen
 
+## 0.8.0 — 2026-11-11
+
+**Kennisbank** op `kennis.<domein>`: Wiki.js 2, alleen voor leden.
+- Inloggen via Keycloak; de groepen komen bij elke login mee (`/netwerk/gebruikers` lezen en schrijven, `/site/redactie` ook verplaatsen en verwijderen, `/site/beheer` alles). Gasten zien niets en gaan meteen naar het inloggen.
+- Ingericht als code (`wiki/inrichten.py`, bij elke versie): installatie, titel, logo en kleuren van de site, groepen, Nederlands, een startpagina met spelregels.
+- Draait offline: de Nederlandse en Engelse teksten zitten in de image (`wiki/Dockerfile`).
+- **Pagina's ook in GitHub**, in beide richtingen, zodra de repo `kennisbank` en de deploy key er zijn (zie README, Kennisbank).
+- In het menu en op het dashboard wijst *Kennisbank* nu naar de wiki; in Redmine staat de wiki per project uit (een projectwiki waarin al iets staat, blijft).
+
+**Architectuurmodellen** op `architectuur.<domein>`, alleen voor leden.
+- Eén repo per project of domein (coArchi); de lijst staat in `architectuur/repos.txt` en werkt na samenvoegen op `main`, zonder versie.
+- `server/architectuur.sh` (systemd-timer, elk kwartier) bouwt het HTML-rapport met Archi (archimate-ci-image, zonder netwerk) als het model is gewijzigd, en maakt een overzichtspagina. Een mislukt rapport laat het vorige staan.
+- Inloggen via Keycloak met oauth2-proxy voor Caddy.
+
+Verder: nieuwe Keycloak-clients `wiki` en `architectuur`; back-up van de kennisbank; `controleer.sh` en de controle bij het uitrollen kijken ook naar de kennisbank; de privacyverklaring (concept) noemt de kennisbank en GitHub.
+
 ## 0.7.5 — 2026-11-11
 
 - Oplossing: na de bevestigingsmail bij het aanmelden kwam je op een foutpagina (*Invalid state*). Een inlogverzoek bleef maar drie minuten geldig; nu een half uur. En komt WordPress toch een verzoek tegen dat het niet meer kent, dan begint het één keer opnieuw: wie al bij Keycloak is ingelogd, is dan meteen ingelogd.

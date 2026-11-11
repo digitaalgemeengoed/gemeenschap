@@ -1,1 +1,3 @@
 .env
+# Sleutels (bijvoorbeeld de deploy key van de kennisbank-repo)
+geheimen/

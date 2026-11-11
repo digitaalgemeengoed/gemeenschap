@@ -12,6 +12,8 @@ Wat hier op `main` en in versie-tags staat, staat binnen vijf minuten live.
 | `aanmelden.digitaalgemeengoed.nl` | Keycloak, realm `gemeenschap` | lid worden, inloggen, wachtwoord vergeten |
 | `projecten.digitaalgemeengoed.nl` | Redmine | meldingen, wensen, roadmap, portfolio |
 | `forum.digitaalgemeengoed.nl` | (doorverwijzing) | naar `/forum/` |
+| `kennis.digitaalgemeengoed.nl` | Wiki.js 2 | de kennisbank, alleen voor leden; pagina's ook in de repo `kennisbank` |
+| `architectuur.digitaalgemeengoed.nl` | Archi-rapporten achter oauth2-proxy | de architectuurmodellen, alleen voor leden |
 
 ## Een pagina wijzigen
 
@@ -55,19 +57,23 @@ alleen beheerders tags `v*` mogen maken.
 | Groepen, profielvelden, clients, mailinstellingen van Keycloak | `keycloak/realm/gemeenschap.json` | GitHub (bij elke versie gelijkgetrokken met [keycloak-config-cli](https://github.com/adorsys/keycloak-config-cli)) |
 | Leden, organisaties, wie in welke groep | Keycloak | Keycloak-beheer |
 | Thema (BuddyX met ons kindthema: logo, kleuren, voet), plugins, instellingen van WordPress, CiviCRM en Redmine | `wordpress/`, `redmine/` | GitHub. Kleuren en voet staan vast in `wordpress/thema/digitaalgemeengoed/functions.php`; wat in de Customizer staat, telt daarvoor niet. |
-| Wachtwoorden en geheimen | `/opt/gemeenschap/.env` op de server | alleen op de server, nooit in deze repo |
+| Pagina's van de kennisbank | Wiki.js (database) | in de wiki; met de Git-opslag ook als Markdown in de repo `kennisbank` (beide richtingen, elke vijf minuten) |
+| Instellingen van de kennisbank (inloggen, groepen, kleuren, Git-opslag) | `wiki/inrichten.py` | GitHub; bij elke versie gelijkgetrokken |
+| Architectuurmodellen | één repo per project (coArchi), lijst in `architectuur/repos.txt` | in Archi met coArchi; de lijst via een pull request (na samenvoegen live, zonder versie) |
+| Wachtwoorden en geheimen | `/opt/gemeenschap/.env` en `/opt/gemeenschap/geheimen/` op de server | alleen op de server, nooit in deze repo |
 
-Keycloak is de bron voor wie lid is. WordPress, CiviCRM en Redmine nemen
-dat over bij het inloggen (Redmine elke tien minuten):
+Keycloak is de bron voor wie lid is. WordPress, CiviCRM, Redmine en de
+kennisbank nemen dat over bij het inloggen (Redmine elke tien minuten). De
+architectuurmodellen ziet iedereen in `/netwerk/gebruikers`.
 
-| In Keycloak | Wordt in WordPress | In bbPress | In Redmine |
-|---|---|---|---|
-| `/netwerk/gebruikers` (standaard) | abonnee, ledentype Gebruiker | deelnemer | groep Netwerk: Gebruikers |
-| `/netwerk/contributors` | ledentype Contributor | deelnemer | groep Netwerk: Contributors |
-| `/netwerk/members` | ledentype Member | deelnemer | groep Netwerk: Members |
-| `/netwerk/kerngroep` | ledentype Kerngroep | moderator | groep Netwerk: Kerngroep |
-| `/site/redactie` | redacteur | moderator | — |
-| `/site/beheer` | beheerder | keymaster | beheerder |
+| In Keycloak | Wordt in WordPress | In bbPress | In Redmine | In de kennisbank |
+|---|---|---|---|---|
+| `/netwerk/gebruikers` (standaard) | abonnee, ledentype Gebruiker | deelnemer | groep Netwerk: Gebruikers | lezen en schrijven |
+| `/netwerk/contributors` | ledentype Contributor | deelnemer | groep Netwerk: Contributors | (als gebruikers) |
+| `/netwerk/members` | ledentype Member | deelnemer | groep Netwerk: Members | (als gebruikers) |
+| `/netwerk/kerngroep` | ledentype Kerngroep | moderator | groep Netwerk: Kerngroep | (als gebruikers) |
+| `/site/redactie` | redacteur | moderator | — | ook verplaatsen en verwijderen |
+| `/site/beheer` | beheerder | keymaster | beheerder | beheerder |
 
 Profielvelden uit het aanmeldformulier (organisatie, functie, werkveld,
 toestemming voor de nieuwsbrief) komen in het BuddyPress-profiel (alleen
@@ -86,10 +92,57 @@ wordpress/dg-inhoud.php       mu-plugin: pagina's uit inhoud/, op slot
 wordpress/thema/            kindthema van BuddyX: logo, kleuren, voet
 wordpress/inrichten.sh      wp-cli: WordPress, plugins, CiviCRM
 redmine/                    image met redmine_oauth, inrichten, groepssync
-caddy/Caddyfile             de vier adressen, certificaten
+wiki/                       de kennisbank: image (vertalingen, logo, offline) en inrichten.py
+architectuur/repos.txt      de architectuurmodellen (één repo per project)
+caddy/Caddyfile             de adressen, certificaten, afscherming
 compose.yml                 alle containers
 server/                     installeren, bijwerken, uitrollen, back-up, controleren
 ```
+
+## Kennisbank
+
+Wiki.js 2 op `kennis.<domein>`. Alleen leden: wie niet is ingelogd, gaat naar
+Keycloak. Alle leden kunnen lezen en schrijven; de groepen komen bij elke
+login uit Keycloak. Het noodaccount `beheer@<domein>` (wachtwoord
+`WIKI_BEHEER_WACHTWOORD` in `.env`) staat niet op het inlogscherm; het is voor
+`wiki/inrichten.py` en voor nood.
+
+De wiki draait offline: de Nederlandse en Engelse teksten zitten in de image,
+hij haalt niets op bij de dienst van Wiki.js.
+
+**Pagina's ook in GitHub.** Eenmalig:
+
+1. Maak de repo `digitaalgemeengoed/kennisbank`, **privé** (de kennisbank is
+   alleen voor leden), met een eerste commit op `main` (bijvoorbeeld een README).
+2. Zet de publieke sleutel van de server als **deploy key met schrijfrechten**
+   bij die repo (Settings → Deploy keys). `bijwerken.sh` toont hem zolang de
+   koppeling er niet is; anders: `sudo cat /opt/gemeenschap/geheimen/kennisbank.pub`.
+3. Zet in `.env`: `KENNISBANK_REPO=git@github.com:digitaalgemeengoed/kennisbank.git`
+   en draai `sudo /opt/gemeenschap/server/bijwerken.sh`.
+
+Daarna staat elke pagina als Markdown in de repo (met wie hem schreef), en
+komt een wijziging in de repo binnen vijf minuten in de wiki.
+
+## Architectuurmodellen
+
+`architectuur.<domein>` toont het HTML-rapport van Archi voor elk model, alleen
+voor leden. Eén repo per project of domein, in het formaat van coArchi.
+
+1. Maak de repo (bijvoorbeeld `digitaalgemeengoed/architectuur-xena`) en zet
+   het model erin met coArchi in Archi.
+2. Voeg een regel toe aan `architectuur/repos.txt` (zie de uitleg daar) en
+   voeg samen op `main`. Een nieuwe versie is niet nodig.
+3. Binnen een kwartier staat het rapport op `architectuur.<domein>/<naam>/`.
+   Bij elke commit in de modelrepo wordt het opnieuw gebouwd.
+
+Privé-repo's: zet `ARCH_GITHUB_TOKEN` in `.env`, een *fine-grained* token met
+alleen *Contents: read* op de modelrepo's. Wat er gebeurde:
+`sudo grep architectuur /var/lib/dg-gemeenschap/logboek`; alles opnieuw bouwen:
+`sudo /opt/gemeenschap/server/architectuur.sh --opnieuw`.
+
+Zet in een model geen netwerkinrichting, beveiligingsmaatregelen of
+leveranciersafspraken van een gemeente (BIO); referentie- en
+oplossingsarchitectuur wel.
 
 ## Installeren
 

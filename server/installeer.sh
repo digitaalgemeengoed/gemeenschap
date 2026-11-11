@@ -32,7 +32,7 @@ while [ -z "${DOMEIN:-}" ]; do
 done
 IP="$(publiek_ip)"
 ONTBREEKT=0
-for naam in "$DOMEIN" "www.$DOMEIN" "aanmelden.$DOMEIN" "projecten.$DOMEIN" "forum.$DOMEIN"; do
+for naam in "$DOMEIN" "www.$DOMEIN" "aanmelden.$DOMEIN" "projecten.$DOMEIN" "forum.$DOMEIN" "kennis.$DOMEIN" "architectuur.$DOMEIN"; do
   gevonden="$(getent ahostsv4 "$naam" | awk 'NR==1{print $1}')"
   if [ "$gevonden" = "$IP" ]; then ok "$naam wijst naar deze server"; else waarschuw "$naam wijst naar '${gevonden:-niets}', niet naar $IP"; ONTBREEKT=1; fi
 done
@@ -40,7 +40,7 @@ for naam in "$DOMEIN" "aanmelden.$DOMEIN" "projecten.$DOMEIN"; do
   gevonden="$(getent ahostsv4 "$naam" | awk 'NR==1{print $1}')"
   [ "$gevonden" = "$IP" ] || stop "Maak eerst in je DNS A-records naar $IP voor $DOMEIN, aanmelden.$DOMEIN en projecten.$DOMEIN (en liefst www. en forum.), wacht een kwartier en probeer opnieuw. Zonder die records kan Caddy geen certificaten halen."
 done
-[ "$ONTBREEKT" = 0 ] || waarschuw "www. en forum. zijn alleen doorverwijzingen; die kun je later toevoegen."
+[ "$ONTBREEKT" = 0 ] || waarschuw "www. en forum. zijn alleen doorverwijzingen, kennis. en architectuur. kunnen later; Caddy haalt het certificaat zodra de naam naar deze server wijst."
 
 # --- .env -----------------------------------------------------------------------
 if [ -s .env ]; then

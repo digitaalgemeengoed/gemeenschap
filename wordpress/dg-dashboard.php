@@ -69,7 +69,7 @@ function dg_dashboard(): string {
 				<section class="dg-db-blok dg-db-oproep dg-db-kennis">
 					<h3><span class="dg-icoon dg-icoon-boek" aria-hidden="true"></span>Kennis- &amp; ervaringsbank</h3>
 					<p>Handleidingen, how-to's, referentiearchitecturen, lessen uit de praktijk en herbruikbare componenten.</p>
-					<a class="dg-db-knop dg-db-knop-rand" href="<?php echo esc_url( home_url( '/platform/' ) ); ?>">Naar de kennisbank ›</a>
+					<a class="dg-db-knop dg-db-knop-rand" href="<?php echo esc_url( dg_db_kennisbank() ); ?>">Naar de kennisbank ›</a>
 				</section>
 				<section class="dg-db-blok dg-db-oproep dg-db-doemee">
 					<h3><span class="dg-icoon dg-icoon-hand" aria-hidden="true"></span>Doe mee!</h3>
@@ -140,7 +140,7 @@ function dg_db_navigatie( WP_User $gebruiker ): string {
 		array( 'huis', 'Dashboard', home_url( '/' ), 0 ),
 		array( 'mensen', 'Community', function_exists( 'bp_get_members_directory_permalink' ) ? bp_get_members_directory_permalink() : home_url( '/leden/' ), 0 ),
 		array( 'forum', 'Discussies & fora', dg_db_forum_url(), 0 ),
-		array( 'boek', 'Kennis- & ervaringsbank', home_url( '/platform/' ), 0 ),
+		array( 'boek', 'Kennis- & ervaringsbank', dg_db_kennisbank(), 0 ),
 		array( 'lagen', 'Projecten', home_url( '/projecten/' ), 0 ),
 		array( 'hand', 'Samenwerkingen', home_url( '/samenwerkingen/' ), 0 ),
 		array( 'kalender', 'Evenementen', dg_db_evenementen_url(), 0 ),
@@ -364,4 +364,9 @@ function dg_db_evenementen(): string {
 		$inhoud .= '</ul>';
 	}
 	return dg_db_blok( 'dg-db-evenementen', 'kalender', 'Aankomende evenementen', 'Kalender', dg_db_evenementen_url(), $inhoud );
+}
+
+/** De kennisbank (Wiki.js) op kennis.<domein>. */
+function dg_db_kennisbank(): string {
+	return 'https://kennis.' . wp_parse_url( home_url(), PHP_URL_HOST ) . '/';
 }

@@ -1,0 +1,11 @@
+[Unit]
+Description=Digitaal GemeenGoed: architectuurmodellen bouwen (architectuur.<domein>)
+After=docker.service network-online.target
+Wants=network-online.target
+Requires=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/opt/gemeenschap/server/architectuur.sh
+TimeoutStartSec=60min
+Nice=10

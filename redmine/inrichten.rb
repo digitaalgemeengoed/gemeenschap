@@ -124,8 +124,13 @@ projecten = {
 projecten.each do |id, (naam, omschrijving)|
   project = Project.find_by(identifier: id) || Project.create!(
     name: naam, identifier: id, is_public: true, description: omschrijving,
-    enabled_module_names: %w[issue_tracking wiki boards news files calendar gantt roadmap]
+    enabled_module_names: %w[issue_tracking boards news files calendar gantt roadmap]
   )
+  # Kennis staat in de kennisbank (kennis.<domein>), niet in een wiki per project.
+  # Een projectwiki waarin al iets staat, blijft.
+  if project.module_enabled?(:wiki) && (project.wiki.nil? || project.wiki.pages.empty?)
+    project.disable_module!(:wiki)
+  end
   project.trackers = Tracker.all if project.trackers.empty?
   Board.find_or_create_by!(project: project, name: 'Algemeen') { |b| b.description = 'Vragen en ideeën over dit project.' }
   groepen.each do |groep, rol|

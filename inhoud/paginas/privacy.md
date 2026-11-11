@@ -27,6 +27,7 @@ Contact over privacy: [IN TE VULLEN: e-mailadres].
 | Je rol in het netwerk (gebruiker, contributor, member, kerngroep) | Wat je op het platform mag | Overeenkomst |
 | Toestemming voor de nieuwsbrief, met datum van geven en intrekken | De nieuwsbrief en uitnodigingen sturen; kunnen aantonen dat je toestemming gaf | Toestemming |
 | Berichten in de fora, meldingen en reacties in Redmine | Het netwerk en de projecten | Overeenkomst |
+| Pagina's en opmerkingen in de kennisbank, met je naam en e-mailadres bij elke wijziging | Kennis delen; kunnen zien wie wat schreef | Overeenkomst |
 | Tijdstip van inloggen, IP-adres, mislukte inlogpogingen | Beveiliging: misbruik en inbraakpogingen tegengaan | Gerechtvaardigd belang |
 | Bij een toezegging voor crowdfunding: de gemeente, het bedrag, naam en functie van wie mag tekenen, en wie de toezegging opgaf | De inzameling bijhouden en de samenwerkingsovereenkomst voorbereiden | Gerechtvaardigd belang [IN TE VULLEN: juridisch toetsen] |
 
@@ -37,6 +38,7 @@ Wij gebruiken je gegevens niet voor iets anders, verkopen ze niet en gebruiken g
 - Je **profiel** (naam, organisatie, functie, werkveld) is zichtbaar voor ingelogde leden. Je **e-mailadres** niet.
 - **Berichten in de fora** zijn zichtbaar voor ingelogde leden.
 - **Meldingen en reacties in Redmine** zijn openbaar, met je naam erbij.
+- De **kennisbank** en de **architectuurmodellen** zijn alleen zichtbaar voor ingelogde leden, met je naam bij wat je schreef. De pagina's van de kennisbank staan ook in een besloten repository op GitHub, met je naam en e-mailadres bij elke wijziging.
 - Bij **crowdfunding** zien bezoekers alleen het totaalbedrag. Ingelogde leden zien welke gemeenten een toezegging deden, en het bedrag zodra die bevestigd is. Naam en functie van wie mag tekenen en wie de toezegging opgaf, zien alleen de kerngroep en de beheerders.
 - De **kerngroep** en de beheerders zien je gegevens voor zover nodig voor hun taak.
 
@@ -46,6 +48,7 @@ Wij gebruiken deze verwerkers, met wie we een verwerkersovereenkomst hebben:
 
 - [IN TE VULLEN: hostingpartij en land van de server]
 - [IN TE VULLEN: aanbieder van de e-maildienst]
+- GitHub (Microsoft): de besloten kopie van de kennisbank en de architectuurmodellen. [IN TE VULLEN: doorgifte buiten de EER (Data Privacy Framework of modelcontractbepalingen) laten toetsen.]
 
 Je gegevens blijven in de Europese Economische Ruimte. [IN TE VULLEN: controleren voor elke verwerker.]
 

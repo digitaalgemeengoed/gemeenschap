@@ -1,0 +1,10 @@
+[Unit]
+Description=Digitaal GemeenGoed: elk kwartier de architectuurmodellen bijwerken
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=15min
+RandomizedDelaySec=60
+
+[Install]
+WantedBy=timers.target
