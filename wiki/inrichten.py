@@ -278,6 +278,21 @@ NIEUWE_PAGINA = """mutation($c: String!, $d: String!, $l: String!, $p: String!, 
   pages { create(content: $c, description: $d, editor: "markdown", isPublished: true, isPrivate: false,
                  locale: $l, path: $p, tags: $t, title: $ti) { responseResult { succeeded message } } } }"""
 gemaakt = 0
+# De eerste versie (0.8.0) maakte een kortere startpagina. Is die nog precies zo,
+# dan vervangen we haar door de startpagina uit startinhoud/; is ze gewijzigd,
+# dan blijft ze staan.
+OUDE_START = "# Kennisbank\n\nWelkom in de kennisbank van **Digitaal GemeenGoed**: kennis van en voor gemeenten over open source, Common Ground en de projecten van het netwerk.\n\nIedereen die lid is, kan hier lezen en schrijven. Klik op het potlood rechtsonder"
+if ("home", taal) in paden and os.path.isfile(os.path.join(START, "home.md")):
+    thuis = next(x for x in gq("{ pages { list(limit: 5000) { id path locale } } }", JWT)["pages"]["list"] if x["path"] == "home" and x["locale"] == taal)
+    pagina = gq("query($id: Int!) { pages { single(id: $id) { content title } } }", JWT, {"id": thuis["id"]})["pages"]["single"]
+    if pagina["content"].startswith(OUDE_START):
+        kop, inhoud = lees_pagina(os.path.join(START, "home.md"))
+        r = gq("""mutation($id: Int!, $c: String!, $d: String!, $t: [String]!, $ti: String!) { pages { update(id: $id, content: $c,
+                 description: $d, tags: $t, title: $ti, isPublished: true) { responseResult { succeeded message } } } }""",
+               JWT, {"id": thuis["id"], "c": inhoud, "d": kop.get("omschrijving", ""), "ti": kop.get("titel", "Kennisbank"),
+                     "t": [x.strip() for x in kop.get("labels", "").split(",") if x.strip()]})["pages"]["update"]
+        resultaat(r, "startpagina bijwerken")
+        gemaakt += 1
 if os.path.isdir(START):
     for map_, _, bestanden in sorted(os.walk(START)):
         for naam in sorted(bestanden):
