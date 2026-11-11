@@ -1,5 +1,9 @@
 # Wijzigingen
 
+## Nog niet uitgebracht
+
+- Documenten: foutpagina's met een Nederlandse titel (Geen toegang, Niet gevonden …).
+
 ## 0.11.1 — 2026-11-11
 
 **Hersteld:** een nieuwe versie van de mu-plugins van WordPress (`dg-gemeenschap.php`, `dg-dashboard.php` …) werd pas actief als de container van WordPress opnieuw werd gemaakt. Ze zitten als losse bestanden in de container, en git vervangt een gewijzigd bestand door een nieuw. Daardoor ontbrak na 0.11.0 o.a. *Mijn documenten* op het profiel. `bijwerken.sh` herstart WordPress nu bij elke versie.

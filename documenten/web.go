@@ -218,7 +218,22 @@ func (a *App) toon(w http.ResponseWriter, r *http.Request, sjabloon string, stat
 }
 
 func (a *App) fout(w http.ResponseWriter, r *http.Request, s *Sessie, status int, tekst string) {
-	a.toon(w, r, "fout", status, pagina{Titel: http.StatusText(status), Sessie: s, Data: tekst})
+	a.toon(w, r, "fout", status, pagina{Titel: foutTitel(status), Sessie: s, Data: tekst})
+}
+
+func foutTitel(status int) string {
+	switch status {
+	case http.StatusForbidden:
+		return "Geen toegang"
+	case http.StatusNotFound:
+		return "Niet gevonden"
+	case http.StatusUnauthorized:
+		return "Niet ingelogd"
+	case http.StatusBadRequest:
+		return "Dat ging niet goed"
+	default:
+		return "Er ging iets mis"
+	}
 }
 
 func logFout(r *http.Request, err error) { log.Printf("%s %s: %v", r.Method, r.URL.Path, err) }
