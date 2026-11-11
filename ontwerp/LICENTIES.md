@@ -16,7 +16,7 @@ gebruikt hem niet zelf.
 | `keycloak/themes/digitaalgemeengoed/login/resources/img/uil.png` | logo op het aanmeldscherm | kopie van het logo | als het logo |
 | `wordpress/thema/digitaalgemeengoed/assets/stad.svg`, `netwerk.svg` | stadsgezicht en netwerklijnen in de opening | eigen tekening, gemaakt voor deze repo | EUPL-1.2, zoals de repo |
 | `wordpress/thema/digitaalgemeengoed/assets/iconen/*.svg` | iconen | eigen tekening, gemaakt voor deze repo | EUPL-1.2, zoals de repo |
-| `inhoud/media/projecten-mizuno-kozuki.jpg` | foto in de opening van *Projecten* | foto van **Mizuno Kozuki**, aangeleverd door Erik Hoekstra; middensectie uitgesneden (16:10) | [IN TE VULLEN: bron (bijvoorbeeld Pexels of Unsplash) en de link naar de foto]; die licentie laat gebruik en bewerken toe zonder verplichte naamsvermelding |
+| `inhoud/media/projecten-mizuno-kozuki.jpg` | foto in de opening van *Projecten* | foto van **Mizuno Kozuki** via Unsplash, aangeleverd door Erik Hoekstra; middensectie uitgesneden (16:10) | Unsplash License, zie hieronder. [IN TE VULLEN: link naar de foto op unsplash.com] |
 | `inhoud/media/photo-1556761175-b413da4baf72.avif` | foto in de opening van *Over ons* | foto van **Austin Distel** via Unsplash | Unsplash License, zie hieronder |
 | `inhoud/media/photo-1552664730-d307ca884978.avif` | foto in de opening van *Het platform* | foto van **Annie Spratt** via Unsplash | Unsplash License, zie hieronder |
 | `inhoud/media/held-voorlopig.jpg` | foto in de opening van de startpagina | **voorlopig**: uitsnede van de AI-visualisatie `ontwerp/visualisaties/startpagina-2.png` | zie *Ontwerpvisualisaties*. Vervangen door een echte foto voordat de site openbaar wordt. |
