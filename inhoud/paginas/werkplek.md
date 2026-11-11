@@ -13,6 +13,7 @@ Fase: [dg_fase project=werkplek]
 Werkwijze: Open source, onder de EUPL
 Financiering: Te bepalen
 Volgen: [Redmine](https://projecten.digitaalgemeengoed.nl/projects/werkplek)
+Documenten: [dg_documenten project=werkplek]
 :::
 
 ## Wat het project doet

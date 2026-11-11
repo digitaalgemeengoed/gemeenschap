@@ -47,6 +47,11 @@ dc pull --quiet --ignore-buildable --ignore-pull-failures 2>/dev/null || true
 dc --profile gereedschap pull --quiet keycloak-config wpcli wiki-inrichten 2>/dev/null || true
 dc build --quiet || stop "Bouwen mislukt."
 dc up -d --remove-orphans || stop "Starten mislukt."
+# De mu-plugins van WordPress zitten als losse bestanden in de container. Git
+# vervangt een gewijzigd bestand door een nieuw; de container ziet dat pas na
+# een herstart (anders draait de oude code door tot de container opnieuw wordt
+# gemaakt).
+dc restart wordpress >/dev/null || waarschuw "WordPress herstarten lukte niet"
 if dc exec -T proxy caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile >/dev/null 2>&1; then
   ok "Caddy herladen"
 else

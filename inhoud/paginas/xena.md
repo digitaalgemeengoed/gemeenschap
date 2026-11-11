@@ -13,6 +13,7 @@ Fase: [dg_fase project=xena]
 Werkwijze: Open source, onder de EUPL
 Financiering: Te bepalen
 Volgen: [Redmine](https://projecten.digitaalgemeengoed.nl/projects/xena)
+Documenten: [dg_documenten project=xena]
 :::
 
 ## Het probleem

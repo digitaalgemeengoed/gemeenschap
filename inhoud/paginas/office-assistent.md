@@ -10,6 +10,7 @@ Fase: [dg_fase project=office-assistent]
 Werkwijze: Open source, onder de EUPL
 Financiering: Te bepalen
 Volgen: [Redmine](https://projecten.digitaalgemeengoed.nl/projects/office-assistent)
+Documenten: [dg_documenten project=office-assistent]
 :::
 
 ## Wat de assistent doet

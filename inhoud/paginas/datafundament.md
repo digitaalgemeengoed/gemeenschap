@@ -13,6 +13,7 @@ Fase: [dg_fase project=datafundament]
 Werkwijze: Open source, onder de EUPL
 Financiering: Te bepalen
 Volgen: [Redmine](https://projecten.digitaalgemeengoed.nl/projects/datafundament)
+Documenten: [dg_documenten project=datafundament]
 :::
 
 ## Wat het project doet

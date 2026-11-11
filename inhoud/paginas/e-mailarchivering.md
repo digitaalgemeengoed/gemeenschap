@@ -12,6 +12,7 @@ Fase: [dg_fase project=e-mailarchivering]
 Werkwijze: Open source, onder de EUPL
 Financiering: Te bepalen
 Volgen: [Redmine](https://projecten.digitaalgemeengoed.nl/projects/e-mailarchivering)
+Documenten: [dg_documenten project=e-mailarchivering]
 :::
 
 ## Wat het project doet

@@ -13,6 +13,7 @@ Fase: [dg_fase project=open-overheid]
 Werkwijze: Open source, onder de EUPL
 Financiering: Te bepalen
 Volgen: [Redmine](https://projecten.digitaalgemeengoed.nl/projects/open-overheid)
+Documenten: [dg_documenten project=open-overheid]
 :::
 
 ## Wat het project doet

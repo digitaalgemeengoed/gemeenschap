@@ -13,6 +13,7 @@ Fase: [dg_fase project=anonimiseren]
 Werkwijze: Open source, onder de EUPL
 Financiering: Te bepalen
 Volgen: [Redmine](https://projecten.digitaalgemeengoed.nl/projects/anonimiseren)
+Documenten: [dg_documenten project=anonimiseren]
 :::
 
 ## Wat het project doet
