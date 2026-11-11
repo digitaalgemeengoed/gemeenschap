@@ -305,7 +305,8 @@ func (r *Register) NieuweSessie(ctx context.Context, p *Persoon) (cookie string,
 		sessieSleutel(cookie), p.Email, p.Naam, pq.Array(p.Groepen), p.IDToken, willekeurig(24), time.Now().Add(sessieDuur))
 	if err == nil {
 		r.db.ExecContext(ctx, `DELETE FROM sessie WHERE verloopt < now()`)
-		_, err = r.db.ExecContext(ctx, `INSERT INTO persoon (email, naam) VALUES ($1, $2) ON CONFLICT (email) DO UPDATE SET naam = EXCLUDED.naam`, p.Email, p.Naam)
+		_, err = r.db.ExecContext(ctx, `INSERT INTO persoon (email, naam, groepen) VALUES ($1, $2, $3)
+			ON CONFLICT (email) DO UPDATE SET naam = EXCLUDED.naam, groepen = EXCLUDED.groepen`, p.Email, p.Naam, pq.Array(p.Groepen))
 		for _, g := range p.Groepen {
 			if err == nil {
 				_, err = r.db.ExecContext(ctx, `INSERT INTO groep (pad) VALUES ($1) ON CONFLICT (pad) DO UPDATE SET gezien = now()`, g)

@@ -101,6 +101,24 @@ var schema = []string{
 	`CREATE UNIQUE INDEX recht_uniek ON recht (ruimte_id, coalesce(item_id, 0), soort, wie)`,
 	// Groepen die bij het inloggen voorbijkwamen: om toegang aan te kunnen geven.
 	`CREATE TABLE groep (pad text PRIMARY KEY, gezien timestamptz NOT NULL DEFAULT now())`,
+	// WebDAV (0.11): de groepen van de laatste login (een WebDAV-programma
+	// heeft geen token uit Keycloak), app-wachtwoorden en tijdelijke links.
+	`ALTER TABLE persoon ADD COLUMN groepen text[] NOT NULL DEFAULT '{}'`,
+	`CREATE TABLE app_wachtwoord (
+		id          bigserial PRIMARY KEY,
+		email       text NOT NULL,
+		naam        text NOT NULL,                  -- het apparaat, zoals de gebruiker het noemt
+		hash        text NOT NULL UNIQUE,           -- SHA-256 van het wachtwoord
+		aangemaakt  timestamptz NOT NULL DEFAULT now(),
+		gebruikt    timestamptz
+	)`,
+	`CREATE TABLE open_link (
+		hash        text PRIMARY KEY,               -- SHA-256 van de sleutel in de link
+		email       text NOT NULL,
+		ruimte_id   bigint NOT NULL REFERENCES ruimte(id) ON DELETE CASCADE,
+		item_id     bigint NOT NULL REFERENCES item(id),
+		verloopt    timestamptz NOT NULL
+	)`,
 }
 
 func migreer(ctx context.Context, db *sql.DB) error {
@@ -380,6 +398,16 @@ func (r *Register) NieuweMap(ctx context.Context, ruimteID, ouder int64, naam, w
 // NieuweVersie legt een upload vast: een nieuw document, of een nieuwe versie
 // van het document met dezelfde naam in dezelfde map.
 func (r *Register) NieuweVersie(ctx context.Context, ruimteID, ouder int64, naam, wie string, v Versie) (itemID int64, nummer int, err error) {
+	return r.nieuweVersie(ctx, ruimteID, ouder, naam, wie, v, false)
+}
+
+// samenvoegTijd: slaat dezelfde persoon binnen deze tijd opnieuw op via
+// WebDAV (Word en LibreOffice slaan vaak tussentijds op), dan vervangt dat de
+// laatste versie in plaats van een nieuwe te maken. Het oude object blijft in
+// de opslag staan; het register verwijst er alleen niet meer naar.
+const samenvoegTijd = "10 minutes"
+
+func (r *Register) nieuweVersie(ctx context.Context, ruimteID, ouder int64, naam, wie string, v Versie, samenvoegen bool) (itemID int64, nummer int, err error) {
 	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
 		return 0, 0, err
@@ -411,6 +439,23 @@ func (r *Register) NieuweVersie(ctx context.Context, ruimteID, ouder int64, naam
 		return 0, 0, err
 	case soort == "map":
 		return 0, 0, errIsMap
+	}
+	if samenvoegen && nummer > 0 {
+		res, err := tx.ExecContext(ctx, `UPDATE versie SET object = $3, sha256 = $4, grootte = $5, mediatype = $6, op = now()
+			WHERE item_id = $1 AND nummer = $2 AND door = $7 AND op > now() - interval '`+samenvoegTijd+`'`,
+			itemID, nummer, v.Object, v.SHA256, v.Grootte, v.Mediatype, wie)
+		if err != nil {
+			return 0, 0, err
+		}
+		if n, _ := res.RowsAffected(); n == 1 {
+			if _, err := tx.ExecContext(ctx, `UPDATE item SET gewijzigd = now(), gewijzigd_door = $2 WHERE id = $1`, itemID, wie); err != nil {
+				return 0, 0, err
+			}
+			if err := logboek(ctx, tx, wie, ruimteID, itemID, "versie bijgewerkt", fmt.Sprintf("%s, versie %d, %d bytes, sha256 %s (via WebDAV)", naam, nummer, v.Grootte, v.SHA256)); err != nil {
+				return 0, 0, err
+			}
+			return itemID, nummer, tx.Commit()
+		}
 	}
 	nummer++
 	if _, err := tx.ExecContext(ctx, `INSERT INTO versie (item_id, nummer, object, sha256, grootte, mediatype, door) VALUES ($1, $2, $3, $4, $5, $6, $7)`,

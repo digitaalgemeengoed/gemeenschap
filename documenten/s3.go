@@ -176,6 +176,26 @@ func (s *S3) Haal(ctx context.Context, sleutel string) (io.ReadCloser, int64, er
 	return resp.Body, resp.ContentLength, nil
 }
 
+// HaalVanaf: de inhoud vanaf een positie (voor Range-verzoeken).
+func (s *S3) HaalVanaf(ctx context.Context, sleutel string, vanaf int64) (io.ReadCloser, error) {
+	extra := http.Header{}
+	if vanaf > 0 {
+		extra.Set("Range", fmt.Sprintf("bytes=%d-", vanaf))
+	}
+	req, err := s.verzoek(ctx, http.MethodGet, sleutel, nil, nil, 0, legeHash, extra)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := s.HTTP.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusPartialContent {
+		return nil, s3Fout(resp)
+	}
+	return resp.Body, nil
+}
+
 // Bestaat: of een object er is.
 func (s *S3) Bestaat(ctx context.Context, sleutel string) (bool, error) {
 	req, err := s.verzoek(ctx, http.MethodHead, sleutel, nil, nil, 0, legeHash, nil)

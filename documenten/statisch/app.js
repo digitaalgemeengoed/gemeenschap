@@ -81,6 +81,31 @@
     k.addEventListener('click', function () { navigator.share({ title: k.dataset.titel, text: k.dataset.tekst, url: k.dataset.link }).catch(function () {}); });
   });
 
+  // Tekst kopiëren (adres, app-wachtwoord).
+  document.querySelectorAll('[data-kopieer-tekst]').forEach(function (k) {
+    k.addEventListener('click', function () {
+      var t = document.getElementById(k.dataset.kopieerTekst).textContent.trim();
+      if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(t).then(function () { k.textContent = 'Gekopieerd'; });
+    });
+  });
+
+  // Openen in Word of LibreOffice: de tijdelijke link ophalen en het programma starten.
+  document.querySelectorAll('form[data-openen]').forEach(function (form) {
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var knop = form.querySelector('button'); var tekst = knop.textContent;
+      knop.disabled = true; knop.textContent = 'Openen…';
+      fetch(form.action, { method: 'POST', body: new FormData(form), headers: { Accept: 'application/json' }, credentials: 'same-origin' })
+        .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+        .then(function (d) { window.location.href = d.adres; })
+        .catch(function () { form.submit(); })
+        .finally(function () { setTimeout(function () { knop.disabled = false; knop.textContent = tekst; }, 2500); });
+    });
+  });
+  // Op de pagina "Openen in …" meteen starten.
+  var meteen = document.querySelector('[data-meteen]');
+  if (meteen) window.location.href = meteen.href;
+
   // Een recht direct opslaan bij het kiezen.
   document.querySelectorAll('select[data-direct]').forEach(function (s) {
     s.addEventListener('change', function () { s.form.submit(); });

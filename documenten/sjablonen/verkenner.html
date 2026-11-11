@@ -43,6 +43,7 @@
   <span class="opdracht uit"><span class="i i-upload" aria-hidden="true"></span>Uploaden</span>
   <span class="tip">Kies links een ruimte.</span>
 {{end}}
+  <a class="opdracht rechts" href="/koppelen"><span class="i i-schijf" aria-hidden="true"></span>Netwerkschijf koppelen</a>
 </div>
 
 {{/* --- Adresbalk --------------------------------------------------------- */}}
@@ -237,10 +238,17 @@
     <h2 class="naam {{soortIcoon $doc.Mediatype $doc.Naam}}">{{$doc.Naam}}</h2>
     <a class="sluit" href="{{$v.MapURL $v.MapID}}" aria-label="Sluiten">×</a>
   </div>
-  <p class="knoppen">
-    <a class="knop" href="{{$basis}}/download" download>Downloaden</a>
+  <div class="knoppen">
+    {{range programmas $doc.Naam}}
+    <form method="post" action="/r/{{$rm.Sleutel}}/i/{{$doc.ID}}/openen" data-openen>
+      <input type="hidden" name="csrf" value="{{$csrf}}"><input type="hidden" name="app" value="{{.Sleutel}}">
+      <button class="knop">Openen in {{.Naam}}</button>
+    </form>
+    {{end}}
+    <a class="knop{{if programmas $doc.Naam}} licht{{end}}" href="{{$basis}}/download" download>Downloaden</a>
     {{if $v.Bekijkbaar}}<a class="knop licht" href="{{$basis}}/download?bekijken=1" target="_blank" rel="noopener">Bekijken</a>{{end}}
-  </p>
+  </div>
+  {{if programmas $doc.Naam}}<p class="zacht klein">{{if ge $v.SelNiveau 2}}Openen in een programma: wat je daar opslaat, komt hier terug als nieuwe versie.{{else}}Je kunt dit document alleen lezen; het programma opent het als alleen-lezen.{{end}}</p>{{end}}
   <h3>Gegevens</h3>
   {{if ge $v.SelNiveau 2}}
   <form class="velden" method="post" action="{{$basis}}/metadata">

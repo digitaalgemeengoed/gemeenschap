@@ -82,8 +82,17 @@ kennis.{$DOMEIN} {
 # Alleen voor leden: dat regelt de dienst zelf (inloggen via Keycloak).
 documenten.{$DOMEIN} {
 	import beveiliging
-	import toegang-{$DG_TOEGANG:open}
-	reverse_proxy documenten:8080
+	# WebDAV (/dav/: app-wachtwoord; /o/: tijdelijke link) logt zelf in met
+	# Basic; de afscherming met wachtwoord zou daar dubbel op zitten (een
+	# programma kan maar één wachtwoord sturen). Daarom buiten de afscherming.
+	@webdav path /dav /dav/* /o/*
+	handle @webdav {
+		reverse_proxy documenten:8080
+	}
+	handle {
+		import toegang-{$DG_TOEGANG:open}
+		reverse_proxy documenten:8080
+	}
 }
 
 # De architectuurmodellen: de HTML-rapporten van Archi (server/architectuur.sh

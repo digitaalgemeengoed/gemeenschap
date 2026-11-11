@@ -1,0 +1,8 @@
+{{define "inhoud"}}
+<div class="losse">
+<h1>Openen in {{.Data.Programma}}</h1>
+<p>{{.Data.Naam}} wordt geopend in {{.Data.Programma}}. Gebeurt er niets, klik dan op de knop. Je browser vraagt misschien eerst of hij {{.Data.Programma}} mag openen.</p>
+<p class="knoppen"><a class="knop" href="{{.Data.Adres}}" data-meteen>Openen in {{.Data.Programma}}</a> <a class="knop licht" href="{{.Data.Terug}}">Terug naar Documenten</a></p>
+<p class="zacht klein">Werkt het niet? Dan staat {{.Data.Programma}} niet op deze computer, of kent je systeem deze manier van openen niet. Download het bestand dan vanuit Documenten.</p>
+</div>
+{{end}}

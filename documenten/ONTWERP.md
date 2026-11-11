@@ -1,6 +1,6 @@
 # Documenten: een lichte XENA voor het netwerk
 
-Ontwerp, 11 november 2026. Status: fase 1 klaar (0.9), verkenner en rechten (0.10).
+Ontwerp, 11 november 2026. Status: fase 1 (0.9), verkenner, rechten, delen en WebDAV (0.10).
 
 ## Vraag
 
@@ -139,13 +139,44 @@ bewust niet: dat is openbaar maken, en vraagt een eigen besluit.
   Garage (`dg-documenten terugspiegelen`). Extra objecten in Garage zijn
   onschadelijk.
 
+## WebDAV en openen in een programma (fase 2)
+
+- `/dav/<ruimte>/<pad>`: de ruimtes, mappen en documenten als bestandssysteem
+  (`internal/webdav`, overgenomen uit `golang.org/x/net/webdav`). Inloggen met
+  Basic: e-mailadres + app-wachtwoord (tabel `app_wachtwoord`, alleen de
+  SHA-256). De groepen komen uit `persoon.groepen`, bijgewerkt bij elke login
+  in de browser.
+- `/o/<sleutel>/<naam>`: één document, met een tijdelijke link (tabel
+  `open_link`, tien uur). De knoppen *Openen in Word / LibreOffice* starten
+  het programma met `ms-word:ofe|u|<link>` of
+  `vnd.libreoffice.command:ofe|u|<link>` (`ofv` als je alleen mag lezen).
+  Afweging: de sleutel in de link werkt als een wachtwoord voor dat ene
+  document, zolang hij geldig is; daar staat tegenover dat het programma
+  zonder vragen opent en opslaat. Een app-wachtwoord blijft de weg voor een
+  gekoppelde schijf.
+- **Versies.** Elke PUT is een versie. Dezelfde persoon binnen tien minuten:
+  de laatste versie wordt vervangen (het oude object blijft in de opslag,
+  zonder verwijzing). **Veilig opslaan** (tijdelijk bestand → origineel
+  hernoemd of verwijderd → tijdelijk bestand krijgt de oude naam): de dienst
+  onthoudt twee minuten welk document een naam verliet; krijgt een ander
+  document die naam, dan wordt dat een nieuwe versie van het oude
+  (`Register.Opnemen`). Het verwijderen van de reservekopie daarna lukt
+  gewoon.
+- **Vluchtig.** `._*`, `.DS_Store`, `Thumbs.db`, `desktop.ini`, `~$*`,
+  `.~lock.*` blijven in het geheugen (tot 1 MB, twee uur), buiten het register
+  en de back-up.
+- **Vergrendelen** en dode eigenschappen (PROPPATCH) in het geheugen; bij een
+  herstart zijn ze weg. Eén exemplaar van de dienst, dus dat is genoeg.
+- Verwijderen via WebDAV vraagt Beheren, behalve een document dat je zelf
+  minder dan tien minuten geleden aanmaakte (tijdelijke bestanden).
+- Caddy laat `/dav/` en `/o/` buiten de afscherming met wachtwoord.
+
 ## Fasering
 
 1. Garage en de dienst: ruimtes, mappen, uploaden en downloaden in de
    browser, metadata, versies, inloggen via Keycloak, back-up.
-2. WebDAV (`/dav/`, `golang.org/x/net/webdav` met een eigen bestandssysteem
-   op het register) en app-wachtwoorden. Testen met Verkenner, Finder,
-   LibreOffice, Word, Cyberduck en rclone.
+2. WebDAV en app-wachtwoorden, openen in Word en LibreOffice (klaar in 0.10;
+   nog te testen met Verkenner, Finder, Word en LibreOffice zelf).
 3. Definitief (vergrendelen), zoeken, de prullenbak terughalen, het logboek
    per document.
 

@@ -95,6 +95,10 @@ func (a *App) Routes() http.Handler {
 	mux.HandleFunc("POST /r/{ruimte}/i/{id}/hernoem", a.metRuimte(a.hernoem))
 	mux.HandleFunc("POST /r/{ruimte}/i/{id}/verwijder", a.metRuimte(a.verwijder))
 	mux.HandleFunc("POST /r/{ruimte}/toegang", a.metRuimte(a.toegang))
+	mux.HandleFunc("POST /r/{ruimte}/i/{id}/openen", a.metRuimte(a.openen))
+	mux.HandleFunc("GET /koppelen", a.metSessie(a.koppelen))
+	mux.HandleFunc("POST /koppelen", a.metSessie(a.koppelen))
+	a.davRoutes(mux)
 	return veilig(mux, a.OIDC.Uitgever)
 }
 
@@ -156,8 +160,9 @@ func (a *App) laadSjablonen() {
 				return "tekst"
 			}
 		},
-		"join":   strings.Join,
-		"niveau": niveauNaam,
+		"join":       strings.Join,
+		"niveau":     niveauNaam,
+		"programmas": programmasVoor,
 		// dict2: twee waarden aan een deelsjabloon meegeven.
 		"dict2": func(a, b any) struct{ A, B any } { return struct{ A, B any }{a, b} },
 		// eigenTitel: de titel, als die meer zegt dan de bestandsnaam.
@@ -170,7 +175,7 @@ func (a *App) laadSjablonen() {
 		},
 	}
 	a.sjablonen = map[string]*template.Template{}
-	for _, naam := range []string{"verkenner", "fout"} {
+	for _, naam := range []string{"verkenner", "fout", "koppelen", "openen"} {
 		a.sjablonen[naam] = template.Must(template.New("").Funcs(functies).ParseFS(sjabloonBestanden, "sjablonen/basis.html", "sjablonen/"+naam+".html"))
 	}
 }

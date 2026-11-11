@@ -71,6 +71,24 @@ input, textarea, select { font: inherit; color: var(--tekst); padding: .42rem .6
 .opdracht-upload { display: contents; }
 .scheiding { width: 1px; height: 1.4rem; background: var(--rand); margin: 0 .35rem; }
 .tip { margin-left: .5rem; color: var(--grijs); font-size: .88rem; }
+.opdracht.rechts { margin-left: auto; }
+.knoppen form { display: contents; }
+.koppelen { max-width: 60rem; }
+.koppelen h2 { font-size: 1.15rem; margin: 1.6rem 0 .4rem; }
+.koppelen code { font-family: ui-monospace, monospace; background: var(--vlak); padding: .1rem .35rem; border-radius: 4px; overflow-wrap: anywhere; }
+.koppelen code.groot { font-size: 1.15rem; letter-spacing: .03em; }
+.feiten.groot { font-size: .95rem; gap: .5rem 1rem; margin: 1rem 0; }
+.nieuwww { background: #e8f5e1; border: 1px solid #b8dca5; border-radius: 10px; padding: .4rem 1rem; margin: 1rem 0; }
+.lijst.smal { border: 1px solid var(--rand); border-radius: 10px; overflow: hidden; }
+.nieuw-ww { display: flex; gap: .6rem; align-items: end; flex-wrap: wrap; margin-top: .8rem; }
+.nieuw-ww label { display: grid; gap: .2rem; font-weight: 600; font-size: .88rem; flex: 1 1 16rem; }
+.stappen { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); gap: 1rem; }
+.stappen section { border: 1px solid var(--rand); border-radius: 10px; padding: .2rem 1rem .6rem; }
+.stappen h3 { font-size: 1rem; }
+.stappen ol { padding-left: 1.2rem; margin: 0; font-size: .9rem; }
+.stappen li { margin-bottom: .35rem; }
+.kruimels { font-size: .85rem; color: var(--grijs); margin: 0; }
+.kruimels a { text-decoration: none; }
 
 .adresbalk { display: flex; flex-wrap: wrap; align-items: center; gap: .3rem; padding: .45rem .9rem; border-bottom: 1px solid var(--rand); font-size: .88rem; background: #fbfcfe; }
 .adresbalk a { color: var(--tekst); text-decoration: none; display: inline-flex; align-items: center; gap: .35rem; padding: .05rem .25rem; border-radius: 4px; }

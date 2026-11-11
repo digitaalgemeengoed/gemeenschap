@@ -200,6 +200,22 @@ niet. De berichten lopen via `/wp-json/dg/v1/bericht` in `dg-gemeenschap.php`,
 met het geheim `DOC_BERICHT_GEHEIM`; Caddy laat dat adres niet van buiten toe. Een gesloten project kan
 alleen nog gelezen worden.
 
+**Openen in Word of LibreOffice**: bij een Office- of OpenDocument-bestand
+staan knoppen *Openen in Word* (of Excel, PowerPoint) en *Openen in
+LibreOffice*. De dienst maakt een tijdelijke link (`/o/<sleutel>/<naam>`, tien
+uur, alleen dat document, met je eigen rechten) en start het programma met
+`ms-word:ofe|u|…` of `vnd.libreoffice.command:ofe|u|…`. Opslaan gaat via
+WebDAV rechtstreeks terug, als nieuwe versie. Werkt het programma die links
+niet, dan blijft *Downloaden*.
+
+**WebDAV** (`https://documenten.<domein>/dav/`): koppel Documenten als schijf.
+Inloggen met je e-mailadres en een app-wachtwoord (*Netwerkschijf koppelen*).
+De rechten zijn die van de browser, met de groepen van je laatste login daar.
+Opslaan binnen tien minuten door dezelfde persoon vervangt de laatste versie;
+"veilig opslaan" van Windows en Office blijft bij één document; tijdelijke
+systeembestanden (`._*`, `~$*`, `.~lock.*` …) blijven buiten het register.
+Windows haalt standaard bestanden tot 50 MB op via WebDAV.
+
 Projecten en hun leden komen elke vijf minuten uit Redmine; een nieuw project
 krijgt vanzelf een ruimte. Hooguit 500 MB per bestand (`DOC_MAX_MB` in `.env`).
 

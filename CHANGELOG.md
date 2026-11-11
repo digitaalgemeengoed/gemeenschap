@@ -2,7 +2,7 @@
 
 ## 0.10.0 — 2026-11-11
 
-**Documenten: een verkenner, rechten per map en document, en delen.**
+**Documenten: een verkenner, rechten per map en document, delen, WebDAV en openen in Word of LibreOffice.**
 - Het scherm is nu een verkenner in de stijl van de XENA-demo: een opdrachtbalk (Nieuwe map, Uploaden, Downloaden, Naam wijzigen, Verwijderen, Toegang, Eigenschappen), een adresbalk, links de ruimtes met de mappenboom, in het midden alleen de inhoud van de gekozen map, rechts de eigenschappen of de toegang, onderaan een statusbalk. Bestanden sleep je op de lijst; een rij aanklikken kiest het document.
 - **Rechten** in drie niveaus, zoals in de XENA-demo: Lezen, Bewerken, Beheren. Per persoon, per groep uit Keycloak of voor de projectleden, op een ruimte of een map. Een map neemt de toegang van boven over; met *Overerving stoppen* wordt hij besloten. Wie Beheren heeft, kan toegang doorgeven, ook Beheren.
 - Standaard: de kerngroep Beheren in elke ruimte; in een project de projectleden volgens hun rol in Redmine (Kerngroep en Manager Beheren, Contributor en Member Bewerken). `/site/beheer` kan altijd overal bij.
@@ -10,6 +10,13 @@
 - **Delen** van een map of document met een persoon, groep of de projectleden, met Lezen (standaard) of Bewerken. De ontvanger krijgt een bericht met de link via de berichten van de site (en de e-mailmelding daarvan); bij een groep elk lid een eigen bericht. Delen vraagt Beheren. De link kopiëren of doorsturen (LinkedIn, Bluesky, X, WhatsApp, e-mail, *Delen via…*) kan iedereen die het kan lezen; de link werkt alleen voor wie toegang heeft.
 - WordPress: het eindpunt `/wp-json/dg/v1/bericht` (alleen met het geheim `DOC_BERICHT_GEHEIM`, en Caddy laat het niet van buiten toe).
 - Verwijderen vraagt nu Beheren (was: iedereen die mocht schrijven).
+- **Openen in Word / Excel / PowerPoint / LibreOffice** bij een document: het programma opent het rechtstreeks (via een tijdelijke link van tien uur, alleen voor dat document) en slaat ook rechtstreeks op. Wie alleen mag lezen, krijgt het alleen-lezen.
+- **WebDAV** op `/dav/`: Documenten als netwerkschijf in Verkenner, Finder, Bestanden of rclone, met dezelfde ruimtes en rechten. Inloggen met je e-mailadres en een **app-wachtwoord** (pagina *Netwerkschijf koppelen*; één per apparaat, in te trekken).
+  - Elke keer opslaan is een versie; slaat dezelfde persoon binnen tien minuten opnieuw op, dan vervangt dat de laatste versie (Word en LibreOffice slaan tussentijds op).
+  - "Veilig opslaan" (tijdelijk bestand, origineel weg, tijdelijk bestand hernoemen) houdt de geschiedenis bij één document.
+  - Bestanden die systemen zelf neerzetten (`._*`, `.DS_Store`, `Thumbs.db`, `desktop.ini`, `~$*`, `.~lock.*`) komen niet in het register.
+  - Vergrendelen (LOCK) zoals Word en LibreOffice dat doen. Getest met litmus: basis, kopiëren en verplaatsen, eigenschappen en vergrendelen werken, op twee bekende beperkingen van de Go-bibliotheek na (geen gedeelde vergrendeling, strenge XML-controle).
+  - Caddy laat `/dav/` en `/o/` buiten de afscherming met wachtwoord: die loggen zelf in.
 
 **Hersteld:**
 - In 0.9 kreeg iedereen die zich aanmeldde toegang tot elk project: in Redmine is de groep *Netwerk: Gebruikers* lid van elk project. Nu telt de rol: Gebruiker geeft geen toegang.

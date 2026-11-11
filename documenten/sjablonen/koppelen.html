@@ -1,0 +1,60 @@
+{{define "inhoud"}}
+{{$k := .Data}}{{$csrf := .Sessie.CSRF}}
+<div class="losse koppelen">
+<p class="kruimels"><a href="/">Documenten</a> › Netwerkschijf koppelen</p>
+<h1>Netwerkschijf koppelen</h1>
+<p>Met WebDAV zie je Documenten als een gewone schijf in Verkenner, Finder of je bestandsbeheer, en open en bewaar je bestanden rechtstreeks. Elke keer opslaan wordt een versie. Je ziet dezelfde ruimtes en mappen als hier, met dezelfde rechten.</p>
+
+<dl class="feiten groot">
+  <dt>Adres</dt><dd><code id="adres">{{$k.Adres}}</code> <button type="button" class="licht klein" data-kopieer-tekst="adres">Kopiëren</button></dd>
+  <dt>Gebruikersnaam</dt><dd><code>{{$k.Email}}</code></dd>
+  <dt>Wachtwoord</dt><dd>een app-wachtwoord (hieronder), niet je gewone wachtwoord</dd>
+</dl>
+
+{{if $k.Nieuw}}
+<div class="nieuwww" role="status">
+  <p><b>Je nieuwe app-wachtwoord voor {{$k.NieuwNaam}}</b></p>
+  <p><code id="nieuwww" class="groot">{{$k.Nieuw}}</code> <button type="button" class="licht klein" data-kopieer-tekst="nieuwww">Kopiëren</button></p>
+  <p class="zacht">Je ziet het maar één keer. Vul het in bij het koppelen; je computer onthoudt het. Kwijt? Maak een nieuw en trek dit in.</p>
+</div>
+{{end}}
+
+<h2>App-wachtwoorden</h2>
+<p class="zacht">Eén per apparaat of programma. Verlies je een laptop, trek dan alleen dat wachtwoord in.</p>
+{{if $k.Lijst}}
+<table class="lijst smal">
+<thead><tr><th>Apparaat</th><th>Gemaakt</th><th>Laatst gebruikt</th><th></th></tr></thead>
+<tbody>
+{{range $k.Lijst}}
+<tr><td>{{.Naam}}</td><td>{{datum .Aangemaakt}}</td><td>{{if .Gebruikt.Valid}}{{datum .Gebruikt.Time}}{{else}}<span class="zacht">nog niet</span>{{end}}</td>
+<td class="r"><form method="post" action="/koppelen"><input type="hidden" name="csrf" value="{{$csrf}}"><input type="hidden" name="actie" value="weg"><input type="hidden" name="id" value="{{.ID}}"><button class="licht klein">Intrekken</button></form></td></tr>
+{{end}}
+</tbody></table>
+{{end}}
+<form class="nieuw-ww" method="post" action="/koppelen">
+  <input type="hidden" name="csrf" value="{{$csrf}}"><input type="hidden" name="actie" value="nieuw">
+  <label>Naam van het apparaat<input name="naam" maxlength="80" placeholder="Bijvoorbeeld: laptop werk"></label>
+  <button>Nieuw app-wachtwoord</button>
+</form>
+
+<h2>Zo koppel je</h2>
+<div class="stappen">
+<section><h3>Windows</h3><ol>
+  <li>Open Verkenner, klik met rechts op <b>Deze pc</b> en kies <b>Netwerklocatie toevoegen</b> (of <b>Netwerkverbinding maken</b>).</li>
+  <li>Vul het adres hierboven in.</li>
+  <li>Log in met je e-mailadres en het app-wachtwoord, en vink <b>Mijn referenties onthouden</b> aan.</li>
+</ol><p class="zacht klein">Windows haalt standaard bestanden tot 50 MB op via WebDAV. Grotere bestanden: download ze hier.</p></section>
+<section><h3>macOS</h3><ol>
+  <li>Kies in Finder <b>Ga → Verbind met server</b> (⌘K).</li>
+  <li>Vul het adres hierboven in en klik <b>Verbind</b>.</li>
+  <li>Log in met je e-mailadres en het app-wachtwoord; bewaar het in je sleutelhanger.</li>
+</ol></section>
+<section><h3>Linux</h3><ol>
+  <li>In Bestanden (GNOME): <b>Andere locaties</b>, en bij <b>Verbinden met server</b> het adres met <code>davs://</code> in plaats van <code>https://</code>.</li>
+  <li>Of met rclone: een remote van het type <code>webdav</code>, leverancier <code>other</code>.</li>
+</ol></section>
+<section><h3>Word en LibreOffice</h3>
+<p>Je hoeft niets te koppelen om één document te openen: kies bij het document <b>Openen in Word</b> of <b>Openen in LibreOffice</b>. Opslaan gaat dan rechtstreeks terug naar Documenten.</p></section>
+</div>
+</div>
+{{end}}
