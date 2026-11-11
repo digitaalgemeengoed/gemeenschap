@@ -510,6 +510,26 @@ Text Domain: digitaalgemeengoed
 .entry-content .dg-bedragen { font-size: .9rem; color: var(--dg-tekst); }
 .entry-content .dg-bedragen strong { color: var(--dg-marine); font-size: 1.05rem; }
 
+/* Crowdfunding met toezeggingen ([dg_campagne], dg-crowdfunding.php). */
+.entry-content .dg-cf { margin-top: 1rem; }
+.entry-content .dg-cf .dg-balk { display: flex; }
+.entry-content .dg-balk-intentie { display: block; height: 100%; background: repeating-linear-gradient(135deg, #a7d8b2 0 6px, #c8ebcf 6px 12px); }
+.entry-content .dg-cf .dg-bedragen { display: block; }
+.entry-content .dg-cf-gemeenten { list-style: none; margin: .8rem 0 0; padding: 0; }
+.entry-content .dg-cf-gemeenten li { display: flex; justify-content: space-between; align-items: center; gap: .5rem; padding: .35rem 0; border-top: 1px solid var(--dg-rand); font-size: .9rem; color: var(--dg-tekst); }
+.entry-content .dg-cf-uitleg { font-size: .88rem; color: var(--dg-grijs) !important; margin-top: .9rem !important; }
+.entry-content .dg-cf-melding { padding: .6rem .9rem; border-radius: 10px; background: #e7f3dc; color: #2f5f14 !important; font-size: .9rem; }
+.entry-content .dg-cf-melding-fout, .entry-content .dg-cf-melding-vast { background: #fdecea; color: #8a1c12 !important; }
+.entry-content .dg-cf-form { margin-top: 1rem; border: 1px solid var(--dg-rand); border-radius: 12px; padding: .2rem .9rem; background: var(--dg-ijs); }
+.entry-content .dg-cf-form summary { cursor: pointer; padding: .6rem 0; font-weight: 650; color: var(--dg-blauw); }
+.entry-content .dg-cf-form form { display: grid; gap: .7rem; padding: .3rem 0 1rem; }
+.entry-content .dg-cf-form label { display: grid; gap: .25rem; font-size: .88rem; font-weight: 600; color: var(--dg-marine); }
+.entry-content .dg-cf-form input[type=text], .entry-content .dg-cf-form input[type=number] { width: 100%; padding: .5rem .7rem; border: 1px solid #c6d5e4; border-radius: 8px; background: #fff; font-weight: 400; }
+.entry-content .dg-cf-form .dg-cf-vink { display: flex; gap: .5rem; align-items: flex-start; font-weight: 400; color: var(--dg-tekst); }
+.entry-content .dg-cf-form .dg-cf-vink input { margin-top: .25rem; }
+.entry-content .dg-cf-form button { justify-self: start; border: 0; cursor: pointer; }
+.entry-content .dg-kaart-meer { margin-top: 1rem !important; font-size: .9rem; }
+
 /* Lijsten in een kader: vinkjes. */
 .entry-content .dg-kader ul { list-style: none; padding-left: 0; }
 .entry-content .dg-kader ul li { position: relative; padding-left: 1.8rem; margin: .45rem 0; font-weight: 600; color: var(--dg-marine); }

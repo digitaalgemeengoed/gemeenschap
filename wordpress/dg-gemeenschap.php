@@ -576,6 +576,10 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			// Logo en sitepictogram uit het thema (wordpress/thema/…/assets/).
 			dg_thema_beeld( 'uil.png', static fn( $id ) => set_theme_mod( 'custom_logo', $id ) );
 			dg_thema_beeld( 'icoon.png', static fn( $id ) => update_option( 'site_icon', $id ) );
+			// De tabel voor toezeggingen (dg-crowdfunding.php).
+			if ( function_exists( 'dg_cf_installeer' ) ) {
+				dg_cf_installeer();
+			}
 			// Werkgroepen: BuddyPress-groepen, elk met een eigen forum onder "Werkgroepen".
 			dg_werkgroepen();
 			// De adressen van BuddyPress in het Nederlands.

@@ -94,7 +94,29 @@ Direct onder de `###` kop van een kaart (of bovenin een `held`) kun je regels
 | `link: xena.md` | de hele kaart wordt een link, met een pijl |
 | `beeld: media/foto.jpg` | een foto: in een `held` rechts over de hele hoogte, op een kaart als tegel |
 | `soort: oproep` | in `projecten`: een brede balk onder de kaarten, voor een oproep met knop |
-| `doel: 50000`, `toegezegd: 31000`, `deelnemers: 4 gemeenten` | crowdfunding: een voortgangsbalk met de bedragen. Alleen echte toezeggingen invullen. |
+| `doel: 50000`, `toegezegd: 31000`, `deelnemers: 4 gemeenten` | crowdfunding met vaste bedragen: een voortgangsbalk. Alleen echte toezeggingen invullen. |
+| `campagne: anonimiseren-2027`, `doel: 60000`, `einddatum: 2027-03-01` | crowdfunding waarbij gemeenten **op de site** toezeggen (zie hieronder). Gebruik dan geen `toegezegd:` of `deelnemers:`; die komen uit de toezeggingen. |
+
+### Toezeggingen per gemeente
+
+Met `campagne:` op een kaart in een `kaarten`-vak kan een ingelogd lid
+namens zijn gemeente een **intentie** opgeven: bedrag, eventueel de voorwaarde
+"alleen als het streefbedrag gehaald wordt", en wie bij de gemeente mag
+tekenen. Dat kan alleen wie via het e-maildomein aan een gemeente gekoppeld
+is (de organisaties in Keycloak). Per gemeente is er één toezegging per
+campagne; een collega kan hem wijzigen of intrekken.
+
+Een intentie is niet bindend. De kerngroep zet hem in WordPress onder
+**Toezeggingen** op *bevestigd* zodra de samenwerkingsovereenkomst getekend
+is, met het kenmerk van de overeenkomst. De getekende overeenkomst zelf hoort
+in het archief, niet in WordPress.
+
+De balk toont bevestigde bedragen vol en intenties gestreept. Op de site staat
+bij elke gemeente of het een intentie of bevestigd is; het bedrag staat er
+alleen bij als het bevestigd is.
+
+De naam van de campagne (`campagne:`) bestaat uit kleine letters, cijfers en
+streepjes en verander je niet meer als er toezeggingen zijn.
 
 `[dg_fase project=xena]` (bijvoorbeeld in een `feiten`-vak) toont de fase van
 het project zoals die in Redmine staat, in het veld Fase.

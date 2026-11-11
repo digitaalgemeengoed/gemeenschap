@@ -28,6 +28,7 @@ Contact over privacy: [IN TE VULLEN: e-mailadres].
 | Toestemming voor de nieuwsbrief, met datum van geven en intrekken | De nieuwsbrief en uitnodigingen sturen; kunnen aantonen dat je toestemming gaf | Toestemming |
 | Berichten in de fora, meldingen en reacties in Redmine | Het netwerk en de projecten | Overeenkomst |
 | Tijdstip van inloggen, IP-adres, mislukte inlogpogingen | Beveiliging: misbruik en inbraakpogingen tegengaan | Gerechtvaardigd belang |
+| Bij een toezegging voor crowdfunding: de gemeente, het bedrag, naam en functie van wie mag tekenen, en wie de toezegging opgaf | De inzameling bijhouden en de samenwerkingsovereenkomst voorbereiden | Gerechtvaardigd belang [IN TE VULLEN: juridisch toetsen] |
 
 Wij gebruiken je gegevens niet voor iets anders, verkopen ze niet en gebruiken geen advertenties of trackers.
 
@@ -36,6 +37,7 @@ Wij gebruiken je gegevens niet voor iets anders, verkopen ze niet en gebruiken g
 - Je **profiel** (naam, organisatie, functie, werkveld) is zichtbaar voor ingelogde leden. Je **e-mailadres** niet.
 - **Berichten in de fora** zijn zichtbaar voor ingelogde leden.
 - **Meldingen en reacties in Redmine** zijn openbaar, met je naam erbij.
+- Bij **crowdfunding** zien bezoekers welke gemeenten een toezegging deden, en het bedrag zodra die bevestigd is. Naam en functie van wie mag tekenen en wie de toezegging opgaf, zien alleen de kerngroep en de beheerders.
 - De **kerngroep** en de beheerders zien je gegevens voor zover nodig voor hun taak.
 
 ## Wie helpt ons
@@ -53,6 +55,7 @@ Je gegevens blijven in de Europese Economische Ruimte. [IN TE VULLEN: controlere
 - Berichten en meldingen: als je account wordt verwijderd, blijven ze staan zonder je naam, omdat anderen erop hebben gereageerd. Wil je dat een bericht helemaal verdwijnt, vraag het ons.
 - Toestemming voor de nieuwsbrief: zolang je lid bent, en daarna nog [IN TE VULLEN: termijn] om te kunnen aantonen dat je toestemming gaf.
 - Inloggegevens voor de beveiliging: [IN TE VULLEN: termijn].
+- Toezeggingen voor crowdfunding: [IN TE VULLEN: termijn, bijvoorbeeld tot het eind van de samenwerkingsovereenkomst].
 - Back-ups: veertien dagen.
 
 ## Cookies

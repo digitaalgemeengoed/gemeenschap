@@ -52,6 +52,7 @@ x-wordpress-mappen: &wordpress-mappen
   - ./wordpress/dg-gemeenschap.php:/var/www/html/wp-content/mu-plugins/dg-gemeenschap.php:ro
   - ./wordpress/dg-inhoud.php:/var/www/html/wp-content/mu-plugins/dg-inhoud.php:ro
   - ./wordpress/dg-dashboard.php:/var/www/html/wp-content/mu-plugins/dg-dashboard.php:ro
+  - ./wordpress/dg-crowdfunding.php:/var/www/html/wp-content/mu-plugins/dg-crowdfunding.php:ro
   - ./wordpress/thema/digitaalgemeengoed:/var/www/html/wp-content/themes/digitaalgemeengoed:ro
   - ./wordpress/php.ini:/usr/local/etc/php/conf.d/dg-gemeenschap.ini:ro
 
@@ -182,6 +183,7 @@ services:
       - ./wordpress/dg-gemeenschap.php:/var/www/html/wp-content/mu-plugins/dg-gemeenschap.php:ro
       - ./wordpress/dg-inhoud.php:/var/www/html/wp-content/mu-plugins/dg-inhoud.php:ro
       - ./wordpress/dg-dashboard.php:/var/www/html/wp-content/mu-plugins/dg-dashboard.php:ro
+      - ./wordpress/dg-crowdfunding.php:/var/www/html/wp-content/mu-plugins/dg-crowdfunding.php:ro
       - ./wordpress/thema/digitaalgemeengoed:/var/www/html/wp-content/themes/digitaalgemeengoed:ro
       - ./wordpress/inrichten.sh:/usr/local/bin/dg-inrichten:ro
       # De pagina's: bij de uitrol de versie van main (zie server/uitrol.sh).

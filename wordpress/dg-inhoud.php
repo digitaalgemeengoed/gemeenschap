@@ -25,7 +25,7 @@
 defined( 'ABSPATH' ) || exit;
 
 /** Ophogen als de omzetting verandert: dan worden alle pagina's opnieuw opgeslagen. */
-const DG_INHOUD_VERSIE = 4;
+const DG_INHOUD_VERSIE = 5;
 
 // ---------------------------------------------------------------------------
 // Op slot: pagina's en afbeeldingen uit de repo wijzig je via GitHub
@@ -174,7 +174,7 @@ const DG_KAARTVAKKEN = array( 'kaarten', 'stappen', 'kenmerken', 'projecten' );
 const DG_ICONEN = array( 'open', 'lagen', 'mensen', 'raket', 'plant', 'document', 'mail', 'werkplek', 'forum', 'boek', 'schild', 'stad', 'puzzel', 'hand', 'kompas', 'code', 'huis', 'kalender', 'instellingen' );
 
 /** Regels "sleutel: waarde" bovenaan een vak of kaart. */
-const DG_KENMERKEN = array( 'label', 'beeld', 'icoon', 'link', 'soort', 'doel', 'toegezegd', 'deelnemers' );
+const DG_KENMERKEN = array( 'label', 'beeld', 'icoon', 'link', 'soort', 'doel', 'toegezegd', 'deelnemers', 'campagne', 'einddatum' );
 
 /**
  * Haalt de regels "sleutel: waarde" (label, beeld, icoon, link, soort) uit een
@@ -236,10 +236,17 @@ function dg_inhoud_vak( string $soort, string $md, callable $link, callable $bee
 			}
 			$icoon   = ! empty( $kenmerk['icoon'] ) ? dg_inhoud_icoon( $kenmerk['icoon'][0] ) : '';
 			$binnen .= dg_blok( 'heading', '<h3 class="wp-block-heading">' . $icoon . dg_inhoud_regel( trim( $kop ), $link ) . '</h3>', array( 'level' => 3 ) ) . "\n\n" . dg_inhoud_blokken( $rest, $link, $beeld );
-			if ( ! empty( $kenmerk['doel'] ) ) {
+			if ( ! empty( $kenmerk['campagne'] ) && ! empty( $kenmerk['doel'] ) ) {
+				// Een campagne met toezeggingen op de site (dg-crowdfunding.php).
+				$code    = '[dg_campagne id=' . sanitize_key( $kenmerk['campagne'][0] ) . ' doel=' . (int) preg_replace( '/\D/', '', $kenmerk['doel'][0] ) . ( ! empty( $kenmerk['einddatum'] ) ? ' einddatum=' . preg_replace( '/[^0-9-]/', '', $kenmerk['einddatum'][0] ) : '' ) . ']';
+				$binnen .= "\n\n" . dg_blok( 'shortcode', $code );
+			} elseif ( ! empty( $kenmerk['doel'] ) ) {
 				$binnen .= "\n\n" . dg_inhoud_campagne( $kenmerk );
 			}
-			if ( ! empty( $kenmerk['link'] ) ) {
+			if ( ! empty( $kenmerk['link'] ) && ! empty( $kenmerk['campagne'] ) ) {
+				// Bij een campagne staat er een formulier op de kaart: geen klikbare kaart, maar een gewone link.
+				$binnen .= "\n\n" . dg_blok( 'paragraph', '<p class="dg-kaart-meer"><a href="' . esc_url( $link( $kenmerk['link'][0] ) ) . '">Meer over het project →</a></p>', array( 'className' => 'dg-kaart-meer' ) );
+			} elseif ( ! empty( $kenmerk['link'] ) ) {
 				$binnen   .= "\n\n" . dg_blok( 'paragraph', '<p class="dg-kaart-link"><a href="' . esc_url( $link( $kenmerk['link'][0] ) ) . '"><span class="screen-reader-text">' . esc_html( trim( $kop ) ) . '</span></a></p>', array( 'className' => 'dg-kaart-link' ) );
 				$klassen[] = 'heeft-link';
 			}
@@ -329,6 +336,10 @@ function dg_inhoud_controleer_vakken( string $md ): array {
 			}
 		} elseif ( null !== $open && preg_match( '/^###\s+/', $regel ) ) {
 			$open[2] = true;
+		} elseif ( null !== $open && preg_match( '/^\s*einddatum:\s*(.*?)\s*$/', $regel, $m ) && ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', $m[1] ) ) {
+			$fouten[] = 'regel ' . ( $nr + 1 ) . ": einddatum schrijf je als jjjj-mm-dd, bijvoorbeeld 2027-03-01.";
+		} elseif ( null !== $open && preg_match( '/^\s*campagne:\s*(.*?)\s*$/', $regel, $m ) && ! preg_match( '/^[a-z0-9]+(-[a-z0-9]+)*$/', $m[1] ) ) {
+			$fouten[] = 'regel ' . ( $nr + 1 ) . ": campagne mag alleen kleine letters, cijfers en streepjes bevatten.";
 		} elseif ( null !== $open && preg_match( '/^\s*icoon:\s*(\S+)/', $regel, $m ) && ! in_array( $m[1], DG_ICONEN, true ) ) {
 			$fouten[] = 'regel ' . ( $nr + 1 ) . ": onbekend icoon \"{$m[1]}\" (kies uit " . implode( ', ', DG_ICONEN ) . ').';
 		}
