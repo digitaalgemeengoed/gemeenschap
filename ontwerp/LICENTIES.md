@@ -22,6 +22,7 @@ gebruikt hem niet zelf.
 | `inhoud/media/community-ai.jpg` | foto in de opening van *Meedoen* (Community) | **AI-beeld**, gemaakt met ChatGPT (OpenAI) door Erik Hoekstra, november 2026; de mensen erop bestaan niet | volgens de voorwaarden van OpenAI is de uitvoer van wie hem liet maken. Vervangen door foto's van echte bijeenkomsten zodra die er zijn. |
 | `inhoud/media/werkwijze-ai.jpg` | foto in de opening van *Werkwijze* | **AI-beeld**, gemaakt met ChatGPT (OpenAI) door Erik Hoekstra, november 2026; de mensen erop bestaan niet | als hierboven |
 | `inhoud/media/crowdfunding-ai.jpg` | foto in de opening van *Crowdfunding* | **AI-beeld**, gemaakt met ChatGPT (OpenAI) door Erik Hoekstra, november 2026; de mensen erop bestaan niet. Er staan een EU-vlag en een scherm *Funding* op. | als hierboven. Let op: de EU-vlag kan suggereren dat de EU meebetaalt of het steunt; alleen gebruiken als dat zo is. |
+| `inhoud/media/contact-ai.jpg` | foto in de opening van *Contact* | **AI-beeld**, gemaakt met ChatGPT (OpenAI) door Erik Hoekstra, november 2026; de mensen erop bestaan niet | als hierboven |
 | `inhoud/media/held-voorlopig.jpg` | foto in de opening van de startpagina | **voorlopig**: uitsnede van de AI-visualisatie `ontwerp/visualisaties/startpagina-2.png` | zie *Ontwerpvisualisaties*. Vervangen door een echte foto voordat de site openbaar wordt. |
 
 ## Ontwerpvisualisaties (`ontwerp/visualisaties/`)

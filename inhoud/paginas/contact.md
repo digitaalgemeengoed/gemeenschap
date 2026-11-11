@@ -3,6 +3,7 @@ titel: Contact
 volgorde: 8
 ---
 ::: held
+beeld: media/contact-ai.jpg
 label: Stichting Digitaal GemeenGoed
 # Contact
 Een vraag over een project of de community? In de fora lezen de meeste mensen mee. Voor al het andere: mail ons.
@@ -13,7 +14,7 @@ Een vraag over een project of de community? In de fora lezen de meeste mensen me
 ::: kaarten
 ### Mail
 icoon: mail
-Voor al het andere: [info@digitaalgemeengoed.nl](mailto:info@digitaalgemeengoed.nl).
+Mail ons op [info@digitaalgemeengoed.nl](mailto:info@digitaalgemeengoed.nl). We reageren binnen een paar werkdagen.
 
 ### Fora
 icoon: forum
