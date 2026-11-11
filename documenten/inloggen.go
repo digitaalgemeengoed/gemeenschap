@@ -306,6 +306,11 @@ func (r *Register) NieuweSessie(ctx context.Context, p *Persoon) (cookie string,
 	if err == nil {
 		r.db.ExecContext(ctx, `DELETE FROM sessie WHERE verloopt < now()`)
 		_, err = r.db.ExecContext(ctx, `INSERT INTO persoon (email, naam) VALUES ($1, $2) ON CONFLICT (email) DO UPDATE SET naam = EXCLUDED.naam`, p.Email, p.Naam)
+		for _, g := range p.Groepen {
+			if err == nil {
+				_, err = r.db.ExecContext(ctx, `INSERT INTO groep (pad) VALUES ($1) ON CONFLICT (pad) DO UPDATE SET gezien = now()`, g)
+			}
+		}
 	}
 	return cookie, err
 }

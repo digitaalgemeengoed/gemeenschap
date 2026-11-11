@@ -1,8 +1,8 @@
 package main
 
 // Projecten en hun leden uit Redmine. Elk project krijgt een ruimte met de
-// identifier als sleutel; wie lid is van het project (direct of via een
-// groep), mag in de ruimte. Gekoppeld op e-mailadres.
+// identifier als sleutel. Wat een projectlid in de ruimte mag, hangt af van
+// zijn rol in Redmine (Rollen hieronder). Gekoppeld op e-mailadres.
 
 import (
 	"context"
@@ -23,6 +23,45 @@ type Redmine struct {
 	URL     string // http://redmine:3000
 	Sleutel string // API-sleutel van het noodaccount admin
 	HTTP    *http.Client
+	Rollen  map[string]int // rolnaam in Redmine → niveau (0 = geen toegang)
+}
+
+// Elk project in Redmine heeft de netwerkgroepen als lid (Gebruiker,
+// Contributor, Member, Kerngroep). Iemand die zich net aanmeldt, is
+// Gebruiker: die ziet de documenten van een project niet.
+const standaardRollen = "Gebruiker=0,Contributor=2,Member=2,Kerngroep=3,Manager=3,Projectmanager=3,Projectleider=3"
+
+// Een rol die hier niet staat, is bij een project gezet door een
+// projectbeheerder: Bewerken.
+const onbekendeRol = Bewerken
+
+func leesRollen(s string) map[string]int {
+	uit := map[string]int{}
+	for _, d := range strings.Split(s, ",") {
+		naam, n, ok := strings.Cut(strings.TrimSpace(d), "=")
+		if !ok {
+			continue
+		}
+		v := 0
+		fmt.Sscan(n, &v)
+		if v < 0 || v > Beheren {
+			v = 0
+		}
+		uit[strings.ToLower(strings.TrimSpace(naam))] = v
+	}
+	return uit
+}
+
+func (rm *Redmine) niveau(rollen []rmRol) int {
+	hoogste := 0
+	for _, r := range rollen {
+		n, ok := rm.Rollen[strings.ToLower(r.Naam)]
+		if !ok {
+			n = onbekendeRol
+		}
+		hoogste = max(hoogste, n)
+	}
+	return hoogste
 }
 
 func (rm *Redmine) haal(ctx context.Context, pad string, q url.Values, doel any) error {
@@ -73,9 +112,14 @@ type rmProject struct {
 	Status     int    `json:"status"`
 }
 
+type rmRol struct {
+	Naam string `json:"name"`
+}
+
 type rmLidmaatschap struct {
 	Gebruiker *struct{ ID int } `json:"user"`
 	Groep     *struct{ ID int } `json:"group"`
+	Rollen    []rmRol           `json:"roles"`
 }
 
 // Synchroniseer neemt projecten en leden over. Projecten die er niet meer
@@ -137,12 +181,17 @@ func (rm *Redmine) Synchroniseer(ctx context.Context, reg *Register) error {
 		if err != nil {
 			return err
 		}
-		leden := map[string]bool{}
+		// Per e-mailadres het hoogste niveau over alle lidmaatschappen.
+		leden := map[string]int{}
 		for _, lm := range lms {
+			n := rm.niveau(lm.Rollen)
+			if n == 0 {
+				continue
+			}
 			switch {
 			case lm.Gebruiker != nil:
 				if m := mail[lm.Gebruiker.ID]; m != "" {
-					leden[m] = true
+					leden[m] = max(leden[m], n)
 				}
 			case lm.Groep != nil:
 				l, err := ledenVanGroep(lm.Groep.ID)
@@ -150,7 +199,7 @@ func (rm *Redmine) Synchroniseer(ctx context.Context, reg *Register) error {
 					return err
 				}
 				for _, m := range l {
-					leden[m] = true
+					leden[m] = max(leden[m], n)
 				}
 			}
 		}
@@ -165,7 +214,7 @@ func (rm *Redmine) Synchroniseer(ctx context.Context, reg *Register) error {
 	return reg.WegBehalve(ctx, gezien)
 }
 
-func (r *Register) ZetProject(ctx context.Context, p rmProject, status string, leden map[string]bool) error {
+func (r *Register) ZetProject(ctx context.Context, p rmProject, status string, leden map[string]int) error {
 	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
 		return err
@@ -193,8 +242,8 @@ func (r *Register) ZetProject(ctx context.Context, p rmProject, status string, l
 	if _, err := tx.ExecContext(ctx, `DELETE FROM lid WHERE ruimte_id = $1`, id); err != nil {
 		return err
 	}
-	for m := range leden {
-		if _, err := tx.ExecContext(ctx, `INSERT INTO lid (ruimte_id, email) VALUES ($1, $2)`, id, m); err != nil {
+	for m, n := range leden {
+		if _, err := tx.ExecContext(ctx, `INSERT INTO lid (ruimte_id, email, niveau) VALUES ($1, $2, $3)`, id, m, n); err != nil {
 			return err
 		}
 	}

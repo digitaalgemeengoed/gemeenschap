@@ -136,7 +136,8 @@ func main() {
 		Projecten:  env("REDMINE_PUBLIEK", ""),
 	}
 	if u := os.Getenv("REDMINE_URL"); u != "" {
-		rm := &Redmine{URL: u, Sleutel: moet("REDMINE_API_KEY"), HTTP: &http.Client{Timeout: 30 * time.Second}}
+		rm := &Redmine{URL: u, Sleutel: moet("REDMINE_API_KEY"), HTTP: &http.Client{Timeout: 30 * time.Second},
+			Rollen: leesRollen(env("DOC_ROLLEN", standaardRollen))}
 		interval, _ := time.ParseDuration(env("REDMINE_INTERVAL", "5m"))
 		go rm.SynchroniseerSteeds(ctx, reg, interval)
 	}

@@ -1,5 +1,17 @@
 # Wijzigingen
 
+## 0.10.0 — 2026-11-11
+
+**Documenten: een verkenner en rechten per map.**
+- Het scherm is nu een verkenner in de stijl van de XENA-demo: een opdrachtbalk (Nieuwe map, Uploaden, Downloaden, Naam wijzigen, Verwijderen, Toegang, Eigenschappen), een adresbalk, links de ruimtes met de mappenboom, in het midden alleen de inhoud van de gekozen map, rechts de eigenschappen of de toegang, onderaan een statusbalk. Bestanden sleep je op de lijst; een rij aanklikken kiest het document.
+- **Rechten** in drie niveaus, zoals in de XENA-demo: Lezen, Bewerken, Beheren. Per persoon, per groep uit Keycloak of voor de projectleden, op een ruimte of een map. Een map neemt de toegang van boven over; met *Overerving stoppen* wordt hij besloten. Wie Beheren heeft, kan toegang doorgeven, ook Beheren.
+- Standaard: de kerngroep Beheren in elke ruimte; in een project de projectleden volgens hun rol in Redmine (Kerngroep en Manager Beheren, Contributor en Member Bewerken). `/site/beheer` kan altijd overal bij.
+- Verwijderen vraagt nu Beheren (was: iedereen die mocht schrijven).
+
+**Hersteld:**
+- In 0.9 kreeg iedereen die zich aanmeldde toegang tot elk project: in Redmine is de groep *Netwerk: Gebruikers* lid van elk project. Nu telt de rol: Gebruiker geeft geen toegang.
+- De gegevens van een document bewaren zonder trefwoorden gaf een fout.
+
 ## 0.9.1 — 2026-11-11
 
 **Hersteld:** 0.8.1 en 0.9.0 rolden niet uit. Het inrichten van de kennisbank stopte bij het bijwerken van de startpagina: `EACCES: permission denied, open '/wiki/data/repo/home.md'`. De volumes voor de Git-werkkopie en de uploads van de wiki waren van root, terwijl de wiki als `node` draait. Daardoor werkte ook de Git-opslag naar de repo `kennisbank` sinds 0.8.0 niet (de fout kwam alleen in het log van de wiki).

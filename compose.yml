@@ -418,6 +418,8 @@ services:
       REDMINE_API_KEY: ${REDMINE_API_KEY:?}
       REDMINE_PUBLIEK: https://projecten.${DOMEIN}
       MAX_MB: ${DOC_MAX_MB:-500}
+      # Welk niveau een rol in Redmine geeft (0 geen, 1 lezen, 2 bewerken, 3 beheren).
+      DOC_ROLLEN: ${DOC_ROLLEN:-Gebruiker=0,Contributor=2,Member=2,Kerngroep=3,Manager=3,Projectmanager=3,Projectleider=3}
     volumes:
       # Uploads gaan eerst hierheen (met controlegetal), dan naar de opslag.
       - doctmp:/tmp

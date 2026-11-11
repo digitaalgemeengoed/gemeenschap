@@ -1,6 +1,6 @@
 # Documenten: een lichte XENA voor het netwerk
 
-Ontwerp, 11 november 2026. Status: fase 1 in aanbouw.
+Ontwerp, 11 november 2026. Status: fase 1 klaar (0.9), verkenner en rechten (0.10).
 
 ## Vraag
 
@@ -66,15 +66,40 @@ status *concept* / *definitief* (definitief = vergrendeld).
 
 ## Rechten
 
-| Ruimte | Lezen | Schrijven |
-|---|---|---|
-| Coöperatie | `/netwerk/members`, `/netwerk/kerngroep` | `/netwerk/kerngroep` |
-| Project (actief in Redmine) | leden van het project in Redmine (direct of via een groep) | idem |
-| Project (gesloten in Redmine) | idem | niemand |
-| Alles | `/site/beheer` | `/site/beheer` |
+Drie niveaus, zoals in de XENA-demo (venster Toegang):
 
-Gebruikers worden gekoppeld op e-mailadres, net als bij de groepssynchronisatie
-van Redmine. Werkgroepen worden later een derde soort ruimte.
+| Niveau | Mag |
+|---|---|
+| Lezen | zien en downloaden |
+| Bewerken | ook uploaden, nieuwe versies, metadata, hernoemen, mappen maken |
+| Beheren | ook verwijderen en de toegang wijzigen, ook Beheren doorgeven |
+
+Een **regel** geeft een persoon (e-mailadres), een groep uit Keycloak of de
+projectleden (per rol in Redmine) een niveau, op de ruimte of op een map
+(tabel `recht`). Rechten staan op mappen, niet op losse documenten: een
+besloten document zet je in een besloten map.
+
+**Overerving.** Een map neemt de regels van de map erboven over en kan er
+regels bij krijgen. *Overerving stoppen* (`item.eigen_rechten`) kopieert de
+geldende regels naar de map; daarna gelden alleen de eigen regels. Zo maak je
+een besloten map. `/site/beheer` heeft altijd Beheren, zodat niemand zich
+buitensluit.
+
+**Standaardregels** op elke ruimte (niet te wijzigen, wel weg te laten in een
+besloten map):
+
+- Coöperatie: `/netwerk/members` Lezen, `/netwerk/kerngroep` Beheren.
+- Project: de projectleden volgens hun rol in Redmine, en `/netwerk/kerngroep`
+  Beheren. Elk project heeft in Redmine de netwerkgroepen als lid; iemand die
+  zich net aanmeldt (Gebruiker) ziet daarom niets. Rollen: Gebruiker 0,
+  Contributor en Member Bewerken, Kerngroep, Manager, Projectmanager en
+  Projectleider Beheren; een andere rol Bewerken (`DOC_ROLLEN`).
+
+Een gesloten project kan alleen nog gelezen worden. Wie toegang heeft tot een
+map diep in een ruimte, ziet de ruimte en de mappen erboven als doorgang.
+
+Een map verwijderen kan alleen met Beheren op de map erboven en op elke map
+eronder.
 
 ## Inloggen
 
@@ -107,6 +132,9 @@ van Redmine. Werkgroepen worden later een derde soort ruimte.
    LibreOffice, Word, Cyberduck en rclone.
 3. Definitief (vergrendelen), zoeken, de prullenbak terughalen, het logboek
    per document.
+
+Tussendoor (0.10): de verkenner in de stijl van de XENA-demo en rechten per
+persoon of groep op mappen.
 
 Later: werkgroepen, de Office Assistent schrijft via WebDAV, bewaartermijnen.
 

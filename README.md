@@ -161,16 +161,37 @@ metadata (titel, omschrijving, soort, trefwoorden). Een lichte XENA: een
 register in Postgres naast een objectopslag (Garage, S3); een object wordt
 nooit overschreven. Het ontwerp staat in `documenten/ONTWERP.md`.
 
-| Ruimte | Lezen | Schrijven |
+Het scherm is een verkenner zoals in de XENA-demo: links de ruimtes en de
+mappenboom, in het midden de inhoud van één map, rechts de eigenschappen of
+de toegang.
+
+**Rechten** zijn drie niveaus, per persoon, groep of de projectleden, op een
+ruimte of een map:
+
+| Niveau | Mag |
+|---|---|
+| Lezen | zien en downloaden |
+| Bewerken | ook uploaden, nieuwe versies, gegevens, hernoemen, mappen maken |
+| Beheren | ook verwijderen en de toegang wijzigen (ook doorgeven aan anderen) |
+
+Standaard:
+
+| Ruimte | Wie | Niveau |
 |---|---|---|
-| Coöperatie | `/netwerk/members`, `/netwerk/kerngroep` | `/netwerk/kerngroep` |
-| Elk project in Redmine | wie lid is van het project (direct of via een groep) | idem, zolang het project niet gesloten is |
-| Alles | `/site/beheer` | `/site/beheer` |
+| Coöperatie | `/netwerk/members` | Lezen |
+| Coöperatie en elk project | `/netwerk/kerngroep` | Beheren |
+| Elk project | de projectleden in Redmine, per rol: Gebruiker niets, Contributor en Member Bewerken, Kerngroep en Manager Beheren (`DOC_ROLLEN` in `.env`) | volgens rol |
+| Alles, altijd | `/site/beheer` | Beheren |
+
+Een map neemt de toegang van de map erboven over; wie Beheren heeft, kan er
+iemand bij zetten. Met **Overerving stoppen** wordt een map besloten: de regels
+van boven worden eigen regels, en daarna haal je weg wie er niet bij hoort.
+Wie alleen toegang heeft tot een map diep in een ruimte, ziet de mappen
+erboven als doorgang (de naam, niet de inhoud). Een gesloten project kan
+alleen nog gelezen worden.
 
 Projecten en hun leden komen elke vijf minuten uit Redmine; een nieuw project
-krijgt vanzelf een ruimte. Zet je iemand in Redmine bij een project, dan ziet
-die de documenten binnen vijf minuten. Hooguit 500 MB per bestand
-(`DOC_MAX_MB` in `.env`).
+krijgt vanzelf een ruimte. Hooguit 500 MB per bestand (`DOC_MAX_MB` in `.env`).
 
 Verwijderen zet iets in de prullenbak; er verdwijnt niets (in deze versie
 haalt alleen de beheerder het terug, met SQL). Geen persoonsgegevens en geen

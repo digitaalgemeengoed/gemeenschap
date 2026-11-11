@@ -84,6 +84,23 @@ var schema = []string{
 	`INSERT INTO ruimte (sleutel, soort, naam) VALUES ('cooperatie', 'cooperatie', 'Coöperatie')`,
 	// Namen bij e-mailadressen, voor de weergave (bijgewerkt bij elke login).
 	`CREATE TABLE persoon (email text PRIMARY KEY, naam text NOT NULL)`,
+	// Rechten (0.10): drie niveaus per persoon, groep of de projectleden, op een
+	// map of op de ruimte zelf (item_id leeg). Een map kan de overerving stoppen.
+	`ALTER TABLE item ADD COLUMN eigen_rechten boolean NOT NULL DEFAULT false`,
+	`ALTER TABLE lid ADD COLUMN niveau smallint NOT NULL DEFAULT 2`,
+	`CREATE TABLE recht (
+		id         bigserial PRIMARY KEY,
+		ruimte_id  bigint NOT NULL REFERENCES ruimte(id) ON DELETE CASCADE,
+		item_id    bigint REFERENCES item(id),
+		soort      text NOT NULL CHECK (soort IN ('groep','persoon','rol')),
+		wie        text NOT NULL,                   -- groepspad, e-mailadres, of 'redmine'
+		niveau     smallint NOT NULL CHECK (niveau BETWEEN 1 AND 3),
+		door       text NOT NULL,
+		op         timestamptz NOT NULL DEFAULT now()
+	)`,
+	`CREATE UNIQUE INDEX recht_uniek ON recht (ruimte_id, coalesce(item_id, 0), soort, wie)`,
+	// Groepen die bij het inloggen voorbijkwamen: om toegang aan te kunnen geven.
+	`CREATE TABLE groep (pad text PRIMARY KEY, gezien timestamptz NOT NULL DEFAULT now())`,
 }
 
 func migreer(ctx context.Context, db *sql.DB) error {

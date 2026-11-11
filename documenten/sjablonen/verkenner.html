@@ -1,0 +1,313 @@
+{{define "inhoud"}}
+{{$v := .Data}}{{$csrf := .Sessie.CSRF}}{{$rm := $v.Ruimte}}
+<div class="venster{{if $v.Paneel}} met-paneel{{end}}">
+
+{{/* --- Opdrachtbalk ------------------------------------------------------ */}}
+<div class="opdrachtbalk" role="toolbar" aria-label="Opdrachten">
+{{if $rm}}
+  {{$doel := $v.Selectie}}
+  {{if ge $v.Niveau 2}}
+  <button type="button" class="opdracht hoofd" data-open="dlg-map"><span class="i i-plus" aria-hidden="true"></span>Nieuwe map</button>
+  <form class="opdracht-upload" method="post" action="/r/{{$rm.Sleutel}}/upload" enctype="multipart/form-data" data-max="{{$v.MaxMB}}">
+    <input type="hidden" name="csrf" value="{{$csrf}}">
+    <input type="hidden" name="ouder" value="{{$v.MapID}}">
+    <label class="opdracht"><span class="i i-upload" aria-hidden="true"></span>Uploaden<input type="file" name="bestanden" multiple></label>
+    <noscript><button class="opdracht">Versturen</button></noscript>
+  </form>
+  {{else}}
+  <span class="opdracht uit" title="Je hebt hier het recht {{niveau $v.Niveau}}"><span class="i i-plus" aria-hidden="true"></span>Nieuwe map</span>
+  <span class="opdracht uit" title="Je hebt hier het recht {{niveau $v.Niveau}}"><span class="i i-upload" aria-hidden="true"></span>Uploaden</span>
+  {{end}}
+  <span class="scheiding"></span>
+  {{if $doel}}
+  <a class="opdracht" href="/r/{{$rm.Sleutel}}/d/{{$doel.ID}}/download" download><span class="i i-download" aria-hidden="true"></span>Downloaden</a>
+  {{else}}<span class="opdracht uit"><span class="i i-download" aria-hidden="true"></span>Downloaden</span>{{end}}
+  {{if and (ge $v.Niveau 2) (or $doel $v.Map)}}
+  <button type="button" class="opdracht" data-open="dlg-naam"><span class="i i-pen" aria-hidden="true"></span>Naam wijzigen</button>
+  {{else}}<span class="opdracht uit"><span class="i i-pen" aria-hidden="true"></span>Naam wijzigen</span>{{end}}
+  {{if and (ge $v.Niveau 3) (or $doel $v.Map)}}
+  <button type="button" class="opdracht" data-open="dlg-weg"><span class="i i-prullenbak" aria-hidden="true"></span>Verwijderen</button>
+  {{else}}<span class="opdracht uit"><span class="i i-prullenbak" aria-hidden="true"></span>Verwijderen</span>{{end}}
+  <span class="scheiding"></span>
+  {{if not $v.Doorgang}}
+  <a class="opdracht{{if eq $v.Paneel "toegang"}} aan{{end}}" href="{{if $v.MapID}}/r/{{$rm.Sleutel}}/m/{{$v.MapID}}/toegang{{else}}/r/{{$rm.Sleutel}}/toegang{{end}}"><span class="i i-persoon" aria-hidden="true"></span>Toegang</a>
+  {{end}}
+  {{if $doel}}
+  <a class="opdracht{{if eq $v.Paneel "eigenschappen"}} aan{{end}}" href="/r/{{$rm.Sleutel}}/d/{{$doel.ID}}"><span class="i i-info" aria-hidden="true"></span>Eigenschappen</a>
+  {{else}}<span class="opdracht uit"><span class="i i-info" aria-hidden="true"></span>Eigenschappen</span>{{end}}
+{{else}}
+  <span class="opdracht uit"><span class="i i-plus" aria-hidden="true"></span>Nieuwe map</span>
+  <span class="opdracht uit"><span class="i i-upload" aria-hidden="true"></span>Uploaden</span>
+  <span class="tip">Kies links een ruimte.</span>
+{{end}}
+</div>
+
+{{/* --- Adresbalk --------------------------------------------------------- */}}
+<nav class="adresbalk" aria-label="Waar je bent">
+  <a href="/"><span class="i i-schijf" aria-hidden="true"></span>Documenten</a>
+  {{if $rm}}<span class="pijl" aria-hidden="true">›</span><a href="/r/{{$rm.Sleutel}}">{{$rm.Naam}}</a>{{end}}
+  {{range $v.Pad}}<span class="pijl" aria-hidden="true">›</span><a href="/r/{{$rm.Sleutel}}/m/{{.ID}}">{{.Naam}}</a>{{end}}
+  {{with $v.Selectie}}<span class="pijl" aria-hidden="true">›</span><b>{{.Naam}}</b>{{end}}
+</nav>
+
+<div class="werkvlak">
+{{/* --- Navigatie: ruimtes en de mappen ----------------------------------- */}}
+<nav class="navpaneel" aria-label="Ruimtes en mappen">
+  <details class="nav-inklap" open>
+  <summary>Ruimtes en mappen</summary>
+  {{$coop := false}}{{$proj := false}}
+  {{range $v.Ruimtes}}{{if eq .Soort "cooperatie"}}{{$coop = true}}{{else}}{{$proj = true}}{{end}}{{end}}
+  {{if $coop}}<p class="navkop">Coöperatie</p>
+  <ul class="boom">{{range $v.Ruimtes}}{{if eq .Soort "cooperatie"}}{{template "ruimte-in-nav" (dict2 . $v)}}{{end}}{{end}}</ul>{{end}}
+  {{if $proj}}<p class="navkop">Projecten</p>
+  <ul class="boom">{{range $v.Ruimtes}}{{if eq .Soort "project"}}{{template "ruimte-in-nav" (dict2 . $v)}}{{end}}{{end}}</ul>{{end}}
+  {{if not $v.Ruimtes}}<p class="leeg-klein">Nog geen ruimtes voor jou.</p>{{end}}
+  </details>
+</nav>
+
+{{/* --- De lijst ---------------------------------------------------------- */}}
+<section class="lijstpaneel" aria-label="Inhoud"{{if and $rm (ge $v.Niveau 2)}} data-sleepdoel{{end}}>
+{{if not $rm}}
+  <table class="lijst">
+  <thead><tr><th>Naam</th><th>Soort</th><th>Jouw recht</th><th class="r">Inhoud</th></tr></thead>
+  <tbody>
+  {{range $v.Ruimtes}}
+  <tr><td><a class="naam schijf" href="/r/{{.Sleutel}}">{{.Naam}}</a></td>
+      <td>{{if eq .Soort "cooperatie"}}<span class="chip groen">Coöperatie</span>{{else}}<span class="chip">Project</span>{{end}}{{if eq .Status "gesloten"}} <span class="chip grijs">Gesloten</span>{{end}}</td>
+      <td>{{if .Niveau}}{{niveau .Niveau}}{{else}}<span class="zacht">Alleen enkele mappen</span>{{end}}</td>
+      <td class="r">{{.Aantal}} document{{if ne .Aantal 1}}en{{end}}{{if .Aantal}} · {{grootte .Grootte}}{{end}}</td></tr>
+  {{else}}
+  <tr><td colspan="4" class="leeg">Je hebt nog geen ruimtes. De ruimte van de coöperatie is voor members en de kerngroep; een projectruimte voor wie in Redmine aan dat project meewerkt.{{with $v.Redmine}} <a href="{{.}}">Naar de projecten in Redmine</a>{{end}}</td></tr>
+  {{end}}
+  </tbody></table>
+{{else}}
+  {{if $v.Doorgang}}<p class="doorgang"><span class="i i-slot" aria-hidden="true"></span>Je hebt geen toegang tot de inhoud van deze map, wel tot een map eronder.</p>{{end}}
+  {{if $v.Inhoud}}
+  <table class="lijst">
+  <thead><tr><th>Naam</th><th>Status</th><th>Gewijzigd</th><th class="r">Grootte</th></tr></thead>
+  <tbody>
+  {{range $v.Inhoud}}
+  {{if eq .Soort "map"}}
+  <tr data-href="/r/{{$rm.Sleutel}}/m/{{.ID}}">
+    <td><a class="naam map" href="/r/{{$rm.Sleutel}}/m/{{.ID}}">{{.Naam}}</a></td>
+    <td>{{if index $v.BeslotenMappen .ID}}<span class="chip paars"><span class="i i-slot" aria-hidden="true"></span>Besloten</span>{{end}}</td>
+    <td>{{datum .Gewijzigd}}</td><td class="r zacht">map</td>
+  </tr>
+  {{else}}
+  <tr class="{{if and $v.Selectie (eq $v.Selectie.ID .ID)}}gekozen{{end}}" data-href="/r/{{$rm.Sleutel}}/d/{{.ID}}">
+    <td><a class="naam {{soortIcoon .Mediatype .Naam}}" href="/r/{{$rm.Sleutel}}/d/{{.ID}}">{{.Naam}}</a>{{with eigenTitel .}}<small>{{.}}</small>{{end}}</td>
+    <td>{{with .Documentsoort}}<span class="chip">{{.}}</span> {{end}}{{if gt .HuidigeVersie 1}}<span class="chip grijs">v{{.HuidigeVersie}}</span>{{end}}</td>
+    <td>{{datum .Gewijzigd}}<small>{{.GewijzigdDoorNaam}}</small></td>
+    <td class="r">{{grootte .Grootte}}</td>
+  </tr>
+  {{end}}
+  {{end}}
+  </tbody></table>
+  {{else if not $v.Doorgang}}
+  <div class="leeg">
+    <p>Deze map is leeg.</p>
+    {{if ge $v.Niveau 2}}<p>Sleep bestanden hierheen, of kies <b>Uploaden</b>. Hooguit {{$v.MaxMB}} MB per bestand; een bestand met een naam die hier al staat, wordt een nieuwe versie.</p>{{end}}
+  </div>
+  {{end}}
+  {{if ge $v.Niveau 2}}<div class="sleeplaag" aria-hidden="true"><span>Laat los om te uploaden naar <b>{{if $v.Map}}{{$v.Map.Naam}}{{else}}{{$rm.Naam}}{{end}}</b></span></div>{{end}}
+  <progress class="voortgang" hidden max="100" value="0"></progress>
+{{end}}
+</section>
+
+{{/* --- Paneel rechts ------------------------------------------------------ */}}
+{{if eq $v.Paneel "eigenschappen"}}{{template "eigenschappen" (dict2 $v $csrf)}}{{end}}
+{{if eq $v.Paneel "toegang"}}{{template "toegangpaneel" (dict2 $v $csrf)}}{{end}}
+</div>
+
+{{/* --- Statusbalk -------------------------------------------------------- */}}
+<div class="statusbalk">
+  {{if $rm}}
+  <span>{{len $v.Inhoud}} item{{if ne (len $v.Inhoud) 1}}s{{end}}</span>
+  <span>Jouw recht hier: <b>{{niveau $v.Niveau}}</b></span>
+  {{if $v.Besloten}}<span><span class="i i-slot" aria-hidden="true"></span>Besloten map</span>{{end}}
+  {{if eq $rm.Status "gesloten"}}<span>Project gesloten: alleen lezen</span>{{end}}
+  {{else}}
+  <span>{{len $v.Ruimtes}} ruimte{{if ne (len $v.Ruimtes) 1}}s{{end}}</span>
+  {{end}}
+  <span class="rechts">Register en objectopslag · elke versie met SHA-256</span>
+</div>
+</div>
+
+{{/* --- Dialogen ---------------------------------------------------------- */}}
+{{if $rm}}
+<dialog id="dlg-map" class="dialoog">
+  <form method="post" action="/r/{{$rm.Sleutel}}/map">
+    <h2>Nieuwe map</h2>
+    <p class="zacht">In {{if $v.Map}}{{$v.Map.Naam}}{{else}}{{$rm.Naam}}{{end}}. De map krijgt de toegang van deze map.</p>
+    <input type="hidden" name="csrf" value="{{$csrf}}"><input type="hidden" name="ouder" value="{{$v.MapID}}">
+    <label>Naam<input name="naam" required maxlength="200" autofocus></label>
+    <div class="knoppen"><button>Aanmaken</button><button type="button" class="licht" data-sluit>Annuleren</button></div>
+  </form>
+</dialog>
+{{$doel := $v.Selectie}}{{if not $doel}}{{$doel = $v.Map}}{{end}}
+{{with $doel}}
+<dialog id="dlg-naam" class="dialoog">
+  <form method="post" action="/r/{{$rm.Sleutel}}/i/{{.ID}}/hernoem">
+    <h2>Naam wijzigen</h2>
+    <input type="hidden" name="csrf" value="{{$csrf}}"><input type="hidden" name="terug" value="{{$v.Hier}}">
+    <label>Nieuwe naam van {{if eq .Soort "map"}}de map{{else}}het document{{end}}<input name="naam" value="{{.Naam}}" required maxlength="200"></label>
+    <div class="knoppen"><button>Opslaan</button><button type="button" class="licht" data-sluit>Annuleren</button></div>
+  </form>
+</dialog>
+<dialog id="dlg-weg" class="dialoog">
+  <form method="post" action="/r/{{$rm.Sleutel}}/i/{{.ID}}/verwijder">
+    <h2>Verwijderen</h2>
+    <p><b>{{.Naam}}</b>{{if eq .Soort "map"}} en alles erin{{end}} naar de prullenbak? Er verdwijnt niets: de beheerder kan het terugzetten.</p>
+    <input type="hidden" name="csrf" value="{{$csrf}}">
+    <div class="knoppen"><button class="gevaar">Verwijderen</button><button type="button" class="licht" data-sluit>Annuleren</button></div>
+  </form>
+</dialog>
+{{end}}
+{{end}}
+{{end}}
+
+{{/* Een ruimte in de navigatie, met de boom als het de huidige is. */}}
+{{define "ruimte-in-nav"}}{{$r := .A}}{{$v := .B}}
+<li class="{{if $r.Actief}}actief{{end}}">
+  <a class="tak schijf{{if and $r.Actief (not $v.MapID)}} hier{{end}}" href="/r/{{$r.Sleutel}}"{{if and $r.Actief (not $v.MapID)}} aria-current="page"{{end}}>{{$r.Naam}}</a>
+  {{if and $r.Actief $v.Knopen}}<ul>{{range $v.Knopen}}{{template "knoop" (dict2 . $v)}}{{end}}</ul>{{end}}
+</li>
+{{end}}
+
+{{define "knoop"}}{{$k := .A}}{{$v := .B}}
+<li>
+  {{if $k.Kinderen}}
+  <details{{if or $k.Open $k.Actief}} open{{end}}>
+    <summary><a class="tak map{{if $k.Actief}} hier{{end}}{{if $k.Doorgang}} doorgang{{end}}" href="/r/{{$v.Ruimte.Sleutel}}/m/{{$k.ID}}"{{if $k.Actief}} aria-current="page"{{end}}>{{$k.Naam}}{{if $k.Besloten}}<span class="i i-slot klein" aria-label="besloten"></span>{{end}}</a></summary>
+    <ul>{{range $k.Kinderen}}{{template "knoop" (dict2 . $v)}}{{end}}</ul>
+  </details>
+  {{else}}
+  <a class="tak map blad{{if $k.Actief}} hier{{end}}{{if $k.Doorgang}} doorgang{{end}}" href="/r/{{$v.Ruimte.Sleutel}}/m/{{$k.ID}}"{{if $k.Actief}} aria-current="page"{{end}}>{{$k.Naam}}{{if $k.Besloten}}<span class="i i-slot klein" aria-label="besloten"></span>{{end}}</a>
+  {{end}}
+</li>
+{{end}}
+
+{{define "eigenschappen"}}{{$v := .A}}{{$csrf := .B}}{{$doc := $v.Selectie}}{{$rm := $v.Ruimte}}{{$basis := printf "/r/%s/d/%d" $rm.Sleutel $doc.ID}}
+<aside class="paneel" aria-label="Eigenschappen">
+  <div class="paneelkop">
+    <h2 class="naam {{soortIcoon $doc.Mediatype $doc.Naam}}">{{$doc.Naam}}</h2>
+    <a class="sluit" href="{{$v.MapURL $v.MapID}}" aria-label="Sluiten">×</a>
+  </div>
+  <p class="knoppen">
+    <a class="knop" href="{{$basis}}/download" download>Downloaden</a>
+    {{if $v.Bekijkbaar}}<a class="knop licht" href="{{$basis}}/download?bekijken=1" target="_blank" rel="noopener">Bekijken</a>{{end}}
+  </p>
+  <h3>Gegevens</h3>
+  {{if ge $v.SelNiveau 2}}
+  <form class="velden" method="post" action="{{$basis}}/metadata">
+    <input type="hidden" name="csrf" value="{{$csrf}}">
+    <label>Titel<input name="titel" value="{{$doc.Titel}}" maxlength="300"></label>
+    <label>Omschrijving<textarea name="omschrijving" rows="3" maxlength="4000">{{$doc.Omschrijving}}</textarea></label>
+    <label>Soort document
+      <select name="documentsoort"><option value="">(kies)</option>{{range $v.Soorten}}<option{{if eq . $doc.Documentsoort}} selected{{end}}>{{.}}</option>{{end}}</select>
+    </label>
+    <label>Trefwoorden <small>gescheiden door komma's</small><input name="trefwoorden" value="{{join $doc.Trefwoorden ", "}}"></label>
+    <button>Bewaren</button>
+  </form>
+  {{else}}
+  <dl class="feiten">
+    <dt>Titel</dt><dd>{{$doc.Titel}}</dd>
+    {{with $doc.Omschrijving}}<dt>Omschrijving</dt><dd>{{.}}</dd>{{end}}
+    {{with $doc.Documentsoort}}<dt>Soort</dt><dd>{{.}}</dd>{{end}}
+    {{with $doc.Trefwoorden}}<dt>Trefwoorden</dt><dd>{{join . ", "}}</dd>{{end}}
+  </dl>
+  {{end}}
+  <h3>Kenmerken</h3>
+  <dl class="feiten">
+    <dt>Toegevoegd</dt><dd>{{datum $doc.Aangemaakt}}<br>{{$doc.AangemaaktDoorNaam}}</dd>
+    <dt>Gewijzigd</dt><dd>{{datum $doc.Gewijzigd}}<br>{{$doc.GewijzigdDoorNaam}}</dd>
+    <dt>Grootte</dt><dd>{{grootte $doc.Grootte}}</dd>
+    <dt>Type</dt><dd>{{$doc.Mediatype}}</dd>
+  </dl>
+  <h3>Versies</h3>
+  {{if ge $v.SelNiveau 2}}
+  <form class="nieuwe-versie" method="post" action="/r/{{$rm.Sleutel}}/upload" enctype="multipart/form-data" data-max="{{$v.MaxMB}}">
+    <input type="hidden" name="csrf" value="{{$csrf}}">
+    <input type="hidden" name="document" value="{{$doc.ID}}">
+    <label class="vak"><input type="file" name="bestanden" required><span><b>Nieuwe versie</b>: kies of sleep een bestand. Het krijgt de naam {{$doc.Naam}}.</span></label>
+    <noscript><button>Uploaden</button></noscript>
+  </form>
+  {{end}}
+  <ol class="versies" reversed>
+  {{range $v.Versies}}
+  <li>
+    <a href="{{$basis}}/download?versie={{.Nummer}}" download>Versie {{.Nummer}}</a>{{if eq .Nummer $doc.HuidigeVersie}} <span class="chip">huidig</span>{{end}}
+    <small>{{datum .Op}} · {{.DoorNaam}} · {{grootte .Grootte}}</small>
+    <small class="hash" title="SHA-256: controlegetal van de inhoud">SHA-256 {{.SHA256}}</small>
+  </li>
+  {{end}}
+  </ol>
+</aside>
+{{end}}
+
+{{define "toegangpaneel"}}{{$v := .A}}{{$csrf := .B}}{{$rm := $v.Ruimte}}
+<aside class="paneel" aria-label="Toegang">
+  <div class="paneelkop">
+    <h2 class="naam {{if $v.Map}}map{{else}}schijf{{end}}">Toegang: {{if $v.Map}}{{$v.Map.Naam}}{{else}}{{$rm.Naam}}{{end}}</h2>
+    <a class="sluit" href="{{$v.MapURL $v.MapID}}" aria-label="Sluiten">×</a>
+  </div>
+  <p class="zacht">Lezen: zien en downloaden. Bewerken: ook uploaden, nieuwe versies, gegevens, hernoemen, mappen maken. Beheren: ook verwijderen en de toegang wijzigen. Je hebt hier: <b>{{niveau $v.Niveau}}</b>.</p>
+  <ul class="regels">
+  {{range $v.Regels}}
+  <li class="regel{{if .Eigen}} eigen{{end}}">
+    <div class="wie">
+      <span class="wienaam">{{.Naam}}</span> <span class="chip grijs">{{.SoortLabel}}</span>
+      <small>{{if eq .Bron "Altijd"}}Altijd: beheerders van het platform{{else if eq .Bron "Standaard"}}Standaard voor deze ruimte{{else if .Eigen}}Op deze {{if $v.Map}}map{{else}}ruimte{{end}}{{else}}Overgenomen van {{.Bron}}{{end}}</small>
+    </div>
+    {{if and .Eigen (ge $v.Niveau 3)}}
+    <form class="regelform" method="post" action="/r/{{$rm.Sleutel}}/toegang">
+      <input type="hidden" name="csrf" value="{{$csrf}}"><input type="hidden" name="map" value="{{$v.MapID}}">
+      <input type="hidden" name="actie" value="toevoegen"><input type="hidden" name="wie" value="{{.Soort}}|{{.Wie}}">
+      <select name="niveau" aria-label="Recht voor {{.Naam}}" data-direct>{{$n := .Niveau}}<option value="1"{{if eq $n 1}} selected{{end}}>Lezen</option><option value="2"{{if eq $n 2}} selected{{end}}>Bewerken</option><option value="3"{{if eq $n 3}} selected{{end}}>Beheren</option></select>
+      <noscript><button class="klein">Opslaan</button></noscript>
+    </form>
+    <form method="post" action="/r/{{$rm.Sleutel}}/toegang">
+      <input type="hidden" name="csrf" value="{{$csrf}}"><input type="hidden" name="map" value="{{$v.MapID}}">
+      <input type="hidden" name="actie" value="weg"><input type="hidden" name="regel" value="{{.ID}}">
+      <button class="weg" aria-label="{{.Naam}} weghalen" title="Weghalen">×</button>
+    </form>
+    {{else}}
+    <span class="recht">{{niveau .Niveau}}{{if eq .Soort "rol"}}<small>hooguit; per rol</small>{{end}}</span>
+    {{end}}
+  </li>
+  {{end}}
+  </ul>
+
+  {{if ge $v.Niveau 3}}
+  {{if $v.Map}}
+  <form class="overerving" method="post" action="/r/{{$rm.Sleutel}}/toegang">
+    <input type="hidden" name="csrf" value="{{$csrf}}"><input type="hidden" name="map" value="{{$v.MapID}}">
+    {{if $v.Besloten}}
+    <p><span class="i i-slot" aria-hidden="true"></span><b>Besloten map.</b> Alleen de regels hierboven gelden; de toegang van de map erboven telt niet mee.</p>
+    <input type="hidden" name="actie" value="herstellen"><button class="licht">Overerving herstellen</button>
+    {{else}}
+    <p>Deze map neemt de toegang van de map erboven over. Wil je hem besloten maken, stop dan de overerving: de huidige regels worden eigen regels, en daarna haal je weg wie er niet bij hoort.</p>
+    <input type="hidden" name="actie" value="stoppen"><button class="licht">Overerving stoppen</button>
+    {{end}}
+  </form>
+  {{end}}
+  <h3>Toegang geven</h3>
+  <form class="geven" method="post" action="/r/{{$rm.Sleutel}}/toegang">
+    <input type="hidden" name="csrf" value="{{$csrf}}"><input type="hidden" name="map" value="{{$v.MapID}}">
+    <input type="hidden" name="actie" value="toevoegen">
+    <label>Aan wie
+      <select name="wie" required>
+        <option value="">Kies een persoon of groep</option>
+        <optgroup label="Groepen">{{range $v.Groepen}}<option value="{{.Waarde}}">{{.Label}}</option>{{end}}</optgroup>
+        <optgroup label="Personen">{{range $v.Personen}}<option value="{{.Waarde}}">{{.Label}}</option>{{end}}</optgroup>
+      </select>
+    </label>
+    <label>Recht
+      <select name="niveau"><option value="1">Lezen</option><option value="2">Bewerken</option><option value="3">Beheren</option></select>
+    </label>
+    <button>Toevoegen</button>
+  </form>
+  <p class="zacht klein">Personen in de lijst: wie al eens heeft ingelogd of in Redmine bij een project staat.</p>
+  {{end}}
+</aside>
+{{end}}
