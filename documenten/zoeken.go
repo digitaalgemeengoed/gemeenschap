@@ -384,7 +384,7 @@ func (a *App) zoekItem(ctx context.Context, id int64) error {
 		Documentsoort: x.dsoort, Trefwoorden: x.trefwoorden, Door: x.door, DoorNaam: x.doorNaam,
 		// UTC in milliseconden: het datumveld van OpenSearch leest dat zeker.
 		Gewijzigd: x.gewijzigd.UTC().Truncate(time.Millisecond),
-		Versie: x.versie}
+		Versie:    x.versie}
 	if d.Mappen == nil {
 		d.Mappen = []int64{}
 	}
