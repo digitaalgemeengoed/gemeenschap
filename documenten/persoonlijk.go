@@ -84,7 +84,7 @@ func (a *App) mijn(w http.ResponseWriter, r *http.Request, s *Sessie) {
 			return
 		}
 		if !mag {
-			a.fout(w, r, s, http.StatusForbidden, "Mijn documenten is er voor wie in de kerngroep, een werkgroep of een project zit, en voor de beheerders van het platform. Word lid van een werkgroep op de site, of vraag de projectleider je in Redmine aan een project toe te voegen.")
+			a.fout(w, r, s, http.StatusForbidden, "Mijn documenten is er voor wie in de kerngroep, een werkgroep of een project zit, en voor de beheerders van het platform. Word lid van een werkgroep op de site, of vraag de projectleider je in Redmine aan een project toe te voegen. "+waaromGeen(s))
 			return
 		}
 	}
@@ -94,6 +94,22 @@ func (a *App) mijn(w http.ResponseWriter, r *http.Request, s *Sessie) {
 		return
 	}
 	http.Redirect(w, r, "/r/"+rm.Sleutel, http.StatusSeeOther)
+}
+
+// waaromGeen: wat Documenten van je weet, zodat je (of de beheerder) ziet waar
+// het misgaat: een ander e-mailadres, of een rol die ontbreekt.
+func waaromGeen(s *Sessie) string {
+	var rollen []string
+	for _, g := range s.Groepen {
+		if strings.HasPrefix(g, "/netwerk/") || strings.HasPrefix(g, "/site/") {
+			rollen = append(rollen, g)
+		}
+	}
+	wat := "geen"
+	if len(rollen) > 0 {
+		wat = strings.Join(rollen, ", ")
+	}
+	return fmt.Sprintf("(Documenten kent je als %s, met de rollen: %s.)", s.Email, wat)
 }
 
 func (r *Register) eigenRuimte(ctx context.Context, email string) (*Ruimte, error) {
