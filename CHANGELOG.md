@@ -2,6 +2,8 @@
 
 ## Nog niet uitgebracht
 
+## 0.18.0 — 2026-11-12
+
 **Nieuws en berichten**, zoals op LinkedIn, op `/nieuws/`.
 - **Ieder lid plaatst berichten**: tekst, titel, foto's (hooguit 4; de locatie en cameragegevens gaan eruit), een video (tot 60 MB) of een link. Een link krijgt een voorbeeld met titel, tekst en afbeelding; YouTube en Vimeo als speler die pas na een klik laadt. Bewerken en verwijderen kan de schrijver zelf.
 - **Per bericht openbaar of alleen voor leden** (standaard). Gasten zien van een ledenbericht niets, ook niet bij een tag, in het zoeken of de RSS. Opmerkingen en wie reageerde: alleen leden.
