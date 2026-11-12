@@ -31,6 +31,7 @@ punten met een link komen in de onderste regel.
   - [Fora](/forum/)
   - [Werkgroepen](/groepen/)
   - [Leden](/leden/)
+  - [Chat](chat.md)
   - [Meldingen en wensen](https://projecten.digitaalgemeengoed.nl)
 - [Kennisbank](https://kennis.digitaalgemeengoed.nl)
   - [Naar de kennisbank](https://kennis.digitaalgemeengoed.nl)

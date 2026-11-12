@@ -16,6 +16,9 @@ Wat hier op `main` en in versie-tags staat, staat binnen vijf minuten live.
 | `architectuur.digitaalgemeengoed.nl` | Archi-rapporten achter oauth2-proxy | de architectuurmodellen, alleen voor leden |
 | `documenten.digitaalgemeengoed.nl` | dg-documenten met Garage (S3) | documenten van de coöperatie en per project, met versies en metadata |
 | `beheer.digitaalgemeengoed.nl` | dg-beheer | leden en rollen, organisaties en de stand van de server, voor de beheerders en de kerngroep |
+| `chat.digitaalgemeengoed.nl` | Element Web | de chat in de browser (Matrix) |
+| `matrix.digitaalgemeengoed.nl` | Synapse | de chatserver (Matrix); gebruikers heten `@naam:digitaalgemeengoed.nl` |
+| `matrix-auth.digitaalgemeengoed.nl` | Matrix Authentication Service (MAS) | inloggen in de chat, alleen via Keycloak |
 
 ## Een pagina wijzigen
 
@@ -246,6 +249,43 @@ vertrouwelijke stukken: zie de Voorwaarden.
 Back-up: het register per nacht (`documenten.dump`), de objecten in één
 spiegel die alleen aangroeit (`/var/backups/dg-gemeenschap-objecten`). Kopieer
 die map ook naar buiten de server.
+
+## Chat
+
+Matrix, voor gesprekken tussen leden van verschillende organisaties (wat in
+Teams vaak niet mag). **Synapse** is de server, **MAS** doet het inloggen
+(alleen via Keycloak, geen eigen wachtwoorden; nodig voor de app Element X),
+**Element Web** is de chat in de browser. De configuratie maakt
+`server/matrix.sh` bij elk bijwerken uit `.env`, in
+`/var/lib/dg-gemeenschap/matrix`.
+
+- **DNS**: `chat`, `matrix` en `matrix-auth` als A-record naar de server.
+  `matrix.` en `matrix-auth.` staan buiten de afscherming (een app kan het
+  wachtwoord daarvan niet invullen); inloggen vraagt altijd een account in
+  Keycloak. `/.well-known/matrix/*` op het hoofddomein vertelt apps waar de
+  server staat.
+- **Kamers**: Documenten houdt ze bij (`documenten/chat.go`), met het account
+  `@documenten:<domein>`: *Algemeen* (iedereen), *Coöperatie* (members en
+  kerngroep), *Kerngroep*, en een kamer per werkgroep (`#werkgroep-…`) en per
+  project (`#project-…`). Wie erbij hoort, krijgt een uitnodiging; wie er niet
+  meer bij hoort, gaat eruit; wie zelf weggaat, wordt niet opnieuw
+  uitgenodigd. Projectleiders en de kerngroep zijn moderator. De kamers zijn
+  niet versleuteld van begin tot eind (zodat nieuwe leden het eerdere
+  gesprek kunnen lezen); privégesprekken wel.
+- **Het account van Documenten**: `bijwerken.sh` maakt het één keer (`mas-cli
+  manage register-user` en `issue-compatibility-token` met beheerrechten in
+  Synapse) en zet het token in `.env` als `MATRIX_BOT_TOKEN`. Lukt dat niet,
+  dan zegt bijwerken dat; de chat werkt dan wel, alleen de kamers worden niet
+  bijgehouden. Opnieuw: maak `MATRIX_BOT_TOKEN=` leeg en draai `bijwerken.sh`.
+- **Federatie** (praten met andere Matrix-servers) staat uit. Aanzetten:
+  `MATRIX_FEDERATIE=*` (open) of een lijst domeinen
+  (`MATRIX_FEDERATIE=gemeente.nl,andere.nl`) in `.env`, en `bijwerken.sh`.
+- **Bellen** zit er nog niet in (daarvoor zijn LiveKit en een TURN-server
+  nodig).
+- **Back-up**: de databases van Synapse en MAS, de geüploade bestanden en de
+  sleutels gaan mee in `back-up.sh`.
+- Logboeken: `sudo docker compose logs synapse mas element`, en in
+  `documenten` de regels die met `chat:` beginnen.
 
 ## Beheer
 

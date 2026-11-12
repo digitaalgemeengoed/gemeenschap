@@ -2,6 +2,14 @@
 
 ## Nog niet uitgebracht
 
+**Chat (Matrix)** op `chat.<domein>`, voor gesprekken tussen leden van verschillende gemeenten en organisaties.
+- **Synapse** (de chatserver, `matrix.<domein>`), **MAS** (het inloggen, `matrix-auth.<domein>`: alleen via je DGG-account in Keycloak) en **Element Web** (de chat in de browser). Op de telefoon: de app **Element X**. Gebruikers heten `@naam:<domein>`.
+- **Kamers vanzelf**: *Algemeen* (iedereen), *Coöperatie* (members en kerngroep), *Kerngroep*, en een kamer per werkgroep en per project. Documenten houdt bij wie erin hoort: wie lid wordt, krijgt een uitnodiging; wie eruit gaat, verdwijnt uit de kamer; wie zelf weggaat, wordt niet opnieuw uitgenodigd. Projectleiders en de kerngroep zijn moderator.
+- Privégesprekken zijn versleuteld van begin tot eind; de kamers van werkgroepen en projecten niet, zodat nieuwe leden het eerdere gesprek kunnen lezen.
+- **Federatie staat uit** (alleen leden); aan te zetten met `MATRIX_FEDERATIE` in `.env`. Bellen zit er nog niet in.
+- Op de site: *Chat* in het menu onder Community, in het menu van het dashboard en als tab bij elke werkgroep; een uitlegpagina (*Chat*, onder Meedoen). In Documenten: een knop *Chat* bij werkgroepen, projecten en de coöperatie.
+- Server: drie nieuwe DNS-records (`chat`, `matrix`, `matrix-auth`); nieuwe instellingen in `.env` komen vanzelf; de back-up neemt de chat mee. Zie README, Chat.
+
 - Site: **"Bericht sturen" op elke kaart in de *Leden*-lijst.** Opent een nieuw privébericht aan dat lid (de berichtenfunctie van BuddyPress; je berichten staan onder *Berichten* in het menu van het dashboard). Eerst stond die knop alleen op een profiel.
 
 ## 0.16.0 — 2026-11-12

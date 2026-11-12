@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Dagelijkse back-up van het gemeenschapsplatform: de vijf databases
-# (Keycloak, WordPress met CiviCRM, Redmine, de kennisbank, de documenten), de
+# Dagelijkse back-up van het gemeenschapsplatform: de databases (Keycloak,
+# WordPress met CiviCRM, Redmine, de kennisbank, de documenten, de chat), de
 # uploads van WordPress, de bestanden van Redmine en de kennisbank en het
 # logboek van beheer. Bewaart 14 dagen in /var/backups/dg-gemeenschap. De
 # documenten zelf (de objecten) staan in één spiegel:
@@ -38,6 +38,11 @@ dc exec -T documenten-db pg_dump -U documenten -Fc documenten > "$DOEL/documente
 install -d -m 700 "$DOC_SPIEGEL"
 dc run --rm -T --no-deps -u 0 -v "$DOC_SPIEGEL:/spiegel" documenten spiegel /spiegel
 
+# Chat: de databases van Synapse en MAS, en de geüploade bestanden.
+dc exec -T matrix-db pg_dump -U synapse -Fc synapse > "$DOEL/chat-synapse.dump" || waarschuw "Chat (Synapse): back-up niet gelukt"
+dc exec -T matrix-db pg_dump -U synapse -Fc mas > "$DOEL/chat-mas.dump" || waarschuw "Chat (MAS): back-up niet gelukt"
+dc exec -T synapse tar -C /data -czf - media_store signing.key > "$DOEL/chat-bestanden.tar.gz" 2>/dev/null || waarschuw "Chat (bestanden): back-up niet gelukt"
+[ -d "$DG_STAAT/matrix/sleutels" ] && cp -a "$DG_STAAT/matrix/sleutels" "$DOEL/chat-sleutels"
 # Het logboek van beheer (wie wijzigde welke rol, en waarom).
 dc exec -T beheer dg-beheer logboek > "$DOEL/beheer-logboek.jsonl" || waarschuw "Logboek van beheer: niet gelukt"
 [ -s "$DOEL/beheer-logboek.jsonl" ] || rm -f "$DOEL/beheer-logboek.jsonl"

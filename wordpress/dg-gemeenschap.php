@@ -455,11 +455,34 @@ add_action(
 					),
 					'groups'
 				);
+				// De chatkamer van de werkgroep (Documenten houdt de leden bij).
+				bp_core_new_subnav_item(
+					array(
+						'name'            => 'Chat',
+						'slug'            => 'chat',
+						'parent_slug'     => $groep->slug,
+						'parent_url'      => bp_get_group_permalink( $groep ),
+						'position'        => 36,
+						'user_has_access' => true,
+						'screen_function' => static function () use ( $groep ) {
+							wp_redirect( dg_chat_url( 'werkgroep-' . $groep->slug ) ); // phpcs:ignore WordPress.Security.SafeRedirect -- chat.<domein>
+							exit;
+						},
+					),
+					'groups'
+				);
 			}
 		}
 	},
 	100
 );
+
+/** De chat (Element Web op chat.<domein>), eventueel meteen in een kamer (#alias). */
+function dg_chat_url( string $alias = '' ): string {
+	$host = (string) wp_parse_url( home_url(), PHP_URL_HOST );
+	$url  = 'https://chat.' . $host . '/';
+	return '' === $alias ? $url : $url . '#/room/' . rawurlencode( '#' . $alias . ':' . $host );
+}
 
 /** Leden, profielen en groepen alleen voor wie is ingelogd. Fora blijven leesbaar. */
 add_action(

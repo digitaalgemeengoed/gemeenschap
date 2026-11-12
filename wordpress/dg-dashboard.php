@@ -171,6 +171,7 @@ function dg_db_navigatie( WP_User $gebruiker ): string {
 		array( 'hand', 'Samenwerkingen', home_url( '/samenwerkingen/' ), 0 ),
 		array( 'kalender', 'Evenementen', dg_db_evenementen_url(), 0 ),
 		array( 'mail', 'Berichten', $berichten, $ongelezen ),
+		array( 'chat', 'Chat', function_exists( 'dg_chat_url' ) ? dg_chat_url() : home_url( '/' ), 0 ),
 		array( 'instellingen', 'Instellingen', $keycloak, 0 ),
 	);
 	$html = '<nav class="dg-db-nav" aria-label="Dashboard"><ul>';

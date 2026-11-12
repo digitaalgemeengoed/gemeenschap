@@ -151,6 +151,10 @@ func main() {
 	if mb, _ := strconv.Atoi(env("DOC_QUOTUM_PERSOONLIJK_MB", "1024")); mb > 0 {
 		app.QuotumPersoonlijk = int64(mb) << 20
 	}
+	if t := os.Getenv("MATRIX_BOT_TOKEN"); t != "" && os.Getenv("MATRIX_URL") != "" {
+		app.Chat = &Chat{URL: os.Getenv("MATRIX_URL"), Server: moet("MATRIX_SERVER"), Publiek: strings.TrimRight(os.Getenv("MATRIX_CHAT_URL"), "/"),
+			Token: t, HTTP: &http.Client{Timeout: 30 * time.Second}}
+	}
 	interval, _ := time.ParseDuration(env("REDMINE_INTERVAL", "5m"))
 	go app.synchroniseerSteeds(ctx, rm, interval)
 	if u := os.Getenv("ZOEK_URL"); u != "" {

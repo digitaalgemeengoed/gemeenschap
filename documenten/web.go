@@ -39,6 +39,7 @@ type App struct {
 	Keycloak          *KeycloakBeheer // de kerngroep, en de groepen van wie inlogt (groepen.go)
 	groepen           groepenCache
 	Zoeken            *Zoeker // nil: zoeken staat uit (zoeken.go)
+	Chat              *Chat   // nil: geen chat (chat.go)
 	sjablonen         map[string]*template.Template
 }
 

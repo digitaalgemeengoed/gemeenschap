@@ -305,6 +305,13 @@ func (a *App) synchroniseerSteeds(ctx context.Context, rm *Redmine, interval tim
 				log.Printf("Persoonlijke ruimtes: %v", err)
 			}
 		}
+		// De chat volgt dezelfde leden; bij een storing in een bron niet (anders
+		// zou iedereen uit de kamers gaan).
+		if goed && a.Chat != nil {
+			if err := a.SynchroniseerChat(ctx); err != nil {
+				log.Printf("Chat: %v", err)
+			}
+		}
 		select {
 		case <-ctx.Done():
 			return

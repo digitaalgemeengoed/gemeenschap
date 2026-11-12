@@ -87,7 +87,7 @@ services:
       - caddydata:/data
       # De HTML-rapporten van de architectuurmodellen (server/architectuur.sh).
       - /srv/dg-architectuur:/srv/architectuur:ro
-    depends_on: [wordpress, keycloak, redmine, wiki, oauth2-proxy, documenten]
+    depends_on: [wordpress, keycloak, redmine, wiki, oauth2-proxy, documenten, synapse, mas, element]
 
   # --- Keycloak: de bron voor leden, organisaties, groepen en toestemmingen ----
   keycloak-db:
@@ -162,6 +162,8 @@ services:
       BEHEER_BASIS_URL: https://beheer.${DOMEIN}
       BEHEER_CLIENT_SECRET: ${BEHEER_CLIENT_SECRET:?}
       BEHEER_KEYCLOAK_SECRET: ${BEHEER_KEYCLOAK_SECRET:?}
+      MATRIX_AUTH_URL: https://matrix-auth.${DOMEIN}
+      MATRIX_KC_SECRET: ${MATRIX_KC_SECRET:?}
     volumes:
       - ./keycloak/realm:/config:ro
     depends_on: [keycloak]
@@ -442,6 +444,11 @@ services:
       KEYCLOAK_SYNC_GEHEIM: ${REDMINE_SYNC_SECRET:?}
       # Persoonlijke ruimtes (Mijn documenten): quotum in MB.
       DOC_QUOTUM_PERSOONLIJK_MB: ${DOC_QUOTUM_PERSOONLIJK_MB:-1024}
+      # Chat (chat.go): een kamer per werkgroep, project en netwerkgroep. Zonder token: uit.
+      MATRIX_URL: http://synapse:8008
+      MATRIX_SERVER: ${DOMEIN}
+      MATRIX_CHAT_URL: https://chat.${DOMEIN}
+      MATRIX_BOT_TOKEN: ${MATRIX_BOT_TOKEN:-}
       # Zoeken (zoeken.go): OpenSearch, alleen intern. Leeg = zoeken staat uit.
       # Is OpenSearch er (nog) niet, dan werkt de rest gewoon en wacht de index.
       ZOEK_URL: http://opensearch:9200
@@ -485,6 +492,57 @@ services:
       interval: 15s
       retries: 20
       start_period: 60s
+
+  # --- Chat: Matrix (Synapse, MAS en Element Web) -------------------------------------
+  # Configuratie gemaakt door server/matrix.sh (bijwerken.sh) uit .env, in
+  # /var/lib/dg-gemeenschap/matrix. Inloggen alleen via Keycloak (MAS).
+  # Zie README, Chat.
+  matrix-db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: synapse
+      POSTGRES_PASSWORD: ${MATRIX_DB_WACHTWOORD:?}
+      POSTGRES_DB: synapse
+      # Synapse wil collatie C.
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --lc-collate=C --lc-ctype=C"
+      MAS_DB_WACHTWOORD: ${MAS_DB_WACHTWOORD:?}
+    volumes:
+      - matrixdb:/var/lib/postgresql/data
+      - ./matrix/db-init.sh:/docker-entrypoint-initdb.d/mas.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U synapse"]
+      interval: 5s
+      retries: 20
+
+  synapse:
+    image: matrixdotorg/synapse:${SYNAPSE_VERSIE:-v1.165.0}
+    restart: unless-stopped
+    environment:
+      SYNAPSE_CONFIG_PATH: /config/homeserver.yaml
+    volumes:
+      - synapsedata:/data
+      - /var/lib/dg-gemeenschap/matrix/synapse:/config:ro
+    depends_on:
+      matrix-db: { condition: service_healthy }
+
+  mas:
+    image: ghcr.io/element-hq/matrix-authentication-service:${MAS_VERSIE:-1.22.0}
+    restart: unless-stopped
+    command: ["server"]
+    environment:
+      MAS_CONFIG: /config/mas.yaml
+    volumes:
+      - /var/lib/dg-gemeenschap/matrix/mas.yaml:/config/mas.yaml:ro
+      - /var/lib/dg-gemeenschap/matrix/sleutels:/sleutels:ro
+    depends_on:
+      matrix-db: { condition: service_healthy }
+
+  element:
+    image: vectorim/element-web:${ELEMENT_VERSIE:-v1.12.32}
+    restart: unless-stopped
+    volumes:
+      - /var/lib/dg-gemeenschap/matrix/element.json:/app/config.json:ro
 
   # --- Beheer (beheer.<domein>): voor de beheerders en de kerngroep -----------------
   # Leden en rollen en organisaties (Keycloak, met het service account
@@ -536,4 +594,6 @@ volumes:
   docdb:
   doctmp:
   zoekdata:
+  matrixdb:
+  synapsedata:
   beheerdata:

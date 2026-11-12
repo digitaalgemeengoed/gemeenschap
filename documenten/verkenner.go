@@ -118,6 +118,7 @@ type Verkenner struct {
 	Niveaus  map[int64]int // jouw recht per item in de lijst (voor het contextmenu)
 	Omvang   *Omvang       // bij info over een map of de ruimte
 	DavAdres string        // het adres op de netwerkschijf (info)
+	ChatLink string        // de chatkamer van deze ruimte (leeg: geen)
 	Hier     string
 	MaxMB    int64
 	Basis    string // https://documenten.<domein>, voor volledige links
@@ -305,7 +306,7 @@ func (a *App) verkenner(ctx context.Context, s *Sessie, p *Plek, mapID int64) (*
 	if err != nil {
 		return nil, err
 	}
-	v := &Verkenner{Ruimtes: kaarten, Ruimte: p.Ruimte, MapID: mapID, Basis: a.Basis, Niveau: p.Boom.Niveau(mapID), Berichten: a.Berichten != nil,
+	v := &Verkenner{Ruimtes: kaarten, Ruimte: p.Ruimte, MapID: mapID, Basis: a.Basis, ChatLink: a.chatLink(p.Ruimte), Niveau: p.Boom.Niveau(mapID), Berichten: a.Berichten != nil,
 		Besloten: p.Boom.Besloten(mapID), MaxMB: a.MaxGrootte >> 20, Soorten: documentsoorten, Redmine: a.Projecten}
 	v.Doorgang = v.Niveau < Lezen
 	if err := a.vulNavigatie(ctx, v, s); err != nil {

@@ -166,6 +166,8 @@ var schema = []string{
 	END $$;
 	CREATE TRIGGER zoek_ruimte AFTER UPDATE ON ruimte FOR EACH ROW EXECUTE FUNCTION zoek_ruimte();
 	INSERT INTO zoek_wachtrij (item_id) SELECT id FROM item WHERE verwijderd_op IS NULL`,
+	// Chat (0.17): de Matrix-kamer bij elke werkgroep, elk project en de netwerkkamers (chat.go).
+	`CREATE TABLE chat_kamer (sleutel text PRIMARY KEY, kamer text NOT NULL, aangemaakt timestamptz NOT NULL DEFAULT now())`,
 }
 
 func migreer(ctx context.Context, db *sql.DB) error {

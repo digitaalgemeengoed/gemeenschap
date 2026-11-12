@@ -43,7 +43,8 @@
   <span class="opdracht uit"><span class="i i-upload" aria-hidden="true"></span>Uploaden</span>
   <span class="tip">Kies links een ruimte.</span>
 {{end}}
-  <a class="opdracht rechts" href="/koppelen"><span class="i i-schijf" aria-hidden="true"></span>Netwerkschijf koppelen</a>
+  {{with $v.ChatLink}}<a class="opdracht rechts" href="{{.}}" target="_blank" rel="noopener"><span class="i i-chat" aria-hidden="true"></span>Chat</a>{{end}}
+  <a class="opdracht{{if not $v.ChatLink}} rechts{{end}}" href="/koppelen"><span class="i i-schijf" aria-hidden="true"></span>Netwerkschijf koppelen</a>
   {{if $v.KanBeheren}}<a class="opdracht" href="/beheer"><span class="i i-info" aria-hidden="true"></span>Beheer</a>{{end}}
 </div>
 
@@ -287,6 +288,7 @@
   </dl>
   <div class="knoppen">
     <a class="knop licht" href="/zoeken?in={{$rm.Sleutel}}{{if $v.MapID}}&amp;m={{$v.MapID}}{{end}}"><span class="i i-zoek" aria-hidden="true"></span>Zoeken in {{if $v.Map}}deze map{{else}}deze ruimte{{end}}</a>
+    {{with $v.ChatLink}}<a class="knop licht" href="{{.}}" target="_blank" rel="noopener"><span class="i i-chat" aria-hidden="true"></span>Chat van {{if eq $rm.Soort "project"}}dit project{{else if eq $rm.Soort "werkgroep"}}deze werkgroep{{else}}de coöperatie{{end}}</a>{{end}}
   </div>
 {{end}}
 

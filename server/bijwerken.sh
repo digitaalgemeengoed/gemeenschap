@@ -14,6 +14,8 @@
 HIER="$(cd "$(dirname "$0")" && pwd)"
 # shellcheck source=lib.sh
 . "$HIER/lib.sh"
+# shellcheck source=matrix.sh
+. "$HIER/matrix.sh"
 moet_root
 cd "$DG_MAP" || exit 1
 [ -s .env ] || stop "Nog niet geïnstalleerd. Gebruik installeer.sh."
@@ -41,6 +43,14 @@ vul_env_aan .env GARAGE_GEHEIM "$(geheim 32)"
 vul_env_aan .env DOC_BERICHT_GEHEIM "$(geheim 32)"
 # Sinds 0.12.1: het cookie van de afscherming (caddy/Caddyfile).
 vul_env_aan .env DG_TOEGANG_COOKIE "$(geheim 32)"
+# Sinds 0.17.0: chat (Matrix).
+vul_env_aan .env MATRIX_DB_WACHTWOORD "$(geheim 24)"
+vul_env_aan .env MAS_DB_WACHTWOORD "$(geheim 24)"
+vul_env_aan .env MATRIX_MAS_GEHEIM "$(geheim 32)"
+vul_env_aan .env MAS_VERSLEUTEL "$(geheim 32)"
+vul_env_aan .env MATRIX_KC_SECRET "$(geheim 32)"
+vul_env_aan .env MATRIX_FEDERATIE ""
+vul_env_aan .env MATRIX_BOT_TOKEN ""
 # Sinds 0.13.0: projectvoorstellen (het account "site" in Redmine).
 vul_env_aan .env REDMINE_SITE_API_KEY "$(geheim 20)"
 # Sinds 0.12.0: beheer (dg-beheer).
@@ -59,6 +69,11 @@ fi
 dc pull --quiet --ignore-buildable --ignore-pull-failures 2>/dev/null || true
 dc --profile gereedschap pull --quiet keycloak-config wpcli wiki-inrichten 2>/dev/null || true
 dc build --quiet || stop "Bouwen mislukt."
+# Chat: de configuratie uit .env, en de sleutel van Synapse (één keer).
+matrix_bestanden
+dc run --rm -T --no-deps --entrypoint sh synapse -c \
+  'python -m synapse.app.homeserver -c /config/homeserver.yaml --generate-keys >/dev/null && chown 991:991 /data /data/signing.key' \
+  || stop "De sleutel van de chatserver maken mislukt."
 dc up -d --remove-orphans || stop "Starten mislukt."
 # De mu-plugins van WordPress zitten als losse bestanden in de container. Git
 # vervangt een gewijzigd bestand door een nieuw; de container ziet dat pas na
@@ -104,6 +119,10 @@ ok "Beheer draait"
 
 wacht "Documenten" 30 documenten_klaar || stop "De documentendienst start niet. Kijk met: sudo docker compose -f $DG_MAP/$COMPOSE logs documenten garage"
 ok "Documenten draait"
+
+wacht "de chatserver" 36 synapse_klaar || stop "De chatserver (Synapse) start niet. Kijk met: sudo docker compose -f $DG_MAP/$COMPOSE logs synapse mas"
+ok "Chat draait"
+matrix_bot
 
 # Architectuurmodellen: elk kwartier bouwen wat nieuw is (architectuur/repos.txt).
 install -d -m 755 /srv/dg-architectuur

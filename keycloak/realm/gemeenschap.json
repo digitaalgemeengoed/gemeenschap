@@ -529,6 +529,44 @@
       ]
     },
     {
+      "clientId": "matrix-auth",
+      "name": "Chat (Matrix)",
+      "description": "MAS, het inloggen van de chat (server/matrix.sh)",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "$(env:MATRIX_KC_SECRET)",
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "implicitFlowEnabled": false,
+      "serviceAccountsEnabled": false,
+      "frontchannelLogout": false,
+      "rootUrl": "$(env:MATRIX_AUTH_URL)",
+      "baseUrl": "$(env:MATRIX_AUTH_URL)",
+      "redirectUris": [
+        "$(env:MATRIX_AUTH_URL)/upstream/callback/01JCQ8DGGKC0RS1M0000000000"
+      ],
+      "webOrigins": [
+        "+"
+      ],
+      "attributes": {
+        "post.logout.redirect.uris": "$(env:MATRIX_AUTH_URL)/*",
+        "backchannel.logout.url": "$(env:MATRIX_AUTH_URL)/upstream/backchannel-logout/01JCQ8DGGKC0RS1M0000000000",
+        "backchannel.logout.session.required": "true",
+        "pkce.code.challenge.method": "S256"
+      },
+      "defaultClientScopes": [
+        "web-origins",
+        "acr",
+        "profile",
+        "roles",
+        "basic",
+        "email"
+      ],
+      "optionalClientScopes": []
+    },
+    {
       "clientId": "beheer",
       "name": "Beheer",
       "enabled": true,
