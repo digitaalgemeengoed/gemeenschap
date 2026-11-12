@@ -2,6 +2,14 @@
 
 ## Nog niet uitgebracht
 
+**Zoeken in Documenten**, met OpenSearch.
+- Een **zoekveld in de adresbalk** van de verkenner: zoekt in de map of ruimte waar je bent. De zoekpagina (`/zoeken`) heeft keuzes voor de ruimte (of alle ruimtes) en de soort: documenten, mappen, tekstdocumenten, pdf, rekenbladen of presentaties.
+- Doorzocht worden de naam, de titel, de trefwoorden, de omschrijving, de map en **de tekst zelf** van Word, Excel, PowerPoint, OpenDocument, pdf en gewone tekst. Met Nederlandse taalanalyse ("archiveren" vindt ook "archivering") en het begin van een naam ("notul" vindt "notulen"). De gevonden woorden zijn gemarkeerd, met een stukje tekst eromheen.
+- **Je vindt alleen wat je in de verkenner ook mag zien**: elk resultaat gaat langs dezelfde rechten, ook bij besloten mappen.
+- Bijgehouden zonder dat je iets doet: opslaan, hernoemen, verplaatsen en verwijderen staan binnen een paar seconden in de zoekresultaten, ook via de netwerkschijf. Bij het eerste starten wordt alles wat er al is in de index gezet.
+- Nieuwe dienst **`opensearch`** (OpenSearch 3.6, de versie met lange ondersteuning): alleen intern, 1 GB geheugen (hooguit 2 GB voor de container; `ZOEK_GEHEUGEN` en `ZOEK_GRENS` in `.env`). `bijwerken.sh` zet `vm.max_map_count` op de server. De index hoeft niet in de back-up: hij bouwt zichzelf opnieuw op. Is OpenSearch er even niet, dan werkt de rest van Documenten gewoon.
+- Hersteld: namen van werkgroepen met een `&` stonden er als `&amp;`.
+
 ## 0.13.0 — 2026-11-12
 
 **Start een project: ieder lid kan een project voorstellen** (`/projecten/project-starten/`, ook in het menu onder *Projecten*).

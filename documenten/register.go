@@ -130,6 +130,42 @@ var schema = []string{
 	// Ook de beheerders van het platform hebben altijd recht op een
 	// persoonlijke ruimte: de tabel bevat nu beide groepen uit Keycloak.
 	`ALTER TABLE kerngroep RENAME TO vaste_leden`,
+	// Zoeken (0.14): wat opnieuw in de index moet (zoeken.go). Triggers
+	// houden de rij bij, zodat geen enkele wijziging buiten de index blijft.
+	`CREATE TABLE zoek_wachtrij (item_id bigint PRIMARY KEY, sinds timestamptz NOT NULL DEFAULT clock_timestamp());
+	CREATE TABLE zoek_stand (item_id bigint PRIMARY KEY, versie integer NOT NULL, op timestamptz NOT NULL DEFAULT now());
+	CREATE FUNCTION zoek_item() RETURNS trigger LANGUAGE plpgsql AS $$
+	BEGIN
+		IF TG_OP = 'DELETE' THEN
+			INSERT INTO zoek_wachtrij (item_id) VALUES (OLD.id)
+				ON CONFLICT (item_id) DO UPDATE SET sinds = clock_timestamp();
+			RETURN OLD;
+		END IF;
+		INSERT INTO zoek_wachtrij (item_id) VALUES (NEW.id)
+			ON CONFLICT (item_id) DO UPDATE SET sinds = clock_timestamp();
+		-- Een map met een andere naam of plek, of (terug uit de) prullenbak: alles eronder.
+		IF TG_OP = 'UPDATE' AND NEW.soort = 'map' AND (NEW.naam IS DISTINCT FROM OLD.naam
+				OR NEW.ouder_id IS DISTINCT FROM OLD.ouder_id OR NEW.verwijderd_op IS DISTINCT FROM OLD.verwijderd_op) THEN
+			INSERT INTO zoek_wachtrij (item_id)
+				WITH RECURSIVE onder AS (
+					SELECT id FROM item WHERE ouder_id = NEW.id
+					UNION SELECT i.id FROM item i JOIN onder o ON i.ouder_id = o.id)
+				SELECT id FROM onder
+				ON CONFLICT (item_id) DO UPDATE SET sinds = clock_timestamp();
+		END IF;
+		RETURN NEW;
+	END $$;
+	CREATE TRIGGER zoek_item AFTER INSERT OR UPDATE OR DELETE ON item FOR EACH ROW EXECUTE FUNCTION zoek_item();
+	CREATE FUNCTION zoek_ruimte() RETURNS trigger LANGUAGE plpgsql AS $$
+	BEGIN
+		IF NEW.sleutel IS DISTINCT FROM OLD.sleutel OR NEW.status IS DISTINCT FROM OLD.status THEN
+			INSERT INTO zoek_wachtrij (item_id) SELECT id FROM item WHERE ruimte_id = NEW.id
+				ON CONFLICT (item_id) DO UPDATE SET sinds = clock_timestamp();
+		END IF;
+		RETURN NEW;
+	END $$;
+	CREATE TRIGGER zoek_ruimte AFTER UPDATE ON ruimte FOR EACH ROW EXECUTE FUNCTION zoek_ruimte();
+	INSERT INTO zoek_wachtrij (item_id) SELECT id FROM item WHERE verwijderd_op IS NULL`,
 }
 
 func migreer(ctx context.Context, db *sql.DB) error {

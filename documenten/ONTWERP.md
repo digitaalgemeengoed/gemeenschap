@@ -219,6 +219,32 @@ opslag, niet uit de back-upspiegel); het logboek.
 (`[dg_documenten project=…]`, alleen voor wie is ingelogd), een tab
 *Documenten* bij elke werkgroep en *Mijn documenten* op je eigen profiel.
 
+## Zoeken (0.14)
+
+- **OpenSearch** (één knooppunt, alleen intern, zonder beveiligingsplugin) als
+  index; Documenten praat er zelf mee (`zoeken.go`, geen client-bibliotheek).
+  De index `documenten-<n>` is een afgeleide: niet in de back-up; weg of een
+  nieuwe opbouw (`zoekIndex`) = vanzelf opnieuw gevuld. Oude indexen worden
+  opgeruimd.
+- **Bijhouden.** Triggers op `item` en `ruimte` zetten elke wijziging in
+  `zoek_wachtrij` (ook alles onder een map die van naam of plek verandert of
+  in de prullenbak gaat). Eén taak verwerkt de rij in volgorde; een item dat
+  tijdens het verwerken opnieuw verandert, blijft staan (`sinds`). Tekst wordt
+  alleen opnieuw gelezen bij een nieuwe versie (`zoek_stand`); anders alleen
+  de kenmerken bijwerken. Elke zes uur: register en `zoek_stand` vergelijken.
+- **Tekst** (`tekst.go`): OOXML en OpenDocument zelf (zip met XML, met grenzen
+  tegen zip-bommen), pdf met `pdftotext`, gewone tekst en HTML. Hooguit
+  400.000 tekens per document. Geen Tika: dat zou een tweede Java-dienst zijn.
+- **Rechten.** De zoekvraag beperkt zich tot de ruimtes die je ziet; daarna
+  gaat elk resultaat langs de rechtenboom (`Boom`) van de verkenner, ook voor
+  besloten mappen, en moet het nog in het register staan. OpenSearch beslist
+  dus nooit wat iemand te zien krijgt.
+- **Afweging.** Zoeken in Postgres (Nederlandse full-text) was lichter en
+  genoeg geweest voor duizenden documenten. OpenSearch is gekozen omdat het in
+  de referentiearchitectuur (XENA) staat, beter rangschikt en markeert, en later
+  ook het forum, de kennisbank en Redmine kan doorzoeken. Prijs: ±1,5 GB
+  geheugen en een extra dienst.
+
 ## Fasering
 
 1. Garage en de dienst: ruimtes, mappen, uploaden en downloaden in de

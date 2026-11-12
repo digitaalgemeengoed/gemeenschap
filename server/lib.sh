@@ -36,6 +36,16 @@ vraag_ja() {
 # Willekeurig geheim, alleen hexadecimale tekens: veilig in .env, JSON en URL's.
 geheim() { openssl rand -hex "${1:-32}"; }
 
+# OpenSearch (zoeken in Documenten) wil vm.max_map_count van minstens 262144.
+zoek_sysctl() {
+  local nu
+  nu="$(cat /proc/sys/vm/max_map_count 2>/dev/null || echo 0)"
+  [ "$nu" -ge 262144 ] && return 0
+  echo "vm.max_map_count=262144" > /etc/sysctl.d/90-dg-opensearch.conf
+  sysctl -q -w vm.max_map_count=262144 || waarschuw "vm.max_map_count kon niet worden gezet; OpenSearch start dan misschien niet"
+  ok "vm.max_map_count=262144 (voor OpenSearch)"
+}
+
 # Leest een KEY=waarde-bestand zonder het als script uit te voeren.
 lees_env() {
   local bestand="$1" regel naam waarde

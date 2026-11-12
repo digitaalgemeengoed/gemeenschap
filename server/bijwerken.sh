@@ -19,6 +19,8 @@ cd "$DG_MAP" || exit 1
 [ -s .env ] || stop "Nog niet geïnstalleerd. Gebruik installeer.sh."
 
 meld "Bijwerken naar $(git describe --tags --always 2>/dev/null || echo onbekend)"
+# Sinds 0.14.0: OpenSearch (zoeken in Documenten) vraagt meer geheugenkaarten.
+zoek_sysctl
 vul_env_aan .env CIVICRM_VERSIE 6.20.0
 vul_env_aan .env UITROL_MELDEN ""
 # Sinds 0.8.0: de kennisbank (Wiki.js) en de architectuurmodellen.

@@ -153,6 +153,10 @@ func main() {
 	}
 	interval, _ := time.ParseDuration(env("REDMINE_INTERVAL", "5m"))
 	go app.synchroniseerSteeds(ctx, rm, interval)
+	if u := os.Getenv("ZOEK_URL"); u != "" {
+		app.Zoeken = &Zoeker{URL: u, HTTP: &http.Client{Timeout: 60 * time.Second}}
+		go app.zoekBijhouden(ctx)
+	}
 
 	srv := &http.Server{
 		Addr:              env("ADRES", ":8080"),

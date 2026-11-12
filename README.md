@@ -218,6 +218,16 @@ Opslaan binnen tien minuten door dezelfde persoon vervangt de laatste versie;
 systeembestanden (`._*`, `~$*`, `.~lock.*` …) blijven buiten het register.
 Windows haalt standaard bestanden tot 50 MB op via WebDAV.
 
+**Zoeken**: een zoekveld in de adresbalk (zoekt in de map of ruimte waar je
+bent) en `/zoeken` met keuzes voor ruimte en soort. Doorzocht worden naam,
+titel, trefwoorden, omschrijving, map en de tekst van Word, Excel, PowerPoint,
+OpenDocument, pdf en gewone tekst, met Nederlandse taalanalyse. De index staat
+in OpenSearch (dienst `opensearch`, alleen intern, 1 GB geheugen,
+`ZOEK_GEHEUGEN`/`ZOEK_GRENS` in `.env`); hij is af te leiden uit het register
+en de opslag, zit niet in de back-up en bouwt zichzelf opnieuw op als hij weg
+is. Je vindt alleen wat je ook in de verkenner mag zien: elk resultaat gaat
+langs dezelfde rechten. Is OpenSearch er niet, dan werkt de rest gewoon.
+
 **Ruimtes**: de coöperatie, elk project (leden uit Redmine), elke werkgroep
 (leden uit de groepen van BuddyPress) en *Mijn documenten* per persoon (voor
 wie in de kerngroep, een werkgroep of een project zit, en de beheerders van het platform; 1 GB; bevroren als je

@@ -38,6 +38,7 @@ type App struct {
 	QuotumPersoonlijk int64
 	Keycloak          *KeycloakBeheer // de kerngroep, en de groepen van wie inlogt (groepen.go)
 	groepen           groepenCache
+	Zoeken            *Zoeker // nil: zoeken staat uit (zoeken.go)
 	sjablonen         map[string]*template.Template
 }
 
@@ -104,6 +105,7 @@ func (a *App) Routes() http.Handler {
 	mux.HandleFunc("POST /beheer", a.metSessie(a.beheer))
 	mux.HandleFunc("GET /beheer/r/{id}", a.metSessie(a.beheerRuimte))
 	mux.HandleFunc("POST /beheer/r/{id}", a.metSessie(a.beheerRuimte))
+	mux.HandleFunc("GET /zoeken", a.metSessie(a.zoeken))
 	mux.HandleFunc("GET /koppelen", a.metSessie(a.koppelen))
 	mux.HandleFunc("POST /koppelen", a.metSessie(a.koppelen))
 	a.davRoutes(mux)
@@ -190,7 +192,7 @@ func (a *App) laadSjablonen() {
 		},
 	}
 	a.sjablonen = map[string]*template.Template{}
-	for _, naam := range []string{"verkenner", "fout", "koppelen", "openen", "beheer", "beheerruimte"} {
+	for _, naam := range []string{"verkenner", "fout", "koppelen", "openen", "beheer", "beheerruimte", "zoeken"} {
 		a.sjablonen[naam] = template.Must(template.New("").Funcs(functies).ParseFS(sjabloonBestanden, "sjablonen/basis.html", "sjablonen/"+naam+".html"))
 	}
 }

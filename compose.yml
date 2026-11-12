@@ -439,6 +439,9 @@ services:
       KEYCLOAK_SYNC_GEHEIM: ${REDMINE_SYNC_SECRET:?}
       # Persoonlijke ruimtes (Mijn documenten): quotum in MB.
       DOC_QUOTUM_PERSOONLIJK_MB: ${DOC_QUOTUM_PERSOONLIJK_MB:-1024}
+      # Zoeken (zoeken.go): OpenSearch, alleen intern. Leeg = zoeken staat uit.
+      # Is OpenSearch er (nog) niet, dan werkt de rest gewoon en wacht de index.
+      ZOEK_URL: http://opensearch:9200
       # Welk niveau een rol in Redmine geeft (0 geen, 1 lezen, 2 bewerken, 3 beheren).
       DOC_ROLLEN: ${DOC_ROLLEN:-Gebruiker=0,Contributor=2,Member=2,Kerngroep=3,Manager=3,Projectmanager=3,Projectleider=3}
     volumes:
@@ -454,6 +457,31 @@ services:
     depends_on:
       documenten-db: { condition: service_healthy }
       garage: { condition: service_started }
+
+  # --- Zoeken: OpenSearch, voor Documenten -----------------------------------------
+  # Alleen in het interne netwerk (geen poort naar buiten), daarom zonder de
+  # beveiligingsplugin. De index is helemaal af te leiden uit het register en
+  # de opslag van Documenten: hij zit niet in de back-up, en is hij weg, dan
+  # bouwt Documenten hem vanzelf opnieuw op. Vraagt vm.max_map_count=262144 op
+  # de server (bijwerken.sh zet dat).
+  opensearch:
+    image: opensearchproject/opensearch:${OPENSEARCH_VERSIE:-3.6.0}
+    restart: unless-stopped
+    environment:
+      discovery.type: single-node
+      DISABLE_SECURITY_PLUGIN: "true"
+      DISABLE_INSTALL_DEMO_CONFIG: "true"
+      OPENSEARCH_JAVA_OPTS: -Xms${ZOEK_GEHEUGEN:-1g} -Xmx${ZOEK_GEHEUGEN:-1g}
+    ulimits:
+      nofile: { soft: 65536, hard: 65536 }
+    mem_limit: ${ZOEK_GRENS:-2g}
+    volumes:
+      - zoekdata:/usr/share/opensearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fs 'http://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=2s' >/dev/null"]
+      interval: 15s
+      retries: 20
+      start_period: 60s
 
   # --- Beheer (beheer.<domein>): voor de beheerders en de kerngroep -----------------
   # Leden en rollen en organisaties (Keycloak, met het service account
@@ -504,4 +532,5 @@ volumes:
   garagedata:
   docdb:
   doctmp:
+  zoekdata:
   beheerdata:

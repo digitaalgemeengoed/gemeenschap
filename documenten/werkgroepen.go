@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"html"
 	"io"
 	"log"
 	"net/http"
@@ -88,6 +89,8 @@ func (r *Register) ZetWerkgroep(ctx context.Context, g wpWerkgroep, leden map[st
 		return err
 	}
 	defer tx.Rollback()
+	// WordPress geeft namen als HTML ("Developers &amp; contributors").
+	g.Naam = html.UnescapeString(g.Naam)
 	var id int64
 	err = tx.QueryRowContext(ctx, `SELECT id FROM ruimte WHERE wp_groep_id = $1`, g.ID).Scan(&id)
 	switch {

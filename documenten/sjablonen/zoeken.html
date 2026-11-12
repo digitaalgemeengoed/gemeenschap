@@ -1,0 +1,54 @@
+{{define "inhoud"}}
+{{$z := .Data}}
+<div class="losse zoekpagina">
+<p class="kruimels"><a href="/">Documenten</a> › Zoeken</p>
+<form class="zoekbalk" method="get" action="/zoeken" role="search">
+  <label class="zoekveld groot">
+    <span class="i i-zoek" aria-hidden="true"></span>
+    <input type="search" name="q" value="{{$z.Vraag}}" aria-label="Zoeken" placeholder="Zoek op naam, titel, trefwoord of tekst" maxlength="200" autofocus>
+  </label>
+  <label class="zoekkeus">In
+    <select name="in">
+      <option value="">alle ruimtes</option>
+      {{range $z.Ruimtes}}<option value="{{.Sleutel}}"{{if eq .Sleutel $z.In}} selected{{end}}>{{.Naam}}</option>{{end}}
+    </select>
+  </label>
+  {{if $z.MapID}}<input type="hidden" name="m" value="{{$z.MapID}}">{{end}}
+  <label class="zoekkeus">Soort
+    <select name="soort">
+      <option value="">alles</option>
+      <option value="document"{{if eq $z.Soort "document"}} selected{{end}}>documenten</option>
+      <option value="map"{{if eq $z.Soort "map"}} selected{{end}}>mappen</option>
+      <option value="word"{{if eq $z.Soort "word"}} selected{{end}}>tekstdocumenten</option>
+      <option value="pdf"{{if eq $z.Soort "pdf"}} selected{{end}}>pdf</option>
+      <option value="rekenblad"{{if eq $z.Soort "rekenblad"}} selected{{end}}>rekenbladen</option>
+      <option value="presentatie"{{if eq $z.Soort "presentatie"}} selected{{end}}>presentaties</option>
+    </select>
+  </label>
+  <button>Zoeken</button>
+</form>
+{{if $z.MapID}}<p class="zoekbereik">Alleen in de map <b>{{$z.MapNaam}}</b> ({{$z.InNaam}}). <a href="/zoeken?q={{$z.Vraag}}&amp;in={{$z.In}}{{with $z.Soort}}&amp;soort={{.}}{{end}}">Zoek in heel {{$z.InNaam}}</a> · <a href="/zoeken?q={{$z.Vraag}}{{with $z.Soort}}&amp;soort={{.}}{{end}}">overal</a></p>
+{{else if $z.In}}<p class="zoekbereik">Alleen in <b>{{$z.InNaam}}</b>. <a href="/zoeken?q={{$z.Vraag}}{{with $z.Soort}}&amp;soort={{.}}{{end}}">Zoek overal</a></p>{{end}}
+
+{{if $z.Uit}}
+  <p class="fout" role="status">Zoeken is even niet beschikbaar: de zoekdienst start op of is in onderhoud. Probeer het over een paar minuten opnieuw; de mappen en documenten zelf werken gewoon.</p>
+{{else if not $z.Gezocht}}
+  <p class="zacht">Zoek op een woord uit de naam, de titel, de trefwoorden of de tekst van een document. Je vindt alleen wat je ook in de verkenner mag zien. Tekst wordt gelezen uit Word, Excel, PowerPoint, OpenDocument, pdf en gewone tekst.</p>
+{{else if not $z.Resultaten}}
+  <div class="leeg"><p>Niets gevonden voor <b>{{$z.Vraag}}</b>{{if or $z.In $z.Soort}} met deze keuzes{{end}}.</p>
+  <p class="zacht">Probeer een ander of korter woord{{if or $z.In $z.Soort}}, of zoek overal{{end}}. Een document dat net is opgeslagen, staat binnen een paar seconden in de zoekresultaten.</p></div>
+{{else}}
+  <p class="zacht" role="status">{{len $z.Resultaten}}{{if $z.Meer}}+{{end}} resultat{{if eq (len $z.Resultaten) 1}}{{else}}en{{end}} voor <b>{{$z.Vraag}}</b>{{if $z.Meer}}. Er zijn er meer: maak je zoekvraag preciezer.{{end}}</p>
+  <ol class="resultaten">
+  {{range $z.Resultaten}}
+  <li>
+    <a class="naam {{if eq .Soort "map"}}map{{else}}{{soortIcoon .Mediatype .Naam}}{{end}}" href="{{.URL}}">{{.NaamHTML}}</a>
+    <p class="waar"><span class="chip{{if eq .Ruimte.Soort "cooperatie"}} groen{{else if eq .Ruimte.Soort "werkgroep"}} paars{{else if eq .Ruimte.Soort "persoonlijk"}} grijs{{end}}">{{.Ruimte.Naam}}</span>{{with .Pad}} <span class="pad">{{.}}</span>{{end}}</p>
+    {{range .Fragment}}<p class="fragment">… {{.}} …</p>{{end}}
+    <p class="meta">{{if eq .Soort "map"}}map{{else}}{{datum .Gewijzigd}}{{with .DoorNaam}} · {{.}}{{end}} · {{grootte .Grootte}}{{if gt .Versie 1}} · v{{.Versie}}{{end}}{{end}}</p>
+  </li>
+  {{end}}
+  </ol>
+{{end}}
+</div>
+{{end}}

@@ -53,6 +53,11 @@
   {{if $rm}}<span class="pijl" aria-hidden="true">›</span><a href="/r/{{$rm.Sleutel}}">{{$rm.Naam}}</a>{{end}}
   {{range $v.Pad}}<span class="pijl" aria-hidden="true">›</span><a href="/r/{{$rm.Sleutel}}/m/{{.ID}}">{{.Naam}}</a>{{end}}
   {{with $v.Selectie}}<span class="pijl" aria-hidden="true">›</span><b>{{.Naam}}</b>{{end}}
+  <form class="zoekveld" method="get" action="/zoeken" role="search">
+    {{if $rm}}<input type="hidden" name="in" value="{{$rm.Sleutel}}">{{if $v.MapID}}<input type="hidden" name="m" value="{{$v.MapID}}">{{end}}{{end}}
+    <span class="i i-zoek" aria-hidden="true"></span>
+    <input type="search" name="q" aria-label="Zoeken" placeholder="Zoeken in {{if $v.Map}}{{$v.Map.Naam}}{{else if $rm}}{{$rm.Naam}}{{else}}alle ruimtes{{end}}" maxlength="200">
+  </form>
 </nav>
 
 <div class="werkvlak">
