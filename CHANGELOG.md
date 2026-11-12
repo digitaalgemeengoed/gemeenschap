@@ -2,6 +2,8 @@
 
 ## Nog niet uitgebracht
 
+## 0.19.0 — 2026-11-12
+
 **Agenda** op `/agenda/`: evenementen toevoegen op de site, opgeslagen in CiviCRM.
 - **Ieder lid zet een tip in de agenda** voor een evenement elders, met een link naar de organisator. **Eigen evenementen** namens de coöperatie (kerngroep), een werkgroep (wie de groep beheert) of een project (wie het in Redmine beheert).
 - **Per evenement in te stellen**: openbaar of alleen voor leden; aanmelden via de site uit, alleen leden, of iedereen (gasten met naam, e-mail en organisatie, na een bevestigingsmail); een maximum aantal plaatsen met een wachtlijst; wie de link naar de online meeting ziet (iedereen, leden, of alleen wie zich aanmeldde).
