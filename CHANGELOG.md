@@ -2,6 +2,8 @@
 
 ## Nog niet uitgebracht
 
+- Site: **"Bericht sturen" op elke kaart in de *Leden*-lijst.** Opent een nieuw privébericht aan dat lid (de berichtenfunctie van BuddyPress; je berichten staan onder *Berichten* in het menu van het dashboard). Eerst stond die knop alleen op een profiel.
+
 ## 0.16.0 — 2026-11-12
 
 **Collega's uitnodigen** (boven de lijst op de *Leden*-pagina).

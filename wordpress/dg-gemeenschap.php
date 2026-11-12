@@ -335,6 +335,49 @@ add_filter(
 	}
 );
 
+/*
+ * "Bericht sturen" op elke kaart in de ledenlijst (BuddyPress toont die knop
+ * zelf alleen op een profiel). Opent een nieuw privébericht aan dat lid.
+ */
+add_filter(
+	'bp_nouveau_get_members_buttons',
+	static function ( $knoppen, $user_id, $soort, $args ) {
+		if ( 'loop' !== $soort || ! is_user_logged_in() || ! function_exists( 'bp_is_active' ) || ! bp_is_active( 'messages' )
+			|| (int) $user_id === get_current_user_id() || ! $user_id ) {
+			return $knoppen;
+		}
+		$url = wp_nonce_url(
+			add_query_arg( 'r', bp_members_get_user_slug( $user_id ), bp_loggedin_user_url( bp_members_get_path_chunks( array( bp_get_messages_slug(), 'compose' ) ) ) )
+		);
+		$ouder = '';
+		if ( ! empty( $args['container'] ) && 'ul' === $args['container'] ) {
+			$ouder = 'li';
+		} elseif ( ! empty( $args['parent_element'] ) ) {
+			$ouder = $args['parent_element'];
+		}
+		$naam              = bp_core_get_user_displayname( $user_id );
+		$knoppen['dg_bericht'] = array(
+			'id'                => 'dg_bericht',
+			'position'          => 25,
+			'component'         => 'messages',
+			'must_be_logged_in' => true,
+			'block_self'        => true,
+			'parent_element'    => $ouder,
+			'button_element'    => 'a',
+			'link_text'         => 'Bericht sturen',
+			'parent_attr'       => array( 'id' => '', 'class' => 'generic-button dg-bericht' ),
+			'button_attr'       => array(
+				'href'       => $url,
+				'class'      => 'send-message',
+				'aria-label' => 'Bericht sturen aan ' . $naam,
+			),
+		);
+		return $knoppen;
+	},
+	10,
+	4
+);
+
 /**
  * Documenten in BuddyPress: een tab "Documenten" bij elke werkgroep (voor de
  * leden; de ruimte heet werkgroep-<slug>) en "Mijn documenten" op je eigen
