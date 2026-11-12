@@ -945,6 +945,26 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
 	);
 }
 
+// Na het inloggen terug naar de pagina waar je op "Aanmelden" klikte. De
+// plugin stuurt wie via wp-login.php inlogt zonder redirect_to standaard naar
+// het dashboard (wp-admin); voor een beheerder is dat de achterkant van
+// WordPress, en daar wil je zelden heen. Wie zelf naar /wp-admin/ ging, krijgt
+// redirect_to mee van WordPress en komt daar dus nog steeds uit.
+add_filter(
+	'openid-connect-generic-client-redirect-to',
+	static function ( $url ) {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- alleen een adres, en dat wordt gecontroleerd.
+		if ( isset( $_REQUEST['redirect_to'] ) || untrailingslashit( (string) $url ) !== untrailingslashit( admin_url() ) ) {
+			return $url;
+		}
+		$terug = wp_get_referer(); // alleen van de eigen site (wp_validate_redirect)
+		if ( $terug && ! str_contains( $terug, 'wp-login.php' ) && ! str_contains( $terug, '/wp-admin' ) ) {
+			return $terug;
+		}
+		return home_url( '/' );
+	}
+);
+
 // Een inlogverzoek dat WordPress niet meer kent (verlopen, of in een ander
 // venster begonnen, zoals na de bevestigingsmail): één keer opnieuw beginnen.
 // Wie al bij Keycloak is ingelogd, komt dan meteen terug en is ingelogd; lukt

@@ -2,6 +2,10 @@
 
 ## Nog niet uitgebracht
 
+- Site: **na het inloggen terug naar de pagina waar je op *Aanmelden* klikte**, in plaats van naar het dashboard van WordPress (`wp-admin`). Dat gebeurde bij iedereen met de rol beheer (`/site/beheer`). Wie zelf naar `/wp-admin/` gaat, komt daar na het inloggen nog steeds uit.
+
+## 0.12.1 — 2026-11-11
+
 **Hersteld: de kennisbank achter de afscherming.** Na het inloggen stuurt Wiki.js bij elk verzoek zijn eigen `Authorization: Bearer …` mee; daardoor kon de browser het wachtwoord van de afscherming niet meer meesturen, en bleef hij erom vragen (ook als het klopte).
 - Na een geslaagde aanmelding bij de afscherming krijgt de browser het cookie `dg_toegang` (30 dagen, voor het domein en alle subdomeinen). Met dat cookie vraagt Caddy niet opnieuw. Gevolg: één keer inloggen geldt nu voor de site, aanmelden., projecten., kennis., documenten., beheer. en architectuur. samen.
 - Het cookie bevat een geheim (`DG_TOEGANG_COOKIE` in `.env`, vanzelf aangemaakt); het wordt alleen na een geslaagde aanmelding gezet. `afschermen.sh aan` (nieuw wachtwoord) maakt ook een nieuw cookie: dan moet iedereen opnieuw inloggen.
