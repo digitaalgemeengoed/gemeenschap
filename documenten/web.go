@@ -81,6 +81,7 @@ func (a *App) Routes() http.Handler {
 		}
 		io.WriteString(w, "ok\n")
 	})
+	mux.HandleFunc("GET /intern/niveau", a.internNiveau)
 	mux.HandleFunc("GET /inloggen", a.inloggen)
 	mux.HandleFunc("GET /oidc/terug", a.terugVanKeycloak)
 	mux.HandleFunc("POST /uitloggen", a.metSessie(a.uitloggen))

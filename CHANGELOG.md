@@ -2,6 +2,17 @@
 
 ## Nog niet uitgebracht
 
+**Agenda** op `/agenda/`: evenementen toevoegen op de site, opgeslagen in CiviCRM.
+- **Ieder lid zet een tip in de agenda** voor een evenement elders, met een link naar de organisator. **Eigen evenementen** namens de coöperatie (kerngroep), een werkgroep (wie de groep beheert) of een project (wie het in Redmine beheert).
+- **Per evenement in te stellen**: openbaar of alleen voor leden; aanmelden via de site uit, alleen leden, of iedereen (gasten met naam, e-mail en organisatie, na een bevestigingsmail); een maximum aantal plaatsen met een wachtlijst; wie de link naar de online meeting ziet (iedereen, leden, of alleen wie zich aanmeldde).
+- **Aanmelden met één klik** voor leden, met een mail met een uitnodiging voor je agenda (.ics). Afmelden kan altijd; de eerste op de wachtlijst schuift dan door en krijgt een mail.
+- **De agenda**: per maand, met filters (coöperatie, van ons, elders, een werkgroep of project, mijn aanmeldingen), een maandoverzicht, eerdere evenementen, en een pagina per evenement met de kaart, delen en *in je agenda zetten*.
+- **In je eigen agenda** (Outlook, Google, Apple): een abonnement op de agenda, ook per werkgroep of project; leden krijgen een persoonlijke link met ook de ledenevenementen.
+- **Voor de organisator**: de deelnemerslijst (ook als CSV), bewerken, afgelasten (de deelnemers krijgen een mail) en verwijderen.
+- Werkgroepen hebben een tab *Agenda*; de tagpagina's van het nieuws linken naar de agenda; een nieuw evenement kan meteen in het nieuws. Het blok *Aankomende evenementen* op de homepage komt uit de agenda. *Agenda* in het menu en de voet. Privacyverklaring (concept) bijgewerkt.
+- De pagina's van CiviCRM voor evenementen gaan voor wie geen CiviCRM-beheerder is naar de agenda.
+- Documenten: `GET /intern/niveau` (alleen intern, met het geheim van de berichten): wie een project beheert, voor de agenda.
+
 ## 0.18.1 — 2026-11-12
 
 - Server: wp-cli laadt nu alle plugins van de site (ook berichten, uitnodigen en projectvoorstellen). Zonder dat haalde `wp rewrite flush` (ook bij bijwerken) het adres `/nieuws/` weg. De nieuwsplugin zet zijn adressen ook zelf terug als ze ontbreken.

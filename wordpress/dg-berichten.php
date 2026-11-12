@@ -393,6 +393,9 @@ function dg_ber_tag_links( WP_Term $t ): array {
 			$links[] = array( 'taken', 'Project in Redmine', $redmine . '/projects/' . rawurlencode( $k ) );
 		}
 	}
+	if ( $soort && function_exists( 'dg_ag_url' ) ) {
+		$links[] = array( 'kalender', 'Agenda', add_query_arg( 'tag', $t->slug, dg_ag_url() ) );
+	}
 	if ( $soort && is_user_logged_in() ) {
 		if ( function_exists( 'dg_chat_url' ) ) {
 			$links[] = array( 'chat', 'Chat', dg_chat_url( $t->slug ) );

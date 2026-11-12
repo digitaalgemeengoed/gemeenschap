@@ -29,6 +29,7 @@ punten met een link komen in de onderste regel.
 - [Community](meedoen.md)
   - [Meedoen](meedoen.md)
   - [Nieuws](/nieuws/)
+  - [Agenda](/agenda/)
   - [Fora](/forum/)
   - [Werkgroepen](/groepen/)
   - [Leden](/leden/)
@@ -54,6 +55,7 @@ punten met een link komen in de onderste regel.
 - Deelnemen
   - [Lid worden](/lid-worden/)
   - [Nieuws](/nieuws/)
+  - [Agenda](/agenda/)
   - [Fora](/forum/)
   - [Werkgroepen](/groepen/)
   - [Kennisbank](https://kennis.digitaalgemeengoed.nl)

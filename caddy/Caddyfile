@@ -135,6 +135,11 @@ documenten.{$DOMEIN} {
 	# WebDAV (/dav/: app-wachtwoord; /o/: tijdelijke link) logt zelf in met
 	# Basic; de afscherming met wachtwoord zou daar dubbel op zitten (een
 	# programma kan maar één wachtwoord sturen). Daarom buiten de afscherming.
+	# Alleen voor WordPress op het interne netwerk (documenten/intern.go).
+	@intern path /intern/*
+	handle @intern {
+		respond 404
+	}
 	@webdav path /dav /dav/* /o/*
 	handle @webdav {
 		reverse_proxy documenten:8080

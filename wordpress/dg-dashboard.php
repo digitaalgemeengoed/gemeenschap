@@ -171,7 +171,7 @@ function dg_db_navigatie( WP_User $gebruiker ): string {
 		array( 'taken', 'Taken', function_exists( 'dg_pv_taken_url' ) ? dg_pv_taken_url() : home_url( '/' ), 0 ),
 		array( 'lagen', 'Projecten', home_url( '/projecten/' ), 0 ),
 		array( 'hand', 'Samenwerkingen', home_url( '/samenwerkingen/' ), 0 ),
-		array( 'kalender', 'Evenementen', dg_db_evenementen_url(), 0 ),
+		array( 'kalender', 'Agenda', dg_db_evenementen_url(), 0 ),
 		array( 'mail', 'Berichten', $berichten, $ongelezen ),
 		array( 'chat', 'Chat', function_exists( 'dg_chat_url' ) ? dg_chat_url() : home_url( '/' ), 0 ),
 		array( 'instellingen', 'Instellingen', $keycloak, 0 ),
@@ -340,61 +340,27 @@ function dg_db_leden(): string {
 }
 
 function dg_db_evenementen_url(): string {
-	if ( function_exists( 'civicrm_initialize' ) && civicrm_initialize() ) {
-		try {
-			return (string) CRM_Utils_System::url( 'civicrm/event/ical', 'reset=1&list=1&html=1', true, null, false, true );
-		} catch ( Throwable $e ) {
-			unset( $e );
-		}
-	}
-	return home_url( '/' );
+	return home_url( '/agenda/' );
 }
 
-/** De volgende twee openbare evenementen uit CiviCRM, met het aantal aanmeldingen. */
+/** De volgende evenementen uit de agenda (dg-agenda.php, gegevens in CiviCRM), met het aantal aanmeldingen. */
 function dg_db_evenementen(): string {
-	$items = array();
-	if ( function_exists( 'civicrm_initialize' ) && civicrm_initialize() && class_exists( '\Civi\Api4\Event' ) ) {
-		try {
-			$events = \Civi\Api4\Event::get( false )
-				->addSelect( 'id', 'title', 'start_date', 'loc_block_id.address_id.city' )
-				->addWhere( 'is_public', '=', true )
-				->addWhere( 'is_active', '=', true )
-				->addWhere( 'start_date', '>=', 'now' )
-				->addOrderBy( 'start_date', 'ASC' )
-				->setLimit( 2 )
-				->execute();
-			foreach ( $events as $e ) {
-				$aantal  = \Civi\Api4\Participant::get( false )
-					->selectRowCount()
-					->addWhere( 'event_id', '=', $e['id'] )
-					->addWhere( 'status_id:name', 'IN', array( 'Registered', 'Attended' ) )
-					->execute()
-					->count();
-				$items[] = array(
-					'titel'  => (string) $e['title'],
-					'tijd'   => strtotime( (string) $e['start_date'] ),
-					'plaats' => (string) ( $e['loc_block_id.address_id.city'] ?? '' ),
-					'aantal' => (int) $aantal,
-					'url'    => (string) CRM_Utils_System::url( 'civicrm/event/info', 'reset=1&id=' . (int) $e['id'], true, null, false, true ),
-				);
-			}
-		} catch ( Throwable $fout ) {
-			$items = array();
-		}
-	}
+	$items = function_exists( 'dg_ag_volgende' ) ? dg_ag_volgende( 3 ) : array();
 	if ( ! $items ) {
-		$inhoud = '<p class="dg-db-leeg">Nog geen evenementen gepland. Evenementen maak je in CiviCRM (Evenementen → Nieuw evenement, openbaar).</p>';
+		$inhoud = '<p class="dg-db-leeg">Nog niets gepland. <a href="' . esc_url( home_url( '/agenda/nieuw/' ) ) . '">Zet een evenement in de agenda</a>: van de coöperatie, je werkgroep of project, of een tip voor iets elders.</p>';
 	} else {
 		$inhoud = '<ul class="dg-db-lijst">';
 		foreach ( $items as $i ) {
-			$inhoud .= '<li class="dg-db-evenement"><span class="dg-db-datum"><b>' . esc_html( wp_date( 'j', $i['tijd'] ) ) . '</b>' . esc_html( wp_date( 'M', $i['tijd'] ) ) . '</span><div>'
+			$waar    = function_exists( 'dg_ag_waar' ) ? dg_ag_waar( $i, false ) : '';
+			$inhoud .= '<li class="dg-db-evenement"><span class="dg-db-datum"><b>' . esc_html( wp_date( 'j', $i['begin'] ) ) . '</b>' . esc_html( wp_date( 'M', $i['begin'] ) ) . '</span><div>'
 				. '<a class="dg-db-titel" href="' . esc_url( $i['url'] ) . '">' . esc_html( $i['titel'] ) . '</a><small>'
-				. '<span class="dg-icoon dg-icoon-kompas" aria-hidden="true"></span>' . esc_html( $i['plaats'] ?: 'Online' )
-				. ' <span class="dg-icoon dg-icoon-mensen" aria-hidden="true"></span>' . (int) $i['aantal'] . ' deelnemers</small></div></li>';
+				. '<span class="dg-icoon dg-icoon-kalender" aria-hidden="true"></span>' . esc_html( wp_date( 'H:i', $i['begin'] ) )
+				. ( $waar ? ' <span class="dg-icoon dg-icoon-kompas" aria-hidden="true"></span>' . esc_html( $waar ) : '' )
+				. ( 'uit' !== $i['aanmelden'] ? ' <span class="dg-icoon dg-icoon-mensen" aria-hidden="true"></span>' . (int) $i['aantal'] . ' aangemeld' : ( 'extern' === $i['soort'] ? ' · elders' : '' ) ) . '</small></div></li>';
 		}
 		$inhoud .= '</ul>';
 	}
-	return dg_db_blok( 'dg-db-evenementen', 'kalender', 'Aankomende evenementen', 'Kalender', dg_db_evenementen_url(), $inhoud );
+	return dg_db_blok( 'dg-db-evenementen', 'kalender', 'Aankomende evenementen', 'Agenda', dg_db_evenementen_url(), $inhoud );
 }
 
 /** De kennisbank (Wiki.js) op kennis.<domein>. */

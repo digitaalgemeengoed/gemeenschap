@@ -320,6 +320,38 @@ Berichten van leden en de redactie, zoals op LinkedIn, in WordPress
 - Elk nieuw bericht zet een regel in de activiteit van BuddyPress (bij een
   werkgroep-tag in die van de groep).
 
+## Agenda
+
+Evenementen op `/agenda/` (`wordpress/dg-agenda.php`, opmaak in het thema:
+`agenda.css`, `agenda.js`). De formulieren staan op de site; de gegevens in
+**CiviCRM**: elk evenement een Event (met de eigen velden in de groep
+`dgg_evenement`, die de plugin zelf aanmaakt), elke aanmelding een
+Participant (Registered, On waitlist, Cancelled). De pagina's van CiviCRM zelf
+voor evenementen (`civicrm/event/…`) sturen wie geen CiviCRM-beheerder is naar
+`/agenda/`.
+
+- **Wie mag wat**: een evenement elders (tip) mag ieder lid toevoegen. Een
+  eigen evenement namens de coöperatie: kerngroep, redactie, beheer; namens
+  een werkgroep: wie de groep beheert of modereert; namens een project: wie
+  het project in Redmine beheert. Dat laatste vraagt WordPress aan Documenten
+  (`GET /intern/niveau`, met `DOC_BERICHT_GEHEIM`; Caddy laat `/intern/`
+  niet door).
+- **Per evenement**: openbaar of alleen leden; aanmelden uit, alleen leden of
+  iedereen (gasten bevestigen via een mail; afmelden met een link in de
+  bevestiging); een maximum met wachtlijst (wie afmeldt, maakt plaats voor de
+  eerste op de wachtlijst, die een mail krijgt); de link naar de online
+  meeting voor iedereen, alleen leden, of alleen wie zich aanmeldde.
+- **Organisator**: ziet de deelnemers (en een CSV), kan bewerken, afgelasten
+  (de deelnemers krijgen een mail) en verwijderen (alleen zonder
+  aanmeldingen).
+- **iCal**: `/agenda/ical/` (openbaar) en `/agenda/ical/<persoonlijke
+  sleutel>/` (met de evenementen voor leden), allebei met `?tag=` en
+  `?soort=`; per evenement `/agenda/<id>/ics/`. Bevestigingsmails hebben een
+  `.ics` erbij.
+- Tags zijn de vaste tags van het nieuws (`cooperatie`, `werkgroep-…`,
+  `project-…`); werkgroepen hebben een tab *Agenda*. Een nieuw evenement kan
+  meteen een bericht in het nieuws zetten.
+
 ## Beheer
 
 `beheer.<domein>` (op de site: *Beheer* op je eigen profiel): voor de

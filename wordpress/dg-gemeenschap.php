@@ -439,6 +439,24 @@ add_action(
 		}
 		if ( function_exists( 'bp_is_group' ) && bp_is_group() ) {
 			$groep = groups_get_current_group();
+			// De agenda van de werkgroep (dg-agenda.php).
+			if ( $groep && function_exists( 'dg_ag_url' ) ) {
+				bp_core_new_subnav_item(
+					array(
+						'name'            => 'Agenda',
+						'slug'            => 'agenda',
+						'parent_slug'     => $groep->slug,
+						'parent_url'      => bp_get_group_url( $groep ),
+						'position'        => 33,
+						'user_has_access' => true,
+						'screen_function' => static function () use ( $groep ) {
+							wp_safe_redirect( add_query_arg( 'tag', 'werkgroep-' . $groep->slug, home_url( '/agenda/' ) ) );
+							exit;
+						},
+					),
+					'groups'
+				);
+			}
 			// Het nieuws van de werkgroep: de berichten met de tag van de groep (dg-berichten.php).
 			if ( $groep && defined( 'DG_BER_TAG' ) ) {
 				bp_core_new_subnav_item(

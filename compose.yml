@@ -55,6 +55,8 @@ x-wordpress-omgeving: &wordpress-omgeving
   WP_CLIENT_SECRET: ${WP_CLIENT_SECRET:?}
   # Berichten namens Documenten bij het delen (dg-gemeenschap.php, /wp-json/dg/v1/bericht).
   DG_BERICHT_GEHEIM: ${DOC_BERICHT_GEHEIM:?}
+  # Wie een project beheert (agenda, dg-agenda.php): Documenten, intern.
+  DG_DOCUMENTEN_INTERN: http://documenten:8080
 
 x-wordpress-mappen: &wordpress-mappen
   - wphtml:/var/www/html
@@ -65,6 +67,7 @@ x-wordpress-mappen: &wordpress-mappen
   - ./wordpress/dg-projectvoorstel.php:/var/www/html/wp-content/mu-plugins/dg-projectvoorstel.php:ro
   - ./wordpress/dg-uitnodigen.php:/var/www/html/wp-content/mu-plugins/dg-uitnodigen.php:ro
   - ./wordpress/dg-berichten.php:/var/www/html/wp-content/mu-plugins/dg-berichten.php:ro
+  - ./wordpress/dg-agenda.php:/var/www/html/wp-content/mu-plugins/dg-agenda.php:ro
   - ./wordpress/thema/digitaalgemeengoed:/var/www/html/wp-content/themes/digitaalgemeengoed:ro
   - ./wordpress/php.ini:/usr/local/etc/php/conf.d/dg-gemeenschap.ini:ro
 
@@ -220,6 +223,7 @@ services:
       - ./wordpress/dg-projectvoorstel.php:/var/www/html/wp-content/mu-plugins/dg-projectvoorstel.php:ro
       - ./wordpress/dg-uitnodigen.php:/var/www/html/wp-content/mu-plugins/dg-uitnodigen.php:ro
       - ./wordpress/dg-berichten.php:/var/www/html/wp-content/mu-plugins/dg-berichten.php:ro
+      - ./wordpress/dg-agenda.php:/var/www/html/wp-content/mu-plugins/dg-agenda.php:ro
       - ./wordpress/thema/digitaalgemeengoed:/var/www/html/wp-content/themes/digitaalgemeengoed:ro
       - ./wordpress/inrichten.sh:/usr/local/bin/dg-inrichten:ro
       # Dezelfde PHP-instellingen als de site; CiviCRM heeft meer dan 128 MB nodig.
