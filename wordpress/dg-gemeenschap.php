@@ -794,6 +794,9 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			dg_thema_beeld( 'uil.png', static fn( $id ) => set_theme_mod( 'custom_logo', $id ) );
 			dg_thema_beeld( 'icoon.png', static fn( $id ) => update_option( 'site_icon', $id ) );
 			// De tabel voor toezeggingen (dg-crowdfunding.php).
+			if ( function_exists( 'dg_uit_installeer' ) ) {
+				dg_uit_installeer();
+			}
 			if ( function_exists( 'dg_cf_installeer' ) ) {
 				dg_cf_installeer();
 			}

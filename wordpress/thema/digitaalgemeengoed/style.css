@@ -2,7 +2,7 @@
 Theme Name: Digitaal GemeenGoed
 Template: buddyx
 Description: Het thema van digitaalgemeengoed.nl: BuddyX (voor BuddyPress en bbPress) met het logo, de kleuren en de opmaak van Digitaal GemeenGoed. Kleuren en voet staan vast in functions.php; de menu's komen uit inhoud/menu.md in de repo digitaalgemeengoed/gemeenschap.
-Version: 1.1.1
+Version: 1.1.2
 License: EUPL-1.2
 Text Domain: digitaalgemeengoed
 */
@@ -557,6 +557,27 @@ Text Domain: digitaalgemeengoed
 .entry-content .dg-cf-form .dg-cf-vink input { margin-top: .25rem; }
 .entry-content .dg-cf-form button { justify-self: start; border: 0; cursor: pointer; }
 .entry-content .dg-kaart-meer { margin-top: 1rem !important; font-size: .9rem; }
+
+/* Collega uitnodigen (dg-uitnodigen.php), boven de ledenlijst. */
+.dg-uit { margin: 0 0 1.4rem; border: 1px solid var(--dg-rand); border-radius: 12px; background: var(--dg-ijs); }
+.dg-uit summary { cursor: pointer; padding: .7rem 1rem; font-weight: 650; color: var(--dg-blauw); list-style: none; display: flex; align-items: center; }
+.dg-uit summary::-webkit-details-marker { display: none; }
+.dg-uit summary::after { content: "+"; margin-left: auto; font-size: 1.2rem; line-height: 1; }
+.dg-uit[open] summary::after { content: "–"; }
+.dg-uit-inhoud { padding: 0 1rem 1rem; }
+.dg-uit-inhoud p { margin: 0 0 .7rem; font-size: .92rem; }
+.dg-uit form { display: grid; gap: .7rem; }
+.dg-uit label { display: grid; gap: .25rem; font-size: .88rem; font-weight: 600; color: var(--dg-marine); }
+.dg-uit label small { font-weight: 400; color: var(--dg-grijs); }
+.dg-uit input[type=text], .dg-uit textarea { width: 100%; box-sizing: border-box; padding: .5rem .7rem; border: 1px solid #c6d5e4; border-radius: 8px; background: #fff; font: inherit; font-weight: 400; }
+.dg-uit button.dg-db-knop { justify-self: start; margin-top: 0; border: 0 !important; cursor: pointer; background: var(--dg-paars) !important; color: #fff !important; box-shadow: none; padding: .55rem 1.2rem !important; border-radius: 999px !important; font-size: .92rem; font-weight: 650; line-height: 1.3; }
+.dg-uit-klein { font-size: .82rem !important; color: var(--dg-grijs); }
+.dg-uit h3 { font-size: .95rem; margin: 1.1rem 0 .4rem; }
+.dg-uit-lijst { list-style: none; margin: 0; padding: 0; }
+.dg-uit-lijst li { display: flex; justify-content: space-between; gap: .5rem; flex-wrap: wrap; padding: .35rem 0; border-top: 1px solid var(--dg-rand); font-size: .9rem; overflow-wrap: anywhere; }
+.dg-uit .dg-cf-melding { margin: 0 0 .8rem; padding: .6rem .9rem; border-radius: 10px; background: #e7f3dc; color: #2f5f14; font-size: .9rem; }
+.dg-uit .dg-cf-melding-fout { background: #fdecea; color: #8a1c12; }
+.dg-uit .dg-cf-melding ul { margin: 0; padding-left: 1.1rem; }
 
 /* Start een project ([dg_project_starten], dg-projectvoorstel.php). */
 .entry-content .dg-pv-form { display: grid; gap: .9rem; margin-top: 1rem; padding: 1.1rem 1.1rem 1.3rem; border: 1px solid var(--dg-rand); border-radius: 12px; background: var(--dg-ijs); }

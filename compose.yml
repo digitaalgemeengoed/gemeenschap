@@ -44,6 +44,8 @@ x-wordpress-omgeving: &wordpress-omgeving
   # Redmine voor het dashboard (dg-dashboard.php): intern voor de API, publiek voor links.
   DG_REDMINE_INTERN: http://redmine:3000
   DG_REDMINE_URL: https://projecten.${DOMEIN}
+  # Uitnodigingen (dg-uitnodigen.php): een geldige uitnodiging opent de afscherming.
+  DG_TOEGANG_COOKIE: ${DG_TOEGANG_COOKIE:-}
   # Projectvoorstellen (dg-projectvoorstel.php): het account "site" in Redmine, geen beheerder.
   DG_REDMINE_SITE_KEY: ${REDMINE_SITE_API_KEY:?}
   # Inloggen via Keycloak (gelezen door wp-content/mu-plugins/dg-gemeenschap.php).
@@ -61,6 +63,7 @@ x-wordpress-mappen: &wordpress-mappen
   - ./wordpress/dg-dashboard.php:/var/www/html/wp-content/mu-plugins/dg-dashboard.php:ro
   - ./wordpress/dg-crowdfunding.php:/var/www/html/wp-content/mu-plugins/dg-crowdfunding.php:ro
   - ./wordpress/dg-projectvoorstel.php:/var/www/html/wp-content/mu-plugins/dg-projectvoorstel.php:ro
+  - ./wordpress/dg-uitnodigen.php:/var/www/html/wp-content/mu-plugins/dg-uitnodigen.php:ro
   - ./wordpress/thema/digitaalgemeengoed:/var/www/html/wp-content/themes/digitaalgemeengoed:ro
   - ./wordpress/php.ini:/usr/local/etc/php/conf.d/dg-gemeenschap.ini:ro
 

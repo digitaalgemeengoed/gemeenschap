@@ -26,6 +26,7 @@ Contact over privacy: [info@digitaalgemeengoed.nl](mailto:info@digitaalgemeengoe
 | Organisatie, functie, werkveld | Het ledenoverzicht, zodat leden elkaar kunnen vinden; zien uit welke organisaties het netwerk bestaat | Overeenkomst |
 | Je rol in het netwerk (gebruiker, contributor, member, kerngroep) | Wat je op het platform mag | Overeenkomst |
 | Toestemming voor de nieuwsbrief, met datum van geven en intrekken | De nieuwsbrief en uitnodigingen sturen; kunnen aantonen dat je toestemming gaf | Toestemming |
+| Het e-mailadres van iemand die een lid uitnodigt, en wie uitnodigde | Eén uitnodiging sturen; dubbele uitnodigingen en misbruik voorkomen. Wordt na 30 dagen verwijderd als je geen lid wordt; word je lid, dan blijft een jaar bewaard wie jou uitnodigde (zonder je adres) | Gerechtvaardigd belang van het lid dat uitnodigt en van het netwerk |
 | Berichten in de fora, meldingen en reacties in Redmine | Het netwerk en de projecten | Overeenkomst |
 | Pagina's en opmerkingen in de kennisbank, met je naam en e-mailadres bij elke wijziging | Kennis delen; kunnen zien wie wat schreef | Overeenkomst |
 | Documenten die je in Documenten zet, met je naam en e-mailadres bij elke versie en elke handeling (logboek); met wie je iets deelt | Samenwerken aan werkdocumenten; kunnen zien wie wat deed | Overeenkomst |

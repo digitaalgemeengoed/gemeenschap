@@ -2,6 +2,13 @@
 
 ## Nog niet uitgebracht
 
+**Collega's uitnodigen** (boven de lijst op de *Leden*-pagina).
+- Ieder lid kan collega's uitnodigen: een of meer e-mailadressen (hooguit 5 tegelijk) en een persoonlijk bericht. De site stuurt één mail namens jou (met je naam en organisatie; antwoorden gaat naar jou), met een link naar het aanmeldformulier. Er wordt vooraf geen account aangemaakt.
+- Grenzen: hooguit 10 uitnodigingen per dag per lid; hetzelfde adres niet opnieuw binnen 30 dagen; wie al lid is, krijgt niets.
+- Je ziet je eigen uitnodigingen, met *uitgenodigd* of *lid geworden*. Bij de eerste login van de nieuwe collega gaat de status vanzelf om.
+- Privacy: het adres van wie geen lid wordt, gaat na 30 dagen weg; de persoonlijke tekst wordt niet bewaard. Toegevoegd aan de privacyverklaring (concept).
+- Zolang de site is afgeschermd, opent een geldige uitnodigingslink de afscherming (hetzelfde cookie als na het wachtwoord); Caddy laat daarvoor alleen `/uitnodiging/…` door. Een verlopen of onjuiste link toont een kale pagina, niets van de site.
+
 ## 0.15.0 — 2026-11-12
 
 **Documenten: contextmenu en de assistent.**

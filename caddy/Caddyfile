@@ -21,6 +21,9 @@
 	@extern {
 		not remote_ip private_ranges
 		not header Cookie *dg_toegang={$DG_TOEGANG_COOKIE}*
+		# Een uitnodiging om lid te worden (wordpress/dg-uitnodigen.php): de site
+		# controleert de sleutel en zet dan zelf het cookie.
+		not path /uitnodiging/*
 	}
 	# In deze volgorde: het cookie alleen na een geslaagde aanmelding.
 	route {
