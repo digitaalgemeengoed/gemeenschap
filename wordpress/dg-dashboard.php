@@ -322,8 +322,10 @@ function dg_db_leden(): string {
 	if ( ! function_exists( 'bp_has_members' ) ) {
 		return '';
 	}
-	$totaal = (int) bp_core_get_total_member_count();
+	// Dezelfde telling als de ledenpagina: alleen wie ooit actief was (niet het
+	// beheeraccount of wie nooit inlogde, die bp_core_get_total_member_count wel telt).
 	$query  = new BP_User_Query( array( 'type' => 'active', 'per_page' => 6, 'populate_extras' => false ) );
+	$totaal = (int) $query->total_users;
 	$fotos  = '';
 	foreach ( $query->results as $lid ) {
 		$fotos .= '<a href="' . esc_url( bp_members_get_user_url( $lid->ID ) ) . '" title="' . esc_attr( $lid->display_name ) . '">'

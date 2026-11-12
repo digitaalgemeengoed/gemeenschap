@@ -2,6 +2,8 @@
 
 ## Nog niet uitgebracht
 
+- Site: het blok *Actieve leden* op de homepage telt nu dezelfde leden als de ledenpagina. Eerst telde het ook accounts die nooit actief waren (zoals het beheeraccount).
+
 ## 0.17.0 — 2026-11-12
 
 **Chat (Matrix)** op `chat.<domein>`, voor gesprekken tussen leden van verschillende gemeenten en organisaties.
