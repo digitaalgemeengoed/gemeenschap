@@ -64,8 +64,9 @@ Text Domain: digitaalgemeengoed
 }
 .main-navigation #primary-menu > li.current-menu-item > a,
 .main-navigation #primary-menu > li > a:hover { color: var(--dg-link); }
-/* Het eerste punt (Home) als huisje. */
-.main-navigation #primary-menu > li.menu-item-home > a { font-size: 0; line-height: 0; display: inline-flex; align-items: center; min-height: 2.5rem; padding-inline: .5rem; }
+/* Het eerste punt (Home) als huisje. Even hoog als de andere punten (die vullen
+   de hele menubalk), zodat het huisje op dezelfde hoogte staat als de tekst. */
+.main-navigation #primary-menu > li.menu-item-home > a { font-size: 0; line-height: 0; display: flex; align-items: center; height: 100%; min-height: 2.5rem; box-sizing: border-box; padding-top: 0; padding-bottom: 0; padding-inline: .5rem; }
 .main-navigation #primary-menu > li.menu-item-home > a::before {
   content: ""; display: block; width: 22px; height: 22px;
   background: var(--dg-marine);
