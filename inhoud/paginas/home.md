@@ -38,6 +38,8 @@ Duurzaam, soeverein en maatschappelijk relevant
 
 [dg_dashboard]
 
+[dg_flitsen]
+
 ## Actuele projecten
 
 ::: projecten

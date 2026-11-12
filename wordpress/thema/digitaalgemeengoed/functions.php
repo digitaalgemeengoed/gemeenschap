@@ -124,3 +124,13 @@ add_action(
 	}
 );
 add_filter( 'body_class', static fn( $klassen ) => dg_heeft_held() ? array_merge( $klassen, array( 'dg-met-held' ) ) : $klassen );
+
+// Emoji zoals het systeem ze toont: geen script en geen plaatjes van s.w.org
+// (scheelt een verzoek naar een andere site bij elke pagina; de reacties op
+// berichten zijn emoji).
+remove_action( 'wp_head', 'print_emoji_detection_script', 7 );
+remove_action( 'wp_print_styles', 'print_emoji_styles' );
+remove_filter( 'the_content_feed', 'wp_staticize_emoji' );
+remove_filter( 'comment_text_rss', 'wp_staticize_emoji' );
+remove_filter( 'wp_mail', 'wp_staticize_emoji_for_email' );
+add_filter( 'emoji_svg_url', '__return_false' );

@@ -2,6 +2,19 @@
 
 ## Nog niet uitgebracht
 
+**Nieuws en berichten**, zoals op LinkedIn, op `/nieuws/`.
+- **Ieder lid plaatst berichten**: tekst, titel, foto's (hooguit 4; de locatie en cameragegevens gaan eruit), een video (tot 60 MB) of een link. Een link krijgt een voorbeeld met titel, tekst en afbeelding; YouTube en Vimeo als speler die pas na een klik laadt. Bewerken en verwijderen kan de schrijver zelf.
+- **Per bericht openbaar of alleen voor leden** (standaard). Gasten zien van een ledenbericht niets, ook niet bij een tag, in het zoeken of de RSS. Opmerkingen en wie reageerde: alleen leden.
+- **Nieuwsflits**: per bericht aan te vinken, met titel, kleine afbeelding en twee à drie regels tekst, standaard 14 dagen. Op de homepage voor gasten (alleen openbare), in het dashboard voor leden, en naast de feed.
+- **Een eigen pagina per bericht** met de opmerkingen (met antwoorden). In de feed klappen lange berichten in, met *…meer*.
+- **Reageren** met leuk, gefeliciteerd, inspirerend of nuttig (geen dislike). **Delen**: link kopiëren, e-mail, en bij openbare berichten LinkedIn, Bluesky, Mastodon, WhatsApp en X, met een kaartje met titel en afbeelding. **Verzenden** als privébericht aan een of meer leden. **Reposten** met een eigen regel erboven.
+- **Tags, aan te klikken**, met een feed per tag. Vaste tags voor de coöperatie, elke werkgroep en elk openbaar project in Redmine (dezelfde namen als de chatkamers en de ruimtes in Documenten, met links daarheen); vrije tags met #woord. Werkgroepen hebben een tab *Nieuws*.
+- **Moderatie**: ieder lid kan een bericht melden (de kerngroep krijgt een mail); de kerngroep en de redactie kunnen een bericht verbergen (de schrijver krijgt een mail).
+- *Nieuws* in het menu (Community), in de voet en in het dashboard. Privacyverklaring (concept) bijgewerkt.
+- Site: geen emoji-script en -plaatjes van wordpress.org meer (scheelt een verzoek naar een andere site op elke pagina).
+- Site: de tabs *Documenten* en *Chat* bij een werkgroep gebruikten een verouderde functie van BuddyPress, die er niet altijd is; nu de nieuwe.
+- Server: uploads tot 64 MB (`wordpress/php.ini`), voor video bij berichten.
+
 - Site: het blok *Actieve leden* op de homepage telt nu dezelfde leden als de ledenpagina. Eerst telde het ook accounts die nooit actief waren (zoals het beheeraccount).
 
 ## 0.17.0 — 2026-11-12

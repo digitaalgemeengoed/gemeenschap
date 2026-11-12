@@ -64,6 +64,7 @@ x-wordpress-mappen: &wordpress-mappen
   - ./wordpress/dg-crowdfunding.php:/var/www/html/wp-content/mu-plugins/dg-crowdfunding.php:ro
   - ./wordpress/dg-projectvoorstel.php:/var/www/html/wp-content/mu-plugins/dg-projectvoorstel.php:ro
   - ./wordpress/dg-uitnodigen.php:/var/www/html/wp-content/mu-plugins/dg-uitnodigen.php:ro
+  - ./wordpress/dg-berichten.php:/var/www/html/wp-content/mu-plugins/dg-berichten.php:ro
   - ./wordpress/thema/digitaalgemeengoed:/var/www/html/wp-content/themes/digitaalgemeengoed:ro
   - ./wordpress/php.ini:/usr/local/etc/php/conf.d/dg-gemeenschap.ini:ro
 

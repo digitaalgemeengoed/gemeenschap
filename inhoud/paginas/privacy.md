@@ -28,6 +28,7 @@ Contact over privacy: [info@digitaalgemeengoed.nl](mailto:info@digitaalgemeengoe
 | Toestemming voor de nieuwsbrief, met datum van geven en intrekken | De nieuwsbrief en uitnodigingen sturen; kunnen aantonen dat je toestemming gaf | Toestemming |
 | Het e-mailadres van iemand die een lid uitnodigt, en wie uitnodigde | Eén uitnodiging sturen; dubbele uitnodigingen en misbruik voorkomen. Wordt na 30 dagen verwijderd als je geen lid wordt; word je lid, dan blijft een jaar bewaard wie jou uitnodigde (zonder je adres) | Gerechtvaardigd belang van het lid dat uitnodigt en van het netwerk |
 | Berichten in de fora, meldingen en reacties in Redmine | Het netwerk en de projecten | Overeenkomst |
+| Berichten in het nieuws, met foto's, video's en links, en je opmerkingen en reacties (zoals *leuk* of *inspirerend*) | Nieuws en ervaringen delen in het netwerk | Overeenkomst |
 | Pagina's en opmerkingen in de kennisbank, met je naam en e-mailadres bij elke wijziging | Kennis delen; kunnen zien wie wat schreef | Overeenkomst |
 | Documenten die je in Documenten zet, met je naam en e-mailadres bij elke versie en elke handeling (logboek); met wie je iets deelt | Samenwerken aan werkdocumenten; kunnen zien wie wat deed | Overeenkomst |
 | App-wachtwoorden voor de netwerkschijf (alleen een versleutelde afdruk), met de naam van het apparaat en wanneer het voor het laatst werd gebruikt | Inloggen vanuit Verkenner, Finder, Word of LibreOffice | Overeenkomst |
@@ -40,6 +41,7 @@ Wij gebruiken je gegevens niet voor iets anders, verkopen ze niet en gebruiken g
 
 - Je **profiel** (naam, organisatie, functie, werkveld) is zichtbaar voor ingelogde leden. Je **e-mailadres** niet.
 - **Berichten in de fora** zijn zichtbaar voor ingelogde leden.
+- Een **bericht in het nieuws** is zichtbaar voor ingelogde leden, of voor iedereen als je bij het plaatsen *openbaar* kiest; een openbaar bericht kan ook als nieuwsflits op de homepage staan. Opmerkingen en wie reageerde, zien alleen ingelogde leden. Uit foto's halen we de locatie en de cameragegevens; uit een video niet, want dat kan de site niet. Foto's en video's staan op een adres dat niet geheim is voor wie het kent. Een video van YouTube of Vimeo laadt pas als je op *Afspelen* klikt.
 - **Meldingen en reacties in Redmine** zijn openbaar, met je naam erbij.
 - De **kennisbank** en de **architectuurmodellen** zijn alleen zichtbaar voor ingelogde leden, met je naam bij wat je schreef. De pagina's van de kennisbank staan ook in een besloten repository op GitHub, met je naam en e-mailadres bij elke wijziging.
 - In **Documenten** zie je een ruimte, map of document alleen als je er toegang toe hebt (als lid van het project, de coöperatie of omdat iemand het met je deelde). Wie toegang heeft, ziet wie een document toevoegde of wijzigde. Deelt iemand iets met je, dan krijg je een bericht op de site en een e-mail. Documenten staan op onze eigen server, niet bij een andere partij.
@@ -59,6 +61,7 @@ Je gegevens blijven in de Europese Economische Ruimte. [IN TE VULLEN: controlere
 ## Hoe lang
 
 - Je account en profiel: tot je je account laat verwijderen. Ben je [IN TE VULLEN: termijn, bijvoorbeeld twee jaar] niet ingelogd, dan vragen we of je lid wilt blijven; zonder antwoord verwijderen we je account.
+- Berichten in het nieuws: tot je ze zelf verwijdert; dan gaan ook de foto's, video's, opmerkingen en reacties weg.
 - Berichten en meldingen: als je account wordt verwijderd, blijven ze staan zonder je naam, omdat anderen erop hebben gereageerd. Wil je dat een bericht helemaal verdwijnt, vraag het ons.
 - Toestemming voor de nieuwsbrief: zolang je lid bent, en daarna nog [IN TE VULLEN: termijn] om te kunnen aantonen dat je toestemming gaf.
 - Inloggegevens voor de beveiliging: [IN TE VULLEN: termijn].

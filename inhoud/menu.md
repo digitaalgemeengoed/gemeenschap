@@ -28,6 +28,7 @@ punten met een link komen in de onderste regel.
   - [Start een project](project-starten.md)
 - [Community](meedoen.md)
   - [Meedoen](meedoen.md)
+  - [Nieuws](/nieuws/)
   - [Fora](/forum/)
   - [Werkgroepen](/groepen/)
   - [Leden](/leden/)
@@ -52,6 +53,7 @@ punten met een link komen in de onderste regel.
   - [Contact](contact.md)
 - Deelnemen
   - [Lid worden](/lid-worden/)
+  - [Nieuws](/nieuws/)
   - [Fora](/forum/)
   - [Werkgroepen](/groepen/)
   - [Kennisbank](https://kennis.digitaalgemeengoed.nl)

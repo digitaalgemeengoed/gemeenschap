@@ -87,6 +87,7 @@ function dg_dashboard(): string {
 					<p>Dé plek voor gemeentelijke professionals, developers, beheerders en beleidsmakers die samen werken aan open, betrouwbare en herbruikbare overheidssoftware.</p>
 				</div>
 			</section>
+			<?php echo function_exists( 'dg_ber_flitsen_html' ) ? dg_ber_flitsen_html( 3, 'dashboard' ) : ''; // phpcs:ignore WordPress.Security.EscapeOutput ?>
 			<div class="dg-db-raster">
 				<?php echo dg_db_projectupdates(); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 				<?php echo dg_db_discussies(); // phpcs:ignore WordPress.Security.EscapeOutput ?>
@@ -162,6 +163,7 @@ function dg_db_navigatie( WP_User $gebruiker ): string {
 	$keycloak = function_exists( 'dg_keycloak' ) && dg_keycloak() ? dg_keycloak() . '/realms/gemeenschap/account/' : admin_url( 'profile.php' );
 	$punten   = array(
 		array( 'huis', 'Dashboard', home_url( '/' ), 0 ),
+		array( 'nieuws', 'Nieuws', home_url( '/nieuws/' ), 0 ),
 		array( 'mensen', 'Community', function_exists( 'bp_get_members_directory_permalink' ) ? bp_get_members_directory_permalink() : home_url( '/leden/' ), 0 ),
 		array( 'forum', 'Discussies & fora', dg_db_forum_url(), 0 ),
 		array( 'boek', 'Kennis- & ervaringsbank', dg_db_kennisbank(), 0 ),

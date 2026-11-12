@@ -287,6 +287,39 @@ Teams vaak niet mag). **Synapse** is de server, **MAS** doet het inloggen
 - Logboeken: `sudo docker compose logs synapse mas element`, en in
   `documenten` de regels die met `chat:` beginnen.
 
+## Nieuws
+
+Berichten van leden en de redactie, zoals op LinkedIn, in WordPress
+(`wordpress/dg-berichten.php`, opmaak in het thema: `berichten.css` en
+`berichten.js`). De feed staat op `/nieuws/`, elk bericht op
+`/nieuws/<naam>/`, een tag op `/nieuws/tag/<tag>/`.
+
+- **Zichtbaarheid per bericht**: *alleen leden* (standaard) of *openbaar*.
+  Gasten zien van een ledenbericht niets (feed, tags, zoeken, RSS); de pagina
+  vraagt om in te loggen. Opmerkingen en wie reageerde: alleen leden.
+- **Nieuwsflits**: vinkje bij het bericht (titel nodig), standaard 14 dagen.
+  De homepage toont de lopende flitsen (`[dg_flitsen]` in `home.md` voor
+  gasten, alleen openbare; in het dashboard voor leden alle).
+- **Tags**: vaste tags `cooperatie`, `werkgroep-<slug>` en `project-<id>`
+  (openbare projecten in Redmine), elk uur bijgewerkt; dezelfde namen als de
+  chatkamers en de ruimtes in Documenten, met links daarheen op de tagpagina.
+  Leden maken vrije tags met `#woord` of het veld Tags. Werkgroepen hebben een
+  tab *Nieuws*.
+- **Reacties**: leuk, gefeliciteerd, inspirerend, nuttig (geen dislike);
+  tabel `wp_dg_reacties`. Opmerkingen zijn gewone WordPress-opmerkingen.
+- **Delen**: link, e-mail; bij openbare berichten ook LinkedIn, Bluesky,
+  Mastodon, WhatsApp en X (met een kaartje: Open Graph). **Verzenden** als
+  privébericht (BuddyPress), **reposten** met een eigen regel erboven.
+- **Media**: hooguit 4 foto's (EXIF eruit, hooguit 2560 pixels) en een video
+  tot 60 MB (mp4, webm; `wordpress/php.ini`). Een link krijgt een voorbeeld,
+  dat de server ophaalt; YouTube en Vimeo als speler die pas na een klik
+  laadt (YouTube via youtube-nocookie.com).
+- **Moderatie**: iedereen kan melden (mail naar de kerngroep); kerngroep,
+  redactie en beheer kunnen verbergen (de schrijver krijgt een mail;
+  terugzetten in WordPress-beheer, *Nieuws*) en verwijderen.
+- Elk nieuw bericht zet een regel in de activiteit van BuddyPress (bij een
+  werkgroep-tag in die van de groep).
+
 ## Beheer
 
 `beheer.<domein>` (op de site: *Beheer* op je eigen profiel): voor de

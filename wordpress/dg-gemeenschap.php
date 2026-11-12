@@ -439,13 +439,31 @@ add_action(
 		}
 		if ( function_exists( 'bp_is_group' ) && bp_is_group() ) {
 			$groep = groups_get_current_group();
+			// Het nieuws van de werkgroep: de berichten met de tag van de groep (dg-berichten.php).
+			if ( $groep && defined( 'DG_BER_TAG' ) ) {
+				bp_core_new_subnav_item(
+					array(
+						'name'            => 'Nieuws',
+						'slug'            => 'nieuws',
+						'parent_slug'     => $groep->slug,
+						'parent_url'      => bp_get_group_url( $groep ),
+						'position'        => 34,
+						'user_has_access' => true,
+						'screen_function' => static function () use ( $groep ) {
+							wp_safe_redirect( home_url( '/nieuws/tag/werkgroep-' . $groep->slug . '/' ) );
+							exit;
+						},
+					),
+					'groups'
+				);
+			}
 			if ( $groep && ( groups_is_user_member( get_current_user_id(), $groep->id ) || current_user_can( 'manage_options' ) ) ) {
 				bp_core_new_subnav_item(
 					array(
 						'name'            => 'Documenten',
 						'slug'            => 'documenten',
 						'parent_slug'     => $groep->slug,
-						'parent_url'      => bp_get_group_permalink( $groep ),
+						'parent_url'      => bp_get_group_url( $groep ),
 						'position'        => 35,
 						'user_has_access' => true,
 						'screen_function' => static function () use ( $groep ) {
@@ -461,7 +479,7 @@ add_action(
 						'name'            => 'Chat',
 						'slug'            => 'chat',
 						'parent_slug'     => $groep->slug,
-						'parent_url'      => bp_get_group_permalink( $groep ),
+						'parent_url'      => bp_get_group_url( $groep ),
 						'position'        => 36,
 						'user_has_access' => true,
 						'screen_function' => static function () use ( $groep ) {
