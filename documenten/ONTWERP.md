@@ -121,7 +121,11 @@ bewust niet: dat is openbaar maken, en vraagt een eigen besluit.
 
 - Browser: OIDC bij Keycloak (client `documenten`), code flow met PKCE. Inloggen
   via het publieke adres, tokens en sleutels rechtstreeks bij Keycloak
-  (zoals oauth2-proxy). De groepen komen bij elke login mee.
+  (zoals oauth2-proxy). De groepen komen bij elke login mee, en worden daarna
+  bij elk verzoek in Keycloak nagekeken (hooguit een minuut oud; client
+  `redmine-sync`, zie `groepen.go`). Een nieuwe of afgenomen rol telt dus
+  zonder opnieuw in te loggen; een geblokkeerd account is meteen uitgelogd.
+  Is Keycloak even weg, dan gelden de groepen die er al waren.
 - WebDAV (fase 2): app-wachtwoorden, in de browser aan te maken.
 
 ## Grenzen
@@ -144,8 +148,8 @@ bewust niet: dat is openbaar maken, en vraagt een eigen besluit.
 - `/dav/<ruimte>/<pad>`: de ruimtes, mappen en documenten als bestandssysteem
   (`internal/webdav`, overgenomen uit `golang.org/x/net/webdav`). Inloggen met
   Basic: e-mailadres + app-wachtwoord (tabel `app_wachtwoord`, alleen de
-  SHA-256). De groepen komen uit `persoon.groepen`, bijgewerkt bij elke login
-  in de browser.
+  SHA-256). De groepen komen live uit Keycloak, zoals in de browser
+  (`persoon.groepen` als laatst bekende stand).
 - `/o/<sleutel>/<naam>`: één document, met een tijdelijke link (tabel
   `open_link`, tien uur). De knoppen *Openen in Word / LibreOffice* starten
   het programma met `ms-word:ofe|u|<link>` of

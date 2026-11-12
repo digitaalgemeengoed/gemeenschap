@@ -45,6 +45,9 @@ func (a *App) davRoutes(mux *http.ServeMux) {
 			return
 		}
 		l, err := a.Reg.OpenLinkVan(r.Context(), sleutel)
+		if err == nil && !a.actueel(r.Context(), l.Sessie) {
+			err = errNietGevonden
+		}
 		if err != nil {
 			http.Error(w, "Deze link is verlopen. Open het document opnieuw vanuit Documenten.", http.StatusNotFound)
 			return
@@ -71,6 +74,9 @@ func (a *App) davMetWachtwoord(h http.Handler) http.Handler {
 				log.Printf("dav inloggen: %v", err)
 				http.Error(w, "Er ging iets mis.", http.StatusInternalServerError)
 				return
+			}
+			if s != nil && !a.actueel(r.Context(), s) {
+				s = nil // geblokkeerd of verwijderd
 			}
 		}
 		if s == nil {

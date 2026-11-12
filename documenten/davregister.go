@@ -147,7 +147,7 @@ func (r *Register) AppWachtwoordWeg(ctx context.Context, email string, id int64)
 }
 
 // MetAppWachtwoord: wie hoort bij dit e-mailadres en wachtwoord? Met de
-// groepen van de laatste keer dat hij in de browser inlogde.
+// laatst bekende groepen; actueel (groepen.go) kijkt ze daarna na.
 func (r *Register) MetAppWachtwoord(ctx context.Context, email, ww string) (*Sessie, error) {
 	email = strings.ToLower(strings.TrimSpace(email))
 	var id int64

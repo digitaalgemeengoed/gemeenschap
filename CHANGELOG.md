@@ -2,6 +2,10 @@
 
 ## Nog niet uitgebracht
 
+- Documenten: **je rollen worden bij elk verzoek in Keycloak nagekeken** (hooguit een minuut oud), niet meer alleen bij het inloggen. Krijg je een rol (beheer, kerngroep, member), dan zie je bijvoorbeeld *Mijn documenten* of de ruimte van de coöperatie zonder opnieuw in te loggen; raak je een rol kwijt, dan verlies je de toegang binnen een minuut in plaats van pas als de sessie na acht uur verloopt. Een geblokkeerd account is meteen uitgelogd, ook op de netwerkschijf en in de links voor Word en LibreOffice. Is Keycloak even niet bereikbaar, dan gelden de rollen die er al waren.
+
+## 0.12.2 — 2026-11-12
+
 - Site: **na het inloggen terug naar de pagina waar je op *Aanmelden* klikte**, in plaats van naar het dashboard van WordPress (`wp-admin`). Dat gebeurde bij iedereen met de rol beheer (`/site/beheer`). Wie zelf naar `/wp-admin/` gaat, komt daar na het inloggen nog steeds uit.
 
 ## 0.12.1 — 2026-11-11

@@ -36,7 +36,8 @@ type App struct {
 	Projecten         string     // publieke URL van Redmine, voor links
 	Berichten         *WordPress // nil: geen berichten bij delen en geen werkgroepen
 	QuotumPersoonlijk int64
-	Keycloak          *KeycloakBeheer // wie in de kerngroep zit (voor de persoonlijke ruimtes)
+	Keycloak          *KeycloakBeheer // de kerngroep, en de groepen van wie inlogt (groepen.go)
+	groepen           groepenCache
 	sjablonen         map[string]*template.Template
 }
 
@@ -352,6 +353,10 @@ func (a *App) metSessie(h func(http.ResponseWriter, *http.Request, *Sessie)) htt
 			if err != nil && !errors.Is(err, errNietGevonden) {
 				a.interneFout(w, r, nil, err)
 				return
+			}
+			if s != nil && !a.actueel(r.Context(), s) {
+				a.Reg.EindSessie(r.Context(), c.Value) // geblokkeerd of verwijderd
+				s = nil
 			}
 		}
 		if s == nil {

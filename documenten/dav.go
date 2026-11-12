@@ -8,8 +8,8 @@ package main
 //	/o/<sleutel>/<naam>      één document, met een tijdelijke link (openen in Word)
 //
 // Inloggen op /dav/ met je e-mailadres en een app-wachtwoord (Basic, alleen
-// over https). De rechten zijn dezelfde als in de browser, met de groepen van
-// je laatste login daar.
+// over https). De rechten zijn dezelfde als in de browser, met je groepen live
+// uit Keycloak (groepen.go).
 //
 // Opslaan maakt een nieuwe versie. Slaat dezelfde persoon binnen tien minuten
 // opnieuw op, dan vervangt dat de laatste versie (Word en LibreOffice slaan
