@@ -138,7 +138,9 @@ add_action(
 		if ( (int) get_option( 'dg_ber_db' ) !== DG_BER_DB_VERSIE ) {
 			dg_ber_installeer();
 		}
-		if ( (int) get_option( 'dg_ber_versie' ) !== DG_BER_VERSIE ) {
+		// Ook als de adressen er (weer) niet zijn, bijvoorbeeld na een wp rewrite flush zonder deze plugin.
+		$regels = get_option( 'rewrite_rules' );
+		if ( (int) get_option( 'dg_ber_versie' ) !== DG_BER_VERSIE || ( is_array( $regels ) && ! isset( $regels['nieuws/?$'] ) ) ) {
 			update_option( 'dg_ber_versie', DG_BER_VERSIE );
 			add_action( 'wp_loaded', static fn() => flush_rewrite_rules( false ) );
 		}

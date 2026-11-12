@@ -215,6 +215,11 @@ services:
       - ./wordpress/dg-inhoud.php:/var/www/html/wp-content/mu-plugins/dg-inhoud.php:ro
       - ./wordpress/dg-dashboard.php:/var/www/html/wp-content/mu-plugins/dg-dashboard.php:ro
       - ./wordpress/dg-crowdfunding.php:/var/www/html/wp-content/mu-plugins/dg-crowdfunding.php:ro
+      # Alle plugins van de site, ook hier: anders kent wp-cli hun adressen niet
+      # (wp rewrite flush gooit /nieuws/ dan weg) en hun tabellen niet.
+      - ./wordpress/dg-projectvoorstel.php:/var/www/html/wp-content/mu-plugins/dg-projectvoorstel.php:ro
+      - ./wordpress/dg-uitnodigen.php:/var/www/html/wp-content/mu-plugins/dg-uitnodigen.php:ro
+      - ./wordpress/dg-berichten.php:/var/www/html/wp-content/mu-plugins/dg-berichten.php:ro
       - ./wordpress/thema/digitaalgemeengoed:/var/www/html/wp-content/themes/digitaalgemeengoed:ro
       - ./wordpress/inrichten.sh:/usr/local/bin/dg-inrichten:ro
       # Dezelfde PHP-instellingen als de site; CiviCRM heeft meer dan 128 MB nodig.
