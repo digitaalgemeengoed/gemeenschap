@@ -2,6 +2,8 @@
 
 ## Nog niet uitgebracht
 
+## 0.18.1 — 2026-11-12
+
 - Server: wp-cli laadt nu alle plugins van de site (ook berichten, uitnodigen en projectvoorstellen). Zonder dat haalde `wp rewrite flush` (ook bij bijwerken) het adres `/nieuws/` weg. De nieuwsplugin zet zijn adressen ook zelf terug als ze ontbreken.
 
 ## 0.18.0 — 2026-11-12
