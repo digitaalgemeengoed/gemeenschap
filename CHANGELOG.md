@@ -2,6 +2,8 @@
 
 ## Nog niet uitgebracht
 
+## 0.16.0 — 2026-11-12
+
 **Collega's uitnodigen** (boven de lijst op de *Leden*-pagina).
 - Ieder lid kan collega's uitnodigen: een of meer e-mailadressen (hooguit 5 tegelijk) en een persoonlijk bericht. De site stuurt één mail namens jou (met je naam en organisatie; antwoorden gaat naar jou), met een link naar het aanmeldformulier. Er wordt vooraf geen account aangemaakt.
 - Grenzen: hooguit 10 uitnodigingen per dag per lid; hetzelfde adres niet opnieuw binnen 30 dagen; wie al lid is, krijgt niets.
