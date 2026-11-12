@@ -6,7 +6,9 @@
 <p>Met WebDAV zie je Documenten als een gewone schijf in Verkenner, Finder of je bestandsbeheer, en open en bewaar je bestanden rechtstreeks. Elke keer opslaan wordt een versie. Je ziet dezelfde ruimtes en mappen als hier, met dezelfde rechten.</p>
 
 <dl class="feiten groot">
-  <dt>Adres</dt><dd><code id="adres">{{$k.Adres}}</code> <button type="button" class="licht klein" data-kopieer-tekst="adres">Kopiëren</button></dd>
+  <dt>Adres</dt><dd><code id="adres">{{$k.Adres}}</code> <button type="button" class="licht klein" data-kopieer-tekst="adres">Kopiëren</button>
+    <br><span class="zacht klein">Hier zie je al je ruimtes als mappen. Zet bestanden in een van die mappen; in de bovenste map zelf kan niets staan.</span></dd>
+  {{if $k.AdresMijn}}<dt>Of alleen Mijn documenten</dt><dd><code id="adresmijn">{{$k.AdresMijn}}</code> <button type="button" class="licht klein" data-kopieer-tekst="adresmijn">Kopiëren</button></dd>{{end}}
   <dt>Gebruikersnaam</dt><dd><code>{{$k.Email}}</code></dd>
   <dt>Wachtwoord</dt><dd>een app-wachtwoord (hieronder), niet je gewone wachtwoord</dd>
 </dl>

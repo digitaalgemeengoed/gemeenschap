@@ -3,6 +3,9 @@
 ## Nog niet uitgebracht
 
 - Documenten: **je rollen worden bij elk verzoek in Keycloak nagekeken** (hooguit een minuut oud), niet meer alleen bij het inloggen. Krijg je een rol (beheer, kerngroep, member), dan zie je bijvoorbeeld *Mijn documenten* of de ruimte van de coöperatie zonder opnieuw in te loggen; raak je een rol kwijt, dan verlies je de toegang binnen een minuut in plaats van pas als de sessie na acht uur verloopt. Een geblokkeerd account is meteen uitgelogd, ook op de netwerkschijf en in de links voor Word en LibreOffice. Is Keycloak even niet bereikbaar, dan gelden de rollen die er al waren.
+- Documenten, netwerkschijf: **je eigen ruimte heet nu *Mijn documenten*** (was `mijn-` met tien tekens; dat adres blijft werken) en wordt aangemaakt zodra je de schijf opent, als je er recht op hebt. Je hoeft dus niet eerst in de browser op *Mijn documenten* te klikken.
+- Documenten, netwerkschijf: **duidelijkere fouten.** Iets in de bovenste map zetten (daar staan alleen de ruimtes) gaf *Conflict*; nu *Toegang geweigerd* (403). Ook ergens zonder schrijfrecht geeft nu 403 (was *Not Found*), en een volle ruimte of een te groot bestand *Insufficient Storage* (507, was *Method Not Allowed*).
+- Documenten, *Netwerkschijf koppelen*: uitleg dat het adres al je ruimtes als mappen toont, en een tweede adres dat rechtstreeks naar *Mijn documenten* gaat.
 
 ## 0.12.2 — 2026-11-12
 

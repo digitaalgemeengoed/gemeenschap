@@ -150,6 +150,13 @@ bewust niet: dat is openbaar maken, en vraagt een eigen besluit.
   Basic: e-mailadres + app-wachtwoord (tabel `app_wachtwoord`, alleen de
   SHA-256). De groepen komen live uit Keycloak, zoals in de browser
   (`persoon.groepen` als laatst bekende stand).
+- `/dav/` zelf toont alleen de ruimtes, als mappen met de sleutel als naam
+  (die blijft gelijk als een project van naam verandert). Uitzondering: je
+  eigen persoonlijke ruimte heet `Mijn documenten` (de sleutel `mijn-…`
+  werkt ook) en wordt bij het openen van de schijf aangemaakt als je er recht
+  op hebt. Iets neerzetten in `/dav/` zelf geeft 403.
+- Foutcodes (aanpassing in `internal/webdav`, zie HERKOMST.md): geen toegang
+  is 403, een ongeldige naam 400, vol of te groot 507.
 - `/o/<sleutel>/<naam>`: één document, met een tijdelijke link (tabel
   `open_link`, tien uur). De knoppen *Openen in Word / LibreOffice* starten
   het programma met `ms-word:ofe|u|<link>` of

@@ -270,6 +270,12 @@ func (h *Handler) handlePut(w http.ResponseWriter, r *http.Request) (status int,
 		if os.IsNotExist(err) {
 			return http.StatusConflict, err
 		}
+		if errors.Is(err, os.ErrPermission) { // Documenten: geen toegang
+			return http.StatusForbidden, err
+		}
+		if errors.Is(err, os.ErrInvalid) { // Documenten: ongeldige naam
+			return http.StatusBadRequest, err
+		}
 		return http.StatusNotFound, err
 	}
 	_, copyErr := io.Copy(f, r.Body)
@@ -277,12 +283,18 @@ func (h *Handler) handlePut(w http.ResponseWriter, r *http.Request) (status int,
 	closeErr := f.Close()
 	// TODO(rost): Returning 405 Method Not Allowed might not be appropriate.
 	if copyErr != nil {
+		if errors.Is(copyErr, ErrInsufficientStorage) { // Documenten: te groot
+			return http.StatusInsufficientStorage, copyErr
+		}
 		return http.StatusMethodNotAllowed, copyErr
 	}
 	if statErr != nil {
 		return http.StatusMethodNotAllowed, statErr
 	}
 	if closeErr != nil {
+		if errors.Is(closeErr, ErrInsufficientStorage) { // Documenten: vol of te groot
+			return http.StatusInsufficientStorage, closeErr
+		}
 		return http.StatusMethodNotAllowed, closeErr
 	}
 	etag, err := findETag(ctx, h.FileSystem, h.LockSystem, reqPath, fi)
@@ -312,6 +324,9 @@ func (h *Handler) handleMkcol(w http.ResponseWriter, r *http.Request) (status in
 	if err := h.FileSystem.Mkdir(ctx, reqPath, 0777); err != nil {
 		if os.IsNotExist(err) {
 			return http.StatusConflict, err
+		}
+		if errors.Is(err, os.ErrPermission) { // Documenten: geen toegang
+			return http.StatusForbidden, err
 		}
 		return http.StatusMethodNotAllowed, err
 	}
@@ -637,6 +652,10 @@ func makePropstatResponse(href string, pstats []Propstat) *response {
 	}
 	return &resp
 }
+
+// ErrInsufficientStorage: een FileSystem kan hiermee laten weten dat iets niet
+// past (Documenten: quotum of maximale grootte). PUT geeft dan 507.
+var ErrInsufficientStorage = errors.New("webdav: insufficient storage")
 
 func handlePropfindError(err error, info os.FileInfo) error {
 	var skipResp error = nil

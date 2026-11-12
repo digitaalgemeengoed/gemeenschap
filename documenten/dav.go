@@ -3,7 +3,8 @@ package main
 // WebDAV: dezelfde ruimtes, mappen en documenten als in de browser, voor
 // Verkenner, Finder, Word, LibreOffice, Cyberduck en rclone.
 //
-//	/dav/                    de ruimtes die je ziet
+//	/dav/                    de ruimtes die je ziet (alleen lezen)
+//	/dav/Mijn documenten/    je eigen ruimte (zo nodig aangemaakt)
 //	/dav/<ruimte>/<pad>      mappen en documenten
 //	/o/<sleutel>/<naam>      één document, met een tijdelijke link (openen in Word)
 //
@@ -46,7 +47,13 @@ type davVerzoek struct {
 	s      *Sessie
 	booms  map[int64]*Boom
 	alleen *OpenLink // bij een tijdelijke link: alleen dit document
+
+	eigen        *Ruimte // Mijn documenten (nil: geen)
+	eigenGezocht bool
 }
+
+// mijnNaam: zo heet je eigen ruimte in WebDAV (de sleutel mijn-… werkt ook).
+const mijnNaam = "Mijn documenten"
 
 func davVan(ctx context.Context) *davVerzoek {
 	v, _ := ctx.Value(davSleutel{}).(*davVerzoek)
@@ -219,6 +226,54 @@ func (fs *DavFS) boom(ctx context.Context, rm *Ruimte) (*Boom, error) {
 // vergeet: na een wijziging de boom opnieuw laden.
 func (fs *DavFS) vergeet(ctx context.Context, rm *Ruimte) { delete(davVan(ctx).booms, rm.ID) }
 
+// eigen: de persoonlijke ruimte van wie er is, aangemaakt als hij er recht op
+// heeft (zoals bij de eerste klik op Mijn documenten in de browser). Nil: geen.
+func (fs *DavFS) eigen(ctx context.Context) (*Ruimte, error) {
+	v := davVan(ctx)
+	if v.eigenGezocht {
+		return v.eigen, nil
+	}
+	rm, err := fs.a.Reg.eigenRuimte(ctx, v.s.Email)
+	if err != nil {
+		return nil, err
+	}
+	if rm == nil || rm.Status == "weg" {
+		mag, err := fs.a.magPersoonlijk(ctx, v.s)
+		if err != nil {
+			return nil, err
+		}
+		rm = nil
+		if mag {
+			if rm, err = fs.a.Reg.PersoonlijkeRuimte(ctx, v.s.Email, fs.a.QuotumPersoonlijk); err != nil {
+				return nil, err
+			}
+		}
+	}
+	v.eigen, v.eigenGezocht = rm, true
+	return rm, nil
+}
+
+// isEigen: is dit de persoonlijke ruimte van wie er is?
+func isEigen(rm *Ruimte, s *Sessie) bool {
+	return rm != nil && rm.Soort == "persoonlijk" && strings.EqualFold(rm.Eigenaar.String, s.Email)
+}
+
+// ruimteVan: het eerste deel van een pad; "Mijn documenten" is je eigen ruimte.
+func (fs *DavFS) ruimteVan(ctx context.Context, naam string) (*Ruimte, error) {
+	if strings.EqualFold(naam, mijnNaam) {
+		rm, err := fs.eigen(ctx)
+		if err == nil && rm == nil {
+			err = os.ErrNotExist
+		}
+		return rm, err
+	}
+	rm, err := fs.a.Reg.Ruimte(ctx, naam)
+	if errors.Is(err, errNietGevonden) {
+		return nil, os.ErrNotExist
+	}
+	return rm, err
+}
+
 func delenVan(naam string) []string {
 	naam = strings.Trim(path.Clean("/"+naam), "/")
 	if naam == "" {
@@ -238,10 +293,7 @@ func (fs *DavFS) zoek(ctx context.Context, naam string) (*plek, error) {
 	if len(d) == 0 {
 		return &plek{bestaat: true}, nil
 	}
-	rm, err := fs.a.Reg.Ruimte(ctx, d[0])
-	if errors.Is(err, errNietGevonden) {
-		return nil, os.ErrNotExist
-	}
+	rm, err := fs.ruimteVan(ctx, d[0])
 	if err != nil {
 		return nil, err
 	}
@@ -279,6 +331,9 @@ func (fs *DavFS) zoek(ctx context.Context, naam string) (*plek, error) {
 	}
 	if len(d) == 1 {
 		p.naam = rm.Sleutel
+		if strings.EqualFold(d[0], mijnNaam) {
+			p.naam = mijnNaam
+		}
 	}
 	return p, nil
 }
@@ -309,6 +364,16 @@ func (fs *DavFS) zoekAlleen(ctx context.Context, d []string) (*plek, error) {
 		return p, nil
 	}
 	return nil, os.ErrPermission
+}
+
+// inDeLijst: in /dav/ zelf staan alleen de ruimtes. Iets neerzetten dat geen
+// ruimte is, is "geen toegang" (403), niet "bestaat niet" (409 Conflict, wat
+// een bestandsbeheer als onbegrijpelijke fout toont).
+func inDeLijst(naam string, err error) error {
+	if errors.Is(err, os.ErrNotExist) && len(delenVan(naam)) == 1 {
+		return os.ErrPermission
+	}
+	return err
 }
 
 func (p *plek) isMap() bool {
@@ -357,7 +422,7 @@ func itemInfo(x *Item, reg *Register, ruimte int64) *davInfo {
 func (fs *DavFS) Mkdir(ctx context.Context, naam string, _ os.FileMode) error {
 	p, err := fs.zoek(ctx, naam)
 	if err != nil {
-		return err
+		return inDeLijst(naam, err)
 	}
 	if p.bestaat {
 		return os.ErrExist
@@ -381,12 +446,15 @@ func (fs *DavFS) Mkdir(ctx context.Context, naam string, _ os.FileMode) error {
 }
 
 func (fs *DavFS) OpenFile(ctx context.Context, naam string, flag int, _ os.FileMode) (webdav.File, error) {
-	p, err := fs.zoek(ctx, naam)
-	if err != nil {
-		return nil, err
-	}
 	// PROPPATCH opent met alleen O_RDWR: dat is geen schrijven van inhoud.
 	schrijven := flag&(os.O_WRONLY|os.O_CREATE|os.O_TRUNC) != 0
+	p, err := fs.zoek(ctx, naam)
+	if err != nil {
+		if schrijven {
+			return nil, inDeLijst(naam, err)
+		}
+		return nil, err
+	}
 	if !schrijven {
 		if !p.bestaat {
 			return nil, os.ErrNotExist
@@ -478,6 +546,9 @@ func (fs *DavFS) openMap(ctx context.Context, p *plek) (webdav.File, error) {
 			m.kinderen = append(m.kinderen, itemInfo(x, fs.a.Reg, rm.ID))
 		}
 	case p.rm == nil:
+		if _, err := fs.eigen(ctx); err != nil { // zo nodig aanmaken
+			return nil, err
+		}
 		alle, err := fs.a.Reg.Ruimtes(ctx)
 		if err != nil {
 			return nil, err
@@ -488,7 +559,11 @@ func (fs *DavFS) openMap(ctx context.Context, p *plek) (webdav.File, error) {
 				return nil, err
 			}
 			if b.Zichtbaar(0) {
-				m.kinderen = append(m.kinderen, &davInfo{naam: alle[i].Sleutel, map_: true, tijd: time.Now()})
+				naam := alle[i].Sleutel
+				if isEigen(&alle[i], v.s) {
+					naam = mijnNaam
+				}
+				m.kinderen = append(m.kinderen, &davInfo{naam: naam, map_: true, tijd: time.Now()})
 			}
 		}
 	default:
@@ -810,20 +885,32 @@ func (w *davSchrijver) Write(p []byte) (int, error) {
 	w.n += int64(len(p))
 	if w.max > 0 && w.n > w.max {
 		w.fout = errTeGroot
-		return 0, errTeGroot
+		return 0, pastNiet(errTeGroot)
 	}
 	w.h.h.Write(p)
 	if w.geheugen {
 		if w.buf.Len()+len(p) > 1<<20 {
 			w.fout = errTeGroot
-			return 0, errTeGroot
+			return 0, pastNiet(errTeGroot)
 		}
 		return w.buf.Write(p)
 	}
 	return w.tmp.Write(p)
 }
 
+// pastNiet: vol of te groot wordt 507 (Insufficient Storage), niet 405.
+func pastNiet(err error) error {
+	if errors.Is(err, errVol) || errors.Is(err, errTeGroot) {
+		return fmt.Errorf("%w: %w", webdav.ErrInsufficientStorage, err)
+	}
+	return err
+}
+
 func (w *davSchrijver) Close() error {
+	return pastNiet(w.sluit())
+}
+
+func (w *davSchrijver) sluit() error {
 	if w.tmp != nil {
 		defer os.Remove(w.tmp.Name())
 		defer w.tmp.Close()

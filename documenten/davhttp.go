@@ -96,6 +96,7 @@ var eenmalig sync.Map
 
 type Koppelen struct {
 	Adres     string
+	AdresMijn string // rechtstreeks naar Mijn documenten (leeg: geen)
 	Email     string
 	Lijst     []AppWachtwoord
 	Nieuw     string // het nieuwe wachtwoord, één keer getoond
@@ -104,6 +105,9 @@ type Koppelen struct {
 
 func (a *App) koppelen(w http.ResponseWriter, r *http.Request, s *Sessie) {
 	k := &Koppelen{Adres: a.Basis + "/dav/", Email: s.Email}
+	if mag, err := a.magPersoonlijk(r.Context(), s); err == nil && mag {
+		k.AdresMijn = a.Basis + "/dav/" + url.PathEscape(mijnNaam) + "/"
+	}
 	if r.Method == http.MethodPost {
 		if !a.csrfGoed(r, s) {
 			a.fout(w, r, s, http.StatusForbidden, "Verlopen formulier. Ververs de pagina en probeer het opnieuw.")
