@@ -2,6 +2,8 @@
 
 ## Nog niet uitgebracht
 
+## 0.13.0 — 2026-11-12
+
 **Start een project: ieder lid kan een project voorstellen** (`/projecten/project-starten/`, ook in het menu onder *Projecten*).
 - Het formulier (naam, doel, aanleiding, wie meedoen, eerste stap, mapnaam) maakt een **voorstel in Redmine**: een issue in het nieuwe, besloten project *Projectvoorstellen*, toegewezen aan de groep *Netwerk: Kerngroep*. WordPress bewaart niets; Redmine is de bron.
 - WordPress praat met Redmine als het nieuwe account **site**, zonder beheerrechten (alleen voorstellen indienen en lezen). De sleutel `REDMINE_SITE_API_KEY` komt vanzelf in `.env`.
@@ -11,6 +13,7 @@
 - **Taken** in het menu van het dashboard en op je profiel: wat in Redmine aan jou of aan een van je groepen is toegewezen en nog open staat (zoals de voorstellen voor de kerngroep).
 - Nog niet automatisch: een forum (*Algemeen*) in het nieuwe project; dat kan de projectleider zelf aanmaken.
 
+**Documenten**
 - Documenten: **je rollen worden bij elk verzoek in Keycloak nagekeken** (hooguit een minuut oud), niet meer alleen bij het inloggen. Krijg je een rol (beheer, kerngroep, member), dan zie je bijvoorbeeld *Mijn documenten* of de ruimte van de coöperatie zonder opnieuw in te loggen; raak je een rol kwijt, dan verlies je de toegang binnen een minuut in plaats van pas als de sessie na acht uur verloopt. Een geblokkeerd account is meteen uitgelogd, ook op de netwerkschijf en in de links voor Word en LibreOffice. Is Keycloak even niet bereikbaar, dan gelden de rollen die er al waren.
 - Documenten, netwerkschijf: **je eigen ruimte heet nu *Mijn documenten*** (was `mijn-` met tien tekens; dat adres blijft werken) en wordt aangemaakt zodra je de schijf opent, als je er recht op hebt. Je hoeft dus niet eerst in de browser op *Mijn documenten* te klikken.
 - Documenten, netwerkschijf: **duidelijkere fouten.** Iets in de bovenste map zetten (daar staan alleen de ruimtes) gaf *Conflict*; nu *Toegang geweigerd* (403). Ook ergens zonder schrijfrecht geeft nu 403 (was *Not Found*), en een volle ruimte of een te groot bestand *Insufficient Storage* (507, was *Method Not Allowed*).
