@@ -166,6 +166,7 @@ function dg_db_navigatie( WP_User $gebruiker ): string {
 		array( 'forum', 'Discussies & fora', dg_db_forum_url(), 0 ),
 		array( 'boek', 'Kennis- & ervaringsbank', dg_db_kennisbank(), 0 ),
 		array( 'document', 'Documenten', dg_documenten_url(), 0 ),
+		array( 'taken', 'Taken', function_exists( 'dg_pv_taken_url' ) ? dg_pv_taken_url() : home_url( '/' ), 0 ),
 		array( 'lagen', 'Projecten', home_url( '/projecten/' ), 0 ),
 		array( 'hand', 'Samenwerkingen', home_url( '/samenwerkingen/' ), 0 ),
 		array( 'kalender', 'Evenementen', dg_db_evenementen_url(), 0 ),

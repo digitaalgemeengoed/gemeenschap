@@ -2,6 +2,15 @@
 
 ## Nog niet uitgebracht
 
+**Start een project: ieder lid kan een project voorstellen** (`/projecten/project-starten/`, ook in het menu onder *Projecten*).
+- Het formulier (naam, doel, aanleiding, wie meedoen, eerste stap, mapnaam) maakt een **voorstel in Redmine**: een issue in het nieuwe, besloten project *Projectvoorstellen*, toegewezen aan de groep *Netwerk: Kerngroep*. WordPress bewaart niets; Redmine is de bron.
+- WordPress praat met Redmine als het nieuwe account **site**, zonder beheerrechten (alleen voorstellen indienen en lezen). De sleutel `REDMINE_SITE_API_KEY` komt vanzelf in `.env`.
+- **De mapnaam ligt vast** zodra het project start; dat staat duidelijk bij het formulier en moet je aanvinken. Het formulier controleert of de naam vrij is (geen bestaand project, geen open voorstel, geen naam die het platform zelf gebruikt).
+- De kerngroep zet een voorstel op *In bespreking*, *Goedgekeurd* of *Afgewezen*. **Goedgekeurd wordt binnen vijf minuten een project** (`redmine-groepen`, nu elke 5 in plaats van 10 minuten): met de mapnaam als adres, de netwerkgroepen zoals bij de andere projecten, fase *Verkenning*, en de indiener als **projectleider** (nieuwe rol). Documenten maakt de ruimte. Het voorstel gaat op *Gestart*, met de links in een reactie. Is de mapnaam intussen bezet, dan gaat het terug naar *In bespreking*.
+- De indiener volgt zijn voorstel en krijgt de reacties per mail. Heeft hij nog geen account in Redmine, dan wordt dat aangemaakt (naam uit Keycloak); bij zijn eerste login wordt het op e-mailadres gekoppeld.
+- **Taken** in het menu van het dashboard en op je profiel: wat in Redmine aan jou of aan een van je groepen is toegewezen en nog open staat (zoals de voorstellen voor de kerngroep).
+- Nog niet automatisch: een forum (*Algemeen*) in het nieuwe project; dat kan de projectleider zelf aanmaken.
+
 - Documenten: **je rollen worden bij elk verzoek in Keycloak nagekeken** (hooguit een minuut oud), niet meer alleen bij het inloggen. Krijg je een rol (beheer, kerngroep, member), dan zie je bijvoorbeeld *Mijn documenten* of de ruimte van de coöperatie zonder opnieuw in te loggen; raak je een rol kwijt, dan verlies je de toegang binnen een minuut in plaats van pas als de sessie na acht uur verloopt. Een geblokkeerd account is meteen uitgelogd, ook op de netwerkschijf en in de links voor Word en LibreOffice. Is Keycloak even niet bereikbaar, dan gelden de rollen die er al waren.
 - Documenten, netwerkschijf: **je eigen ruimte heet nu *Mijn documenten*** (was `mijn-` met tien tekens; dat adres blijft werken) en wordt aangemaakt zodra je de schijf opent, als je er recht op hebt. Je hoeft dus niet eerst in de browser op *Mijn documenten* te klikken.
 - Documenten, netwerkschijf: **duidelijkere fouten.** Iets in de bovenste map zetten (daar staan alleen de ruimtes) gaf *Conflict*; nu *Toegang geweigerd* (403). Ook ergens zonder schrijfrecht geeft nu 403 (was *Not Found*), en een volle ruimte of een te groot bestand *Insufficient Storage* (507, was *Method Not Allowed*).

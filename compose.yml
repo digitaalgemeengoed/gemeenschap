@@ -44,6 +44,8 @@ x-wordpress-omgeving: &wordpress-omgeving
   # Redmine voor het dashboard (dg-dashboard.php): intern voor de API, publiek voor links.
   DG_REDMINE_INTERN: http://redmine:3000
   DG_REDMINE_URL: https://projecten.${DOMEIN}
+  # Projectvoorstellen (dg-projectvoorstel.php): het account "site" in Redmine, geen beheerder.
+  DG_REDMINE_SITE_KEY: ${REDMINE_SITE_API_KEY:?}
   # Inloggen via Keycloak (gelezen door wp-content/mu-plugins/dg-gemeenschap.php).
   DG_KEYCLOAK_URL: https://aanmelden.${DOMEIN}
   DG_KEYCLOAK_INTERN: http://keycloak:8080
@@ -58,6 +60,7 @@ x-wordpress-mappen: &wordpress-mappen
   - ./wordpress/dg-inhoud.php:/var/www/html/wp-content/mu-plugins/dg-inhoud.php:ro
   - ./wordpress/dg-dashboard.php:/var/www/html/wp-content/mu-plugins/dg-dashboard.php:ro
   - ./wordpress/dg-crowdfunding.php:/var/www/html/wp-content/mu-plugins/dg-crowdfunding.php:ro
+  - ./wordpress/dg-projectvoorstel.php:/var/www/html/wp-content/mu-plugins/dg-projectvoorstel.php:ro
   - ./wordpress/thema/digitaalgemeengoed:/var/www/html/wp-content/themes/digitaalgemeengoed:ro
   - ./wordpress/php.ini:/usr/local/etc/php/conf.d/dg-gemeenschap.ini:ro
 
@@ -253,6 +256,7 @@ services:
       # Voor redmine/inrichten.rb:
       REDMINE_CLIENT_SECRET: ${REDMINE_CLIENT_SECRET:?}
       REDMINE_API_KEY: ${REDMINE_API_KEY:?}
+      REDMINE_SITE_API_KEY: ${REDMINE_SITE_API_KEY:?}
       REDMINE_ADMIN_WACHTWOORD: ${REDMINE_ADMIN_WACHTWOORD:?}
     volumes:
       - rmfiles:/usr/src/redmine/files
@@ -270,7 +274,9 @@ services:
       SYNC_CLIENT_SECRET: ${REDMINE_SYNC_SECRET:?}
       REDMINE_URL: http://redmine:3000
       REDMINE_API_KEY: ${REDMINE_API_KEY:?}
-      INTERVAL: "600"
+      DOCUMENTEN_URL: https://documenten.${DOMEIN}
+      # Ook projectvoorstellen: een goedgekeurd voorstel wordt binnen deze tijd een project.
+      INTERVAL: "300"
     volumes:
       - ./redmine/redmine_groepen.py:/opt/redmine_groepen.py:ro
     read_only: true

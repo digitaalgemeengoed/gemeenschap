@@ -2,7 +2,7 @@
 Theme Name: Digitaal GemeenGoed
 Template: buddyx
 Description: Het thema van digitaalgemeengoed.nl: BuddyX (voor BuddyPress en bbPress) met het logo, de kleuren en de opmaak van Digitaal GemeenGoed. Kleuren en voet staan vast in functions.php; de menu's komen uit inhoud/menu.md in de repo digitaalgemeengoed/gemeenschap.
-Version: 1.1.0
+Version: 1.1.1
 License: EUPL-1.2
 Text Domain: digitaalgemeengoed
 */
@@ -128,6 +128,7 @@ Text Domain: digitaalgemeengoed
 .dg-icoon-raket    { --dg-i: url("assets/iconen/raket.svg"); }
 .dg-icoon-plant    { --dg-i: url("assets/iconen/plant.svg"); }
 .dg-icoon-document { --dg-i: url("assets/iconen/document.svg"); }
+.dg-icoon-taken    { --dg-i: url("assets/iconen/taken.svg"); }
 .dg-icoon-mail     { --dg-i: url("assets/iconen/mail.svg"); }
 .dg-icoon-werkplek { --dg-i: url("assets/iconen/werkplek.svg"); }
 .dg-icoon-forum    { --dg-i: url("assets/iconen/forum.svg"); }
@@ -556,6 +557,22 @@ Text Domain: digitaalgemeengoed
 .entry-content .dg-cf-form .dg-cf-vink input { margin-top: .25rem; }
 .entry-content .dg-cf-form button { justify-self: start; border: 0; cursor: pointer; }
 .entry-content .dg-kaart-meer { margin-top: 1rem !important; font-size: .9rem; }
+
+/* Start een project ([dg_project_starten], dg-projectvoorstel.php). */
+.entry-content .dg-pv-form { display: grid; gap: .9rem; margin-top: 1rem; padding: 1.1rem 1.1rem 1.3rem; border: 1px solid var(--dg-rand); border-radius: 12px; background: var(--dg-ijs); }
+.entry-content .dg-pv-form label { display: grid; gap: .3rem; font-size: .9rem; font-weight: 600; color: var(--dg-marine); }
+.entry-content .dg-pv-form input[type=text], .entry-content .dg-pv-form textarea { width: 100%; box-sizing: border-box; padding: .55rem .7rem; border: 1px solid #c6d5e4; border-radius: 8px; background: #fff; font: inherit; font-weight: 400; color: var(--dg-tekst); }
+.entry-content .dg-pv-form textarea { resize: vertical; min-height: 5.5rem; }
+.entry-content .dg-pv-form input:focus-visible, .entry-content .dg-pv-form textarea:focus-visible { outline: 2px solid var(--dg-blauw); outline-offset: 1px; }
+.entry-content .dg-pv-vast { display: grid; gap: .55rem; padding: .9rem 1rem; border-left: 4px solid #d98e04; border-radius: 8px; background: #fff8e6; }
+.entry-content .dg-pv-vast p { margin: 0 !important; font-size: .88rem; color: var(--dg-tekst); }
+.entry-content .dg-pv-vast code { font-size: .85em; overflow-wrap: anywhere; }
+.entry-content .dg-pv-vast #dg-pv-mapnaam { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+.entry-content .dg-pv-regels { color: var(--dg-grijs) !important; }
+.entry-content .dg-pv-form .dg-cf-vink { display: flex; gap: .5rem; align-items: flex-start; font-weight: 400; color: var(--dg-tekst); }
+.entry-content .dg-pv-form .dg-cf-vink input { margin-top: .25rem; }
+.entry-content .dg-pv-form button { justify-self: start; border: 0; cursor: pointer; }
+.entry-content .dg-pv-stappen li { margin: .5rem 0; }
 
 /* Lijsten in een kader: vinkjes. */
 .entry-content .dg-kader ul { list-style: none; padding-left: 0; }

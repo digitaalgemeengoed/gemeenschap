@@ -62,6 +62,7 @@ else
     echo "REDMINE_SYNC_SECRET=$(geheim 32)"
     echo "REDMINE_SECRET_KEY_BASE=$(geheim 64)"
     echo "REDMINE_API_KEY=$(geheim 20)"
+    echo "REDMINE_SITE_API_KEY=$(geheim 20)"
     echo "REDMINE_ADMIN_WACHTWOORD=$(geheim 12)"
     echo "CIVICRM_VERSIE=6.20.0"
     echo "SMTP_HOST="

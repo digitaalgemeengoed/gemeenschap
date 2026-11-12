@@ -69,3 +69,9 @@ link: datafundament.md
 ## Meedoen in een project
 
 Meldingen, wensen en de planning van elk project staan in [Redmine](https://projecten.digitaalgemeengoed.nl). Je logt in met je account van de community. Wil je met je gemeente aansluiten bij een project, laat het weten in het forum *Besluitvorming*.
+
+## Zelf een project beginnen
+
+Heb je een idee voor een nieuw project? Ieder lid kan een project voorstellen; de kerngroep beoordeelt het.
+
+[[Start een project]](project-starten.md)

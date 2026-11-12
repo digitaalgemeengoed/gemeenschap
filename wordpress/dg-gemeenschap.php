@@ -359,6 +359,22 @@ add_action(
 					},
 				)
 			);
+			// Taken: wat in Redmine aan jou of aan een van je groepen is
+			// toegewezen (zoals een projectvoorstel voor de kerngroep).
+			if ( function_exists( 'dg_pv_taken_url' ) ) {
+				bp_core_new_nav_item(
+					array(
+						'name'                    => 'Taken',
+						'slug'                    => 'taken',
+						'position'                => 88,
+						'show_for_displayed_user' => false,
+						'screen_function'         => static function () {
+							wp_redirect( dg_pv_taken_url() );
+							exit;
+						},
+					)
+				);
+			}
 			// Beheer (beheer.<domein>): alleen voor de beheerders van het
 			// platform en de kerngroep. Alleen een link; de beheerdienst
 			// controleert zelf in Keycloak wie er binnenkomt.

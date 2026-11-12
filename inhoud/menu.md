@@ -25,6 +25,7 @@ punten met een link komen in de onderste regel.
   - [Anonimiseren bij de bron](anonimiseren.md)
   - [Open overheid](open-overheid.md)
   - [Datafundament](datafundament.md)
+  - [Start een project](project-starten.md)
 - [Community](meedoen.md)
   - [Meedoen](meedoen.md)
   - [Fora](/forum/)
