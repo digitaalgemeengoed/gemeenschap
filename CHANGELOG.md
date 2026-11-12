@@ -2,6 +2,8 @@
 
 ## Nog niet uitgebracht
 
+## 0.17.0 — 2026-11-12
+
 **Chat (Matrix)** op `chat.<domein>`, voor gesprekken tussen leden van verschillende gemeenten en organisaties.
 - **Synapse** (de chatserver, `matrix.<domein>`), **MAS** (het inloggen, `matrix-auth.<domein>`: alleen via je DGG-account in Keycloak) en **Element Web** (de chat in de browser). Op de telefoon: de app **Element X**. Gebruikers heten `@naam:<domein>`.
 - **Kamers vanzelf**: *Algemeen* (iedereen), *Coöperatie* (members en kerngroep), *Kerngroep*, en een kamer per werkgroep en per project. Documenten houdt bij wie erin hoort: wie lid wordt, krijgt een uitnodiging; wie eruit gaat, verdwijnt uit de kamer; wie zelf weggaat, wordt niet opnieuw uitgenodigd. Projectleiders en de kerngroep zijn moderator.
