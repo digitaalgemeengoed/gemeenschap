@@ -2,6 +2,8 @@
 
 ## Nog niet uitgebracht
 
+## 0.14.0 — 2026-11-12
+
 **Zoeken in Documenten**, met OpenSearch.
 - Een **zoekveld in de adresbalk** van de verkenner: zoekt in de map of ruimte waar je bent. De zoekpagina (`/zoeken`) heeft keuzes voor de ruimte (of alle ruimtes) en de soort: documenten, mappen, tekstdocumenten, pdf, rekenbladen of presentaties.
 - Doorzocht worden de naam, de titel, de trefwoorden, de omschrijving, de map en **de tekst zelf** van Word, Excel, PowerPoint, OpenDocument, pdf en gewone tekst. Met Nederlandse taalanalyse ("archiveren" vindt ook "archivering") en het begin van een naam ("notul" vindt "notulen"). De gevonden woorden zijn gemarkeerd, met een stukje tekst eromheen.
