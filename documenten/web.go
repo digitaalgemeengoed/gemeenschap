@@ -88,6 +88,13 @@ func (a *App) Routes() http.Handler {
 	mux.HandleFunc("GET /r/{ruimte}", a.metRuimte(a.toonMap))
 	mux.HandleFunc("GET /r/{ruimte}/m/{id}", a.metRuimte(a.toonMap))
 	mux.HandleFunc("GET /r/{ruimte}/toegang", a.metRuimte(a.toonMap))
+	mux.HandleFunc("GET /r/{ruimte}/info", a.metRuimte(a.toonMap))
+	mux.HandleFunc("GET /r/{ruimte}/delen", a.metRuimte(a.toonMap))
+	mux.HandleFunc("GET /r/{ruimte}/m/{id}/info", a.metRuimte(a.toonMap))
+	mux.HandleFunc("GET /r/{ruimte}/m/{id}/delen", a.metRuimte(a.toonMap))
+	mux.HandleFunc("GET /r/{ruimte}/d/{id}/versies", a.metRuimte(a.toonDocument))
+	mux.HandleFunc("GET /r/{ruimte}/d/{id}/delen", a.metRuimte(a.toonDocument))
+	mux.HandleFunc("POST /r/{ruimte}/plakken", a.metRuimte(a.plakken))
 	mux.HandleFunc("GET /r/{ruimte}/m/{id}/toegang", a.metRuimte(a.toonMap))
 	mux.HandleFunc("GET /r/{ruimte}/d/{id}", a.metRuimte(a.toonDocument))
 	mux.HandleFunc("GET /r/{ruimte}/d/{id}/toegang", a.metRuimte(a.toonDocument))
@@ -151,6 +158,40 @@ func datum(t time.Time) string {
 	return fmt.Sprintf("%d %s %d, %02d:%02d", t.Day(), maanden[t.Month()-1], t.Year(), t.Hour(), t.Minute())
 }
 
+// soortNaam: de soort van een bestand in gewone woorden.
+func soortNaam(mt, naam string) string {
+	ext := strings.ToLower(strings.TrimPrefix(path.Ext(naam), "."))
+	switch ext {
+	case "doc", "docx", "docm", "dotx":
+		return "Word-document (." + ext + ")"
+	case "xls", "xlsx", "xlsm":
+		return "Excel-rekenblad (." + ext + ")"
+	case "ppt", "pptx", "pptm":
+		return "PowerPoint-presentatie (." + ext + ")"
+	case "odt":
+		return "OpenDocument-tekst (.odt)"
+	case "ods":
+		return "OpenDocument-rekenblad (.ods)"
+	case "odp":
+		return "OpenDocument-presentatie (.odp)"
+	case "pdf":
+		return "Pdf"
+	case "md":
+		return "Markdown (.md)"
+	case "txt":
+		return "Tekst (.txt)"
+	case "csv":
+		return "Tabel (.csv)"
+	}
+	switch {
+	case strings.HasPrefix(mt, "image/"):
+		return "Afbeelding (" + strings.TrimPrefix(mt, "image/") + ")"
+	case ext != "":
+		return "." + ext + "-bestand"
+	}
+	return mt
+}
+
 func (a *App) laadSjablonen() {
 	functies := template.FuncMap{
 		"grootte": grootte,
@@ -171,6 +212,8 @@ func (a *App) laadSjablonen() {
 			}
 		},
 		"join":       strings.Join,
+		"bekijkbaar": bekijkbaar,
+		"soortNaam":  soortNaam,
 		"niveau":     niveauNaam,
 		"programmas": programmasVoor,
 		"procent": func(a, b int64) int64 {

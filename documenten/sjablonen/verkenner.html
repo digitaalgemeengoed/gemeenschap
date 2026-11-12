@@ -30,14 +30,14 @@
   {{else}}<span class="opdracht uit"><span class="i i-prullenbak" aria-hidden="true"></span>Verwijderen</span>{{end}}
   <span class="scheiding"></span>
   {{if $v.Link}}
-  <button type="button" class="opdracht" data-open="dlg-delen"><span class="i i-delen" aria-hidden="true"></span>Delen</button>
+  <a class="opdracht{{if eq $v.Paneel "delen"}} aan{{end}}" href="{{$v.TabURL "delen"}}"><span class="i i-delen" aria-hidden="true"></span>Delen</a>
   {{else}}<span class="opdracht uit"><span class="i i-delen" aria-hidden="true"></span>Delen</span>{{end}}
   {{if or $doel (not $v.Doorgang)}}
   <a class="opdracht{{if eq $v.Paneel "toegang"}} aan{{end}}" href="{{$v.ToegangURL}}"><span class="i i-persoon" aria-hidden="true"></span>Toegang</a>
   {{end}}
-  {{if $doel}}
-  <a class="opdracht{{if eq $v.Paneel "eigenschappen"}} aan{{end}}" href="/r/{{$rm.Sleutel}}/d/{{$doel.ID}}"><span class="i i-info" aria-hidden="true"></span>Eigenschappen</a>
-  {{else}}<span class="opdracht uit"><span class="i i-info" aria-hidden="true"></span>Eigenschappen</span>{{end}}
+  {{if or $doel (not $v.Doorgang)}}
+  <a class="opdracht{{if or (eq $v.Paneel "info") (eq $v.Paneel "versies")}} aan{{end}}" href="{{if $v.Paneel}}{{$v.SluitURL}}{{else}}{{$v.TabURL "info"}}{{end}}" aria-pressed="{{if $v.Paneel}}true{{else}}false{{end}}"><span class="i i-assistent" aria-hidden="true"></span>Assistent</a>
+  {{else}}<span class="opdracht uit"><span class="i i-assistent" aria-hidden="true"></span>Assistent</span>{{end}}
 {{else}}
   <span class="opdracht uit"><span class="i i-plus" aria-hidden="true"></span>Nieuwe map</span>
   <span class="opdracht uit"><span class="i i-upload" aria-hidden="true"></span>Uploaden</span>
@@ -75,7 +75,7 @@
 </nav>
 
 {{/* --- De lijst ---------------------------------------------------------- */}}
-<section class="lijstpaneel" aria-label="Inhoud"{{if and $rm (ge $v.Niveau 2)}} data-sleepdoel{{end}}>
+<section class="lijstpaneel" aria-label="Inhoud"{{if and $rm (ge $v.Niveau 2)}} data-sleepdoel{{end}}{{if $rm}} data-ruimte="{{$rm.Sleutel}}" data-ruimte-naam="{{$rm.Naam}}" data-map="{{$v.MapID}}" data-map-naam="{{if $v.Map}}{{$v.Map.Naam}}{{else}}{{$rm.Naam}}{{end}}" data-niveau="{{$v.Niveau}}" data-basis="{{$v.Basis}}"{{end}}>
 {{if not $rm}}
   <table class="lijst">
   <thead><tr><th>Naam</th><th>Soort</th><th>Jouw recht</th><th class="r">Inhoud</th></tr></thead>
@@ -98,14 +98,14 @@
   <tbody>
   {{range $v.Inhoud}}
   {{if eq .Soort "map"}}
-  <tr data-href="/r/{{$rm.Sleutel}}/m/{{.ID}}">
-    <td><a class="naam map" href="/r/{{$rm.Sleutel}}/m/{{.ID}}">{{.Naam}}</a></td>
+  <tr data-href="/r/{{$rm.Sleutel}}/m/{{.ID}}" data-id="{{.ID}}" data-soort="map" data-naam="{{.Naam}}" data-niveau="{{index $v.Niveaus .ID}}">
+    <td><a class="naam map" href="/r/{{$rm.Sleutel}}/m/{{.ID}}">{{.Naam}}</a><button type="button" class="meer" data-menu aria-haspopup="menu" aria-label="Acties voor {{.Naam}}" title="Acties">⋯</button></td>
     <td>{{if index $v.BeslotenMappen .ID}}<span class="chip paars"><span class="i i-slot" aria-hidden="true"></span>Besloten</span>{{end}}</td>
     <td>{{datum .Gewijzigd}}</td><td class="r zacht">map</td>
   </tr>
   {{else}}
-  <tr class="{{if and $v.Selectie (eq $v.Selectie.ID .ID)}}gekozen{{end}}" data-href="/r/{{$rm.Sleutel}}/d/{{.ID}}">
-    <td><a class="naam {{soortIcoon .Mediatype .Naam}}" href="/r/{{$rm.Sleutel}}/d/{{.ID}}">{{.Naam}}</a>{{with eigenTitel .}}<small>{{.}}</small>{{end}}</td>
+  <tr class="{{if and $v.Selectie (eq $v.Selectie.ID .ID)}}gekozen{{end}}" data-href="/r/{{$rm.Sleutel}}/d/{{.ID}}" data-id="{{.ID}}" data-soort="document" data-naam="{{.Naam}}" data-niveau="{{index $v.Niveaus .ID}}" data-apps="{{range $i, $p := programmas .Naam}}{{if $i}}|{{end}}{{$p.Sleutel}}:{{$p.Naam}}{{end}}"{{if bekijkbaar .Mediatype}} data-bekijken{{end}}>
+    <td><a class="naam {{soortIcoon .Mediatype .Naam}}" href="/r/{{$rm.Sleutel}}/d/{{.ID}}">{{.Naam}}</a><button type="button" class="meer" data-menu aria-haspopup="menu" aria-label="Acties voor {{.Naam}}" title="Acties">⋯</button>{{with eigenTitel .}}<small>{{.}}</small>{{end}}</td>
     <td>{{with .Documentsoort}}<span class="chip">{{.}}</span> {{end}}{{if gt .HuidigeVersie 1}}<span class="chip grijs">v{{.HuidigeVersie}}</span>{{end}}</td>
     <td>{{datum .Gewijzigd}}<small>{{.GewijzigdDoorNaam}}</small></td>
     <td class="r">{{grootte .Grootte}}</td>
@@ -125,8 +125,7 @@
 </section>
 
 {{/* --- Paneel rechts ------------------------------------------------------ */}}
-{{if eq $v.Paneel "eigenschappen"}}{{template "eigenschappen" (dict2 $v $csrf)}}{{end}}
-{{if eq $v.Paneel "toegang"}}{{template "toegangpaneel" (dict2 $v $csrf)}}{{end}}
+{{if $v.Paneel}}{{template "assistent" (dict2 $v $csrf)}}{{end}}
 </div>
 
 {{/* --- Statusbalk -------------------------------------------------------- */}}
@@ -157,65 +156,31 @@
   </form>
 </dialog>
 {{$doel := $v.Selectie}}{{if not $doel}}{{$doel = $v.Map}}{{end}}
-{{with $doel}}
+{{/* Naam wijzigen en verwijderen: voor wat gekozen is, of (via het contextmenu) voor een andere rij; app.js vult dan het item in. */}}
 <dialog id="dlg-naam" class="dialoog">
-  <form method="post" action="/r/{{$rm.Sleutel}}/i/{{.ID}}/hernoem">
+  <form method="post" action="{{with $doel}}/r/{{$rm.Sleutel}}/i/{{.ID}}/hernoem{{end}}" data-actie="/r/{{$rm.Sleutel}}/i/{id}/hernoem">
     <h2>Naam wijzigen</h2>
     <input type="hidden" name="csrf" value="{{$csrf}}"><input type="hidden" name="terug" value="{{$v.Hier}}">
-    <label>Nieuwe naam van {{if eq .Soort "map"}}de map{{else}}het document{{end}}<input name="naam" value="{{.Naam}}" required maxlength="200"></label>
+    <label><span data-wat>Nieuwe naam{{with $doel}} van {{if eq .Soort "map"}}de map{{else}}het document{{end}}{{end}}</span><input name="naam" value="{{with $doel}}{{.Naam}}{{end}}" required maxlength="200"></label>
     <div class="knoppen"><button>Opslaan</button><button type="button" class="licht" data-sluit>Annuleren</button></div>
   </form>
 </dialog>
-<dialog id="dlg-delen" class="dialoog breed">
-  <h2>Delen: {{.Naam}}</h2>
-  {{if ge $v.DoelNiveau 3}}
-  <form class="geven" method="post" action="/r/{{$rm.Sleutel}}/i/{{.ID}}/delen">
-    <input type="hidden" name="csrf" value="{{$csrf}}"><input type="hidden" name="terug" value="{{$v.Hier}}">
-    <label>Met wie
-      <select name="wie" required>
-        <option value="">Kies een persoon of groep</option>
-        <optgroup label="Groepen">{{range $v.Groepen}}<option value="{{.Waarde}}">{{.Label}}</option>{{end}}</optgroup>
-        <optgroup label="Personen">{{range $v.Personen}}<option value="{{.Waarde}}">{{.Label}}</option>{{end}}</optgroup>
-      </select>
-    </label>
-    <fieldset class="keuze">
-      <legend>Recht</legend>
-      <label><input type="radio" name="niveau" value="1" checked> Lezen</label>
-      <label><input type="radio" name="niveau" value="2"> Bewerken</label>
-    </fieldset>
-    <label>Bericht <small>optioneel</small><textarea name="bericht" rows="3" maxlength="2000" placeholder="Bijvoorbeeld: wil je hier voor donderdag naar kijken?"></textarea></label>
-    {{if $v.Berichten}}<label class="vink"><input type="checkbox" name="dm" value="ja" checked> Stuur een bericht met de link (via de berichten van de site; de ontvanger krijgt ook een e-mail)</label>{{end}}
-    <div class="knoppen"><button>Delen</button><button type="button" class="licht" data-sluit>Annuleren</button></div>
-  </form>
-  {{else}}
-  <p class="zacht">Toegang geven kan alleen wie hier <b>Beheren</b> heeft. De link kun je wel doorgeven aan wie al toegang heeft.</p>
-  {{end}}
-  <h3 class="tussenkop">Link</h3>
-  <div class="linkregel">
-    <input id="deellink" value="{{$v.Link}}" readonly aria-label="Link">
-    <button type="button" class="licht" data-kopieer="deellink">Kopiëren</button>
-  </div>
-  <p class="zacht klein">Alleen wie toegang heeft, kan de link openen; anderen komen bij het inloggen uit.</p>
-  {{$tekst := printf "%s · Documenten van Digitaal GemeenGoed (voor leden)" $v.DeelNaam}}
-  <div class="sociaal">
-    <button type="button" class="licht" data-webshare data-titel="{{$v.DeelNaam}}" data-tekst="{{$tekst}}" data-link="{{$v.Link}}" hidden>Delen via…</button>
-    <a class="knop licht" href="https://www.linkedin.com/sharing/share-offsite/?url={{urlquery $v.Link}}" target="_blank" rel="noopener">LinkedIn</a>
-    <a class="knop licht" href="https://bsky.app/intent/compose?text={{urlquery $tekst}}%20{{urlquery $v.Link}}" target="_blank" rel="noopener">Bluesky</a>
-    <a class="knop licht" href="https://x.com/intent/post?text={{urlquery $tekst}}&amp;url={{urlquery $v.Link}}" target="_blank" rel="noopener">X</a>
-    <a class="knop licht" href="https://wa.me/?text={{urlquery $tekst}}%20{{urlquery $v.Link}}" target="_blank" rel="noopener">WhatsApp</a>
-    <a class="knop licht" href="mailto:?subject={{urlquery $v.DeelNaam}}&amp;body={{urlquery $tekst}}%0A%0A{{urlquery $v.Link}}">E-mail</a>
-  </div>
-  {{if lt $v.DoelNiveau 3}}<div class="knoppen"><button type="button" class="licht" data-sluit>Sluiten</button></div>{{end}}
-</dialog>
 <dialog id="dlg-weg" class="dialoog">
-  <form method="post" action="/r/{{$rm.Sleutel}}/i/{{.ID}}/verwijder">
+  <form method="post" action="{{with $doel}}/r/{{$rm.Sleutel}}/i/{{.ID}}/verwijder{{end}}" data-actie="/r/{{$rm.Sleutel}}/i/{id}/verwijder">
     <h2>Verwijderen</h2>
-    <p><b>{{.Naam}}</b>{{if eq .Soort "map"}} en alles erin{{end}} naar de prullenbak? Er verdwijnt niets: de beheerder kan het terugzetten.</p>
+    <p><b data-naam>{{with $doel}}{{.Naam}}{{end}}</b><span data-alles>{{with $doel}}{{if eq .Soort "map"}} en alles erin{{end}}{{end}}</span> naar de prullenbak? Er verdwijnt niets: de beheerder kan het terugzetten.</p>
     <input type="hidden" name="csrf" value="{{$csrf}}">
     <div class="knoppen"><button class="gevaar">Verwijderen</button><button type="button" class="licht" data-sluit>Annuleren</button></div>
   </form>
 </dialog>
-{{end}}
+<form id="plakform" method="post" action="/r/{{$rm.Sleutel}}/plakken" hidden>
+  <input type="hidden" name="csrf" value="{{$csrf}}"><input type="hidden" name="terug" value="{{$v.SluitURL}}">
+  <input type="hidden" name="actie"><input type="hidden" name="bron"><input type="hidden" name="bron_ruimte"><input type="hidden" name="doel">
+</form>
+<form id="openform" method="post" hidden data-openen data-actie="/r/{{$rm.Sleutel}}/i/{id}/openen">
+  <input type="hidden" name="csrf" value="{{$csrf}}"><input type="hidden" name="app"><button>Openen</button>
+</form>
+<div class="contextmenu" role="menu" hidden></div>
 {{end}}
 {{end}}
 
@@ -240,12 +205,31 @@
 </li>
 {{end}}
 
-{{define "eigenschappen"}}{{$v := .A}}{{$csrf := .B}}{{$doc := $v.Selectie}}{{$rm := $v.Ruimte}}{{$basis := printf "/r/%s/d/%d" $rm.Sleutel $doc.ID}}
-<aside class="paneel" aria-label="Eigenschappen">
+{{/* --- De assistent: één paneel rechts met tabbladen ----------------------- */}}
+{{define "assistent"}}{{$v := .A}}{{$csrf := .B}}{{$rm := $v.Ruimte}}{{$doc := $v.Selectie}}
+<aside class="paneel assistent" aria-label="Assistent">
   <div class="paneelkop">
-    <h2 class="naam {{soortIcoon $doc.Mediatype $doc.Naam}}">{{$doc.Naam}}</h2>
-    <a class="sluit" href="{{$v.MapURL $v.MapID}}" aria-label="Sluiten">×</a>
+    {{if $doc}}<h2 class="naam {{soortIcoon $doc.Mediatype $doc.Naam}}">{{$doc.Naam}}</h2>
+    {{else if $v.Map}}<h2 class="naam map">{{$v.Map.Naam}}</h2>
+    {{else}}<h2 class="naam schijf">{{$rm.Naam}}</h2>{{end}}
+    <a class="sluit" href="{{$v.SluitURL}}" aria-label="Assistent sluiten">×</a>
   </div>
+  <nav class="tabs" aria-label="Onderdelen">
+    <a href="{{$v.TabURL "info"}}"{{if eq $v.Paneel "info"}} aria-current="page"{{end}}>Info</a>
+    {{if $doc}}<a href="{{$v.TabURL "versies"}}"{{if eq $v.Paneel "versies"}} aria-current="page"{{end}}>Versies <span class="teller">{{$doc.HuidigeVersie}}</span></a>{{end}}
+    <a href="{{$v.TabURL "delen"}}"{{if eq $v.Paneel "delen"}} aria-current="page"{{end}}>Delen</a>
+    {{if or $doc (not $v.Doorgang)}}<a href="{{$v.ToegangURL}}"{{if eq $v.Paneel "toegang"}} aria-current="page"{{end}}>Toegang</a>{{end}}
+  </nav>
+  <div class="paneelinhoud">
+  {{if eq $v.Paneel "info"}}{{if $doc}}{{template "tab-info-doc" (dict2 $v $csrf)}}{{else}}{{template "tab-info-map" (dict2 $v $csrf)}}{{end}}
+  {{else if eq $v.Paneel "versies"}}{{template "tab-versies" (dict2 $v $csrf)}}
+  {{else if eq $v.Paneel "delen"}}{{template "tab-delen" (dict2 $v $csrf)}}
+  {{else if eq $v.Paneel "toegang"}}{{template "tab-toegang" (dict2 $v $csrf)}}{{end}}
+  </div>
+</aside>
+{{end}}
+
+{{define "tab-info-doc"}}{{$v := .A}}{{$csrf := .B}}{{$doc := $v.Selectie}}{{$rm := $v.Ruimte}}{{$basis := printf "/r/%s/d/%d" $rm.Sleutel $doc.ID}}
   <div class="knoppen">
     {{range programmas $doc.Naam}}
     <form method="post" action="/r/{{$rm.Sleutel}}/i/{{$doc.ID}}/openen" data-openen>
@@ -257,6 +241,17 @@
     {{if $v.Bekijkbaar}}<a class="knop licht" href="{{$basis}}/download?bekijken=1" target="_blank" rel="noopener">Bekijken</a>{{end}}
   </div>
   {{if programmas $doc.Naam}}<p class="zacht klein">{{if ge $v.SelNiveau 2}}Openen in een programma: wat je daar opslaat, komt hier terug als nieuwe versie.{{else}}Je kunt dit document alleen lezen; het programma opent het als alleen-lezen.{{end}}</p>{{end}}
+  <h3>Bestand</h3>
+  <dl class="feiten">
+    <dt>Locatie</dt><dd>{{$rm.Naam}}{{range $v.Pad}} › {{.Naam}}{{end}}</dd>
+    <dt>Soort</dt><dd>{{soortNaam $doc.Mediatype $doc.Naam}}</dd>
+    <dt>Grootte</dt><dd>{{grootte $doc.Grootte}}</dd>
+    <dt>Versie</dt><dd>{{$doc.HuidigeVersie}}{{if gt $doc.HuidigeVersie 1}} · <a href="{{$v.TabURL "versies"}}">alle versies</a>{{end}}</dd>
+    <dt>Toegevoegd</dt><dd>{{datum $doc.Aangemaakt}}<br>{{$doc.AangemaaktDoorNaam}}</dd>
+    <dt>Gewijzigd</dt><dd>{{datum $doc.Gewijzigd}}<br>{{$doc.GewijzigdDoorNaam}}</dd>
+    <dt>Jouw recht</dt><dd>{{niveau $v.SelNiveau}}</dd>
+    {{with $v.DavAdres}}<dt>Netwerkschijf</dt><dd><code class="adres" id="davadres">{{.}}</code> <button type="button" class="link" data-kopieer-tekst="davadres">Kopiëren</button></dd>{{end}}
+  </dl>
   <h3>Gegevens</h3>
   {{if ge $v.SelNiveau 2}}
   <form class="velden" method="post" action="{{$basis}}/metadata">
@@ -277,20 +272,32 @@
     {{with $doc.Trefwoorden}}<dt>Trefwoorden</dt><dd>{{join . ", "}}</dd>{{end}}
   </dl>
   {{end}}
-  <h3>Kenmerken</h3>
+{{end}}
+
+{{define "tab-info-map"}}{{$v := .A}}{{$rm := $v.Ruimte}}
   <dl class="feiten">
-    <dt>Toegevoegd</dt><dd>{{datum $doc.Aangemaakt}}<br>{{$doc.AangemaaktDoorNaam}}</dd>
-    <dt>Gewijzigd</dt><dd>{{datum $doc.Gewijzigd}}<br>{{$doc.GewijzigdDoorNaam}}</dd>
-    <dt>Grootte</dt><dd>{{grootte $doc.Grootte}}</dd>
-    <dt>Type</dt><dd>{{$doc.Mediatype}}</dd>
+    {{if $v.Map}}<dt>Locatie</dt><dd>{{$rm.Naam}}{{range $v.Pad}} › {{.Naam}}{{end}}</dd>
+    {{else}}<dt>Soort ruimte</dt><dd>{{if eq $rm.Soort "cooperatie"}}Coöperatie: voor members en de kerngroep{{else if eq $rm.Soort "werkgroep"}}Werkgroep: voor de leden van de groep op de site{{else if eq $rm.Soort "persoonlijk"}}Persoonlijk{{else}}Project: voor wie in Redmine aan het project meewerkt{{end}}</dd>{{end}}
+    {{with $v.Omvang}}<dt>Inhoud</dt><dd>{{.Documenten}} document{{if ne .Documenten 1}}en{{end}}, {{.Mappen}} map{{if ne .Mappen 1}}pen{{end}}{{if .Documenten}} · {{grootte .Grootte}}{{end}}<br><small class="zacht">met alles eronder dat je mag zien</small></dd>{{end}}
+    {{with $v.Map}}<dt>Aangemaakt</dt><dd>{{datum .Aangemaakt}}<br>{{.AangemaaktDoorNaam}}</dd>{{end}}
+    <dt>Toegang</dt><dd>{{if $v.Besloten}}<span class="chip paars"><span class="i i-slot" aria-hidden="true"></span>Besloten</span> alleen eigen regels{{else if $v.Map}}zoals de map erboven{{else}}de standaard van de ruimte{{end}} · <a href="{{$v.ToegangURL}}">bekijken</a></dd>
+    <dt>Jouw recht</dt><dd>{{niveau $v.Niveau}}</dd>
+    {{if $rm.Quotum.Valid}}<dt>Ruimte</dt><dd>{{grootte $v.Gebruik}} van {{grootte $rm.Quotum.Int64}} gebruikt</dd>{{end}}
+    {{with $v.DavAdres}}<dt>Netwerkschijf</dt><dd><code class="adres" id="davadres">{{.}}</code> <button type="button" class="link" data-kopieer-tekst="davadres">Kopiëren</button></dd>{{end}}
   </dl>
-  <h3>Versies</h3>
+  <div class="knoppen">
+    <a class="knop licht" href="/zoeken?in={{$rm.Sleutel}}{{if $v.MapID}}&amp;m={{$v.MapID}}{{end}}"><span class="i i-zoek" aria-hidden="true"></span>Zoeken in {{if $v.Map}}deze map{{else}}deze ruimte{{end}}</a>
+  </div>
+{{end}}
+
+{{define "tab-versies"}}{{$v := .A}}{{$csrf := .B}}{{$doc := $v.Selectie}}{{$rm := $v.Ruimte}}{{$basis := printf "/r/%s/d/%d" $rm.Sleutel $doc.ID}}
   {{if ge $v.SelNiveau 2}}
   <form class="nieuwe-versie" method="post" action="/r/{{$rm.Sleutel}}/upload" enctype="multipart/form-data" data-max="{{$v.MaxMB}}">
     <input type="hidden" name="csrf" value="{{$csrf}}">
     <input type="hidden" name="document" value="{{$doc.ID}}">
     <label class="vak"><input type="file" name="bestanden" required><span><b>Nieuwe versie</b>: kies of sleep een bestand. Het krijgt de naam {{$doc.Naam}}.</span></label>
     <noscript><button>Uploaden</button></noscript>
+    <progress hidden max="100" value="0"></progress>
   </form>
   {{end}}
   <ol class="versies" reversed>
@@ -302,15 +309,54 @@
   </li>
   {{end}}
   </ol>
-</aside>
+  <p class="zacht klein">Elke keer opslaan is een versie. Er verdwijnt geen versie: download een oudere en zet hem terug als nieuwe versie als je hem weer nodig hebt.</p>
 {{end}}
 
-{{define "toegangpaneel"}}{{$v := .A}}{{$csrf := .B}}{{$rm := $v.Ruimte}}{{$hier := "deze map"}}{{if $v.ToegangDoc}}{{$hier = "dit document"}}{{else if not $v.ToegangID}}{{$hier = "deze ruimte"}}{{end}}
-<aside class="paneel" aria-label="Toegang">
-  <div class="paneelkop">
-    <h2 class="naam {{if $v.ToegangDoc}}{{soortIcoon $v.Selectie.Mediatype $v.Selectie.Naam}}{{else if $v.ToegangID}}map{{else}}schijf{{end}}">Toegang: {{$v.ToegangNaam}}</h2>
-    <a class="sluit" href="{{if $v.ToegangDoc}}{{$v.Hier}}{{else}}{{$v.MapURL $v.MapID}}{{end}}" aria-label="Sluiten">×</a>
+{{define "tab-delen"}}{{$v := .A}}{{$csrf := .B}}{{$rm := $v.Ruimte}}{{$doel := $v.Selectie}}{{if not $doel}}{{$doel = $v.Map}}{{end}}
+  <h3>Link</h3>
+  <div class="linkregel">
+    <input id="deellink" value="{{$v.Link}}" readonly aria-label="Link">
+    <button type="button" class="licht" data-kopieer="deellink">Kopiëren</button>
   </div>
+  <p class="zacht klein">Alleen wie toegang heeft, kan de link openen; anderen komen bij het inloggen uit.</p>
+  {{$tekst := printf "%s · Documenten van Digitaal GemeenGoed (voor leden)" $v.DeelNaam}}
+  <div class="sociaal">
+    <button type="button" class="licht" data-webshare data-titel="{{$v.DeelNaam}}" data-tekst="{{$tekst}}" data-link="{{$v.Link}}" hidden>Delen via…</button>
+    <a class="knop licht" href="mailto:?subject={{urlquery $v.DeelNaam}}&amp;body={{urlquery $tekst}}%0A%0A{{urlquery $v.Link}}">E-mail</a>
+    <a class="knop licht" href="https://wa.me/?text={{urlquery $tekst}}%20{{urlquery $v.Link}}" target="_blank" rel="noopener">WhatsApp</a>
+    <a class="knop licht" href="https://www.linkedin.com/sharing/share-offsite/?url={{urlquery $v.Link}}" target="_blank" rel="noopener">LinkedIn</a>
+    <a class="knop licht" href="https://bsky.app/intent/compose?text={{urlquery $tekst}}%20{{urlquery $v.Link}}" target="_blank" rel="noopener">Bluesky</a>
+    <a class="knop licht" href="https://x.com/intent/post?text={{urlquery $tekst}}&amp;url={{urlquery $v.Link}}" target="_blank" rel="noopener">X</a>
+  </div>
+  <h3>Delen met een persoon of groep</h3>
+  {{if and $doel (ge $v.DoelNiveau 3)}}
+  <form class="geven" method="post" action="/r/{{$rm.Sleutel}}/i/{{$doel.ID}}/delen">
+    <input type="hidden" name="csrf" value="{{$csrf}}"><input type="hidden" name="terug" value="{{$v.TabURL "delen"}}">
+    <label>Met wie
+      <select name="wie" required>
+        <option value="">Kies een persoon of groep</option>
+        <optgroup label="Groepen">{{range $v.Groepen}}<option value="{{.Waarde}}">{{.Label}}</option>{{end}}</optgroup>
+        <optgroup label="Personen">{{range $v.Personen}}<option value="{{.Waarde}}">{{.Label}}</option>{{end}}</optgroup>
+      </select>
+    </label>
+    <fieldset class="keuze">
+      <legend>Recht</legend>
+      <label><input type="radio" name="niveau" value="1" checked> Lezen</label>
+      <label><input type="radio" name="niveau" value="2"> Bewerken</label>
+    </fieldset>
+    <label>Bericht <small>optioneel</small><textarea name="bericht" rows="3" maxlength="2000" placeholder="Bijvoorbeeld: wil je hier voor donderdag naar kijken?"></textarea></label>
+    {{if $v.Berichten}}<label class="vink"><input type="checkbox" name="dm" value="ja" checked> Stuur een bericht met de link (via de berichten van de site; de ontvanger krijgt ook een e-mail)</label>{{end}}
+    <button>Delen</button>
+  </form>
+  <p class="zacht klein">Wie toegang heeft, zie je bij <a href="{{$v.ToegangURL}}">Toegang</a>.</p>
+  {{else if $doel}}
+  <p class="zacht">Toegang geven kan alleen wie hier <b>Beheren</b> heeft. De link kun je wel doorgeven aan wie al toegang heeft.</p>
+  {{else}}
+  <p class="zacht">Een hele ruimte deel je niet: wie erbij mag, volgt uit {{if eq $rm.Soort "project"}}het project in Redmine{{else if eq $rm.Soort "werkgroep"}}de werkgroep op de site{{else}}de rollen in het netwerk{{end}}. Deel een map of een document, of geef toegang bij <a href="{{$v.ToegangURL}}">Toegang</a>.</p>
+  {{end}}
+{{end}}
+
+{{define "tab-toegang"}}{{$v := .A}}{{$csrf := .B}}{{$rm := $v.Ruimte}}{{$hier := "deze map"}}{{if $v.ToegangDoc}}{{$hier = "dit document"}}{{else if not $v.ToegangID}}{{$hier = "deze ruimte"}}{{end}}
   <p class="zacht">Lezen: zien en downloaden. Bewerken: ook uploaden, nieuwe versies, gegevens, hernoemen, mappen maken. Beheren: ook verwijderen, delen en de toegang wijzigen. Je hebt hier: <b>{{niveau $v.ToegangNiveau}}</b>.</p>
   <ul class="regels">
   {{range $v.Regels}}
@@ -369,5 +415,4 @@
   </form>
   <p class="zacht klein">Wil je de ontvanger ook een bericht sturen, gebruik dan <b>Delen</b>. Personen in de lijst: wie al eens heeft ingelogd of in Redmine bij een project staat.</p>
   {{end}}
-</aside>
 {{end}}

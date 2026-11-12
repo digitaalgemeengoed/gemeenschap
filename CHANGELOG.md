@@ -2,6 +2,15 @@
 
 ## Nog niet uitgebracht
 
+**Documenten: contextmenu en de assistent.**
+- **Contextmenu** met de rechtermuisknop, de menutoets of de knop **⋯** achter elke naam (die werkt ook op een telefoon). Op een document: openen, openen in Word of LibreOffice, bekijken, downloaden, knippen, kopiëren, naam wijzigen, delen, link kopiëren, toegang, versies, de assistent en verwijderen. Op een map: openen, plakken in deze map, knippen, naam wijzigen, delen, link kopiëren, toegang, zoeken in deze map, de assistent en verwijderen. Op een lege plek: nieuwe map, uploaden, plakken, zoeken. Wat je met jouw recht niet mag, staat er grijs bij, met de uitleg waarom. Te bedienen met pijltjes, de eerste letter en Escape.
+- **Knippen, kopiëren en plakken.** Knippen en plakken verplaatst, binnen een ruimte. Kopiëren maakt een kopie van een document (de huidige versie), ook in een andere ruimte; staat er al iets met die naam, dan heet de kopie "naam (kopie)". Wat op het klembord staat, zie je onderin, met *Plakken hier* en *Wissen*. Een hele map kopiëren kan via de netwerkschijf.
+- **De assistent**: één paneel rechts (knop *Assistent*) met tabbladen:
+  - *Info*: voor een document de knoppen om te openen en te downloaden, de locatie, soort, grootte, versie, wie het toevoegde en wijzigde, jouw recht, het adres op de netwerkschijf (om te kopiëren) en de gegevens (titel, omschrijving, soort, trefwoorden). Voor een map of ruimte: wat erin zit (aantal documenten en mappen, omvang), de toegang, jouw recht, het gebruik van de ruimte, het adres op de netwerkschijf en *Zoeken in deze map*.
+  - *Versies*: een nieuwe versie uploaden, en alle versies om te downloaden.
+  - *Delen*: de link, delen via e-mail, WhatsApp, LinkedIn, Bluesky en X, en delen met een persoon of groep (met een bericht). Was eerst een los venster.
+  - *Toegang*: zoals voorheen.
+
 ## 0.14.0 — 2026-11-12
 
 **Zoeken in Documenten**, met OpenSearch.

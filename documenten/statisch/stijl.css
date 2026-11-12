@@ -56,6 +56,7 @@ input, textarea, select { font: inherit; color: var(--tekst); padding: .42rem .6
 .i-schijf { --m: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linejoin='round'%3E%3Cpath d='M3 14l3-8h12l3 8v4H3z'/%3E%3Cpath d='M3 14h18M17 17h.01'/%3E%3C/svg%3E"); }
 .i-delen { --m: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='18' cy='5' r='3'/%3E%3Ccircle cx='6' cy='12' r='3'/%3E%3Ccircle cx='18' cy='19' r='3'/%3E%3Cpath d='M8.6 13.5l6.8 4M15.4 6.5l-6.8 4'/%3E%3C/svg%3E"); }
 .i-zoek { --m: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='10.5' cy='10.5' r='6.5'/%3E%3Cpath d='m15.5 15.5 5 5'/%3E%3C/svg%3E"); }
+.i-assistent { --m: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='16' rx='2'/%3E%3Cpath d='M14 4v16M17 8.5h1M17 12h1'/%3E%3C/svg%3E"); }
 .i-slot { --m: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2'%3E%3Crect x='5' y='11' width='14' height='10' rx='2'/%3E%3Cpath d='M8 11V8a4 4 0 0 1 8 0v3'/%3E%3C/svg%3E"); }
 
 /* --- Het venster ---------------------------------------------------------------- */
@@ -152,6 +153,23 @@ input, textarea, select { font: inherit; color: var(--tekst); padding: .42rem .6
 .lijst tbody tr { cursor: default; }
 .lijst tbody tr[data-href]:hover { background: var(--zweef); }
 .lijst tr.gekozen { background: var(--kies) !important; }
+.lijst tr.menu-open { background: var(--zweef); }
+
+/* Contextmenu en de knop ⋯ per rij. */
+.meer { float: right; margin: -.15rem -.4rem 0 .4rem; padding: .05rem .45rem; border-radius: 6px; background: none; color: var(--grijs); font-size: 1.05rem; line-height: 1.2; font-weight: 700; opacity: 0; }
+.lijst tr:hover .meer, .lijst tr.menu-open .meer, .meer:focus-visible { opacity: 1; }
+.meer:hover, .meer:focus-visible { background: var(--kies); color: var(--marine); }
+@media (hover: none) { .meer { opacity: 1; } }
+.contextmenu { position: fixed; z-index: 50; min-width: 13rem; max-width: calc(100vw - 16px); max-height: calc(100vh - 16px); overflow: auto; padding: .3rem; border: 1px solid var(--rand); border-radius: 10px; background: var(--wit); box-shadow: 0 12px 32px rgba(10, 38, 84, .18); }
+.contextmenu button { display: block; width: 100%; text-align: left; padding: .42rem .7rem; border-radius: 6px; background: none; color: var(--tekst); font-weight: 400; font-size: .88rem; }
+.contextmenu button:hover, .contextmenu button:focus-visible { background: var(--kies); color: var(--marine); outline: none; }
+.contextmenu button[aria-disabled] { color: #9aa8b8; cursor: not-allowed; background: none; }
+.contextmenu button.gevaar { color: var(--rood); }
+.contextmenu button.gevaar:hover, .contextmenu button.gevaar:focus-visible { background: #fdecea; }
+.contextmenu .scheiding { height: 1px; margin: .25rem .4rem; background: var(--rand); }
+.statusbalk .klembord { color: var(--marine); font-weight: 600; }
+.statusbalk .klembord button.link { font-size: inherit; }
+.melding.zwevend { position: fixed; left: 50%; bottom: 1.2rem; transform: translateX(-50%); z-index: 60; box-shadow: 0 8px 24px rgba(10, 38, 84, .18); }
 .lijst td small { font-size: .76rem; }
 .r, .lijst .r { text-align: right; white-space: nowrap; }
 .naam { font-weight: 500; color: var(--tekst); text-decoration: none; overflow-wrap: anywhere; padding-left: 1.75rem; background: no-repeat left center / 1.2rem; display: inline-block; min-height: 1.3rem; }
@@ -183,6 +201,15 @@ a.naam:hover { color: var(--link); text-decoration: underline; }
 .paneelkop h2 { font-size: 1.05rem; margin: .1rem 0 .3rem; background-size: 1.25rem; }
 .sluit { font-size: 1.5rem; line-height: 1; text-decoration: none; color: var(--grijs); padding: 0 .3rem; border-radius: 6px; }
 .sluit:hover { background: var(--zweef); color: var(--marine); }
+/* De assistent: tabbladen bovenin het paneel. */
+.tabs { display: flex; gap: .15rem; border-bottom: 1px solid var(--rand); margin: .4rem -1rem .2rem; padding: 0 .75rem; overflow-x: auto; }
+.tabs a { padding: .45rem .6rem; font-size: .86rem; font-weight: 600; color: var(--grijs); text-decoration: none; border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; }
+.tabs a:hover { color: var(--marine); }
+.tabs a[aria-current] { color: var(--blauw); border-bottom-color: var(--blauw); }
+.tabs .teller { display: inline-block; min-width: 1.2rem; padding: 0 .3rem; border-radius: 99px; background: var(--ijs); font-size: .72rem; text-align: center; }
+.paneelinhoud { padding-top: .6rem; }
+.paneel .knoppen { margin-top: .2rem; }
+code.adres { font-size: .78rem; overflow-wrap: anywhere; background: var(--vlak); padding: .05rem .3rem; border-radius: 4px; }
 .paneel h3 { font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--grijs); margin: 1.2rem 0 .5rem; }
 .velden { display: grid; gap: .65rem; }
 .velden label { display: grid; gap: .2rem; font-weight: 600; font-size: .85rem; }
@@ -232,8 +259,10 @@ a.naam:hover { color: var(--link); text-decoration: underline; }
 .keuze { border: 0; padding: 0; margin: .6rem 0 0; }
 .keuze legend { font-weight: 600; font-size: .88rem; padding: 0; margin-bottom: .25rem; }
 .keuze label { display: inline-flex; align-items: center; gap: .4rem; font-weight: 400; margin: 0 1.2rem 0 0; }
-.dialoog label.vink { display: flex; gap: .4rem; font-weight: 400; }
-.dialoog label.vink { margin-top: .7rem; align-items: flex-start; }
+.dialoog label.vink, .geven label.vink { display: flex; gap: .4rem; font-weight: 400; }
+.dialoog label.vink, .geven label.vink { margin-top: .3rem; align-items: flex-start; }
+.geven label small { display: inline; font-weight: 400; }
+.geven .keuze { margin: 0; }
 .keuze input, .vink input { width: auto; }
 .linkregel { display: flex; gap: .4rem; }
 .linkregel input { font-size: .82rem; color: var(--grijs); }

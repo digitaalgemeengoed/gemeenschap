@@ -219,6 +219,21 @@ opslag, niet uit de back-upspiegel); het logboek.
 (`[dg_documenten project=…]`, alleen voor wie is ingelogd), een tab
 *Documenten* bij elke werkgroep en *Mijn documenten* op je eigen profiel.
 
+## Contextmenu en assistent (0.15)
+
+- Het contextmenu is JavaScript bovenop gewone links en formulieren
+  (`app.js`): elke opdracht bestaat ook zonder menu (de opdrachtbalk, het
+  paneel). Rechten per rij staan in `data-niveau`; wat niet mag, staat grijs
+  met uitleg. De server controleert alles opnieuw.
+- Het klembord staat in de browser (`sessionStorage`). Plakken is één POST
+  (`/r/{ruimte}/plakken`, `klembord.go`): knippen = `Verplaats` binnen een
+  ruimte; kopiëren = de huidige versie als nieuw document (nieuw object,
+  ook naar een andere ruimte, met het quotum van die ruimte).
+- De assistent is het paneel rechts met tabbladen als eigen adressen
+  (`…/d/{id}`, `…/d/{id}/versies`, `…/delen`, `…/toegang`, `…/m/{id}/info`,
+  `/r/{ruimte}/info`), zodat terug, vernieuwen en een link naar een tabblad
+  gewoon werken.
+
 ## Zoeken (0.14)
 
 - **OpenSearch** (één knooppunt, alleen intern, zonder beveiligingsplugin) als

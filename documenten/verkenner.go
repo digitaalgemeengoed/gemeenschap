@@ -15,6 +15,7 @@ import (
 	"log"
 	"mime"
 	"net/http"
+	"net/url"
 	"os"
 	"path"
 	"strconv"
@@ -113,9 +114,13 @@ type Verkenner struct {
 	Inhoud   []*Item
 	Selectie *Item
 	Versies  []Versie
-	Paneel   string // "", "eigenschappen", "toegang"
+	Paneel   string        // "" (geen), of een tabblad van de assistent: "info", "versies", "delen", "toegang"
+	Niveaus  map[int64]int // jouw recht per item in de lijst (voor het contextmenu)
+	Omvang   *Omvang       // bij info over een map of de ruimte
+	DavAdres string        // het adres op de netwerkschijf (info)
 	Hier     string
 	MaxMB    int64
+	Basis    string // https://documenten.<domein>, voor volledige links
 	Soorten  []string
 	// Toegang
 	Regels         []regelRegel
@@ -175,6 +180,28 @@ func (a *App) vulToegang(ctx context.Context, v *Verkenner, p *Plek, id int64, n
 }
 
 func (v *Verkenner) MapURL(id int64) string { return mapURL(v.Ruimte, id) }
+
+// TabURL: een tabblad van de assistent (info, versies, delen, toegang) voor
+// het gekozen document, anders de map waar je bent, anders de ruimte.
+func (v *Verkenner) TabURL(tab string) string {
+	if v.Ruimte == nil {
+		return "/"
+	}
+	if v.Selectie != nil {
+		basis := fmt.Sprintf("/r/%s/d/%d", v.Ruimte.Sleutel, v.Selectie.ID)
+		if tab == "info" {
+			return basis
+		}
+		return basis + "/" + tab
+	}
+	if v.MapID != 0 {
+		return fmt.Sprintf("/r/%s/m/%d/%s", v.Ruimte.Sleutel, v.MapID, tab)
+	}
+	return "/r/" + v.Ruimte.Sleutel + "/" + tab
+}
+
+// SluitURL: het paneel dicht (terug naar de map).
+func (v *Verkenner) SluitURL() string { return mapURL(v.Ruimte, v.MapID) }
 
 // noemRuimte: een persoonlijke ruimte heet voor de eigenaar "Mijn documenten",
 // voor wie er iets uit gedeeld kreeg "Van <naam>".
@@ -278,7 +305,7 @@ func (a *App) verkenner(ctx context.Context, s *Sessie, p *Plek, mapID int64) (*
 	if err != nil {
 		return nil, err
 	}
-	v := &Verkenner{Ruimtes: kaarten, Ruimte: p.Ruimte, MapID: mapID, Niveau: p.Boom.Niveau(mapID), Berichten: a.Berichten != nil,
+	v := &Verkenner{Ruimtes: kaarten, Ruimte: p.Ruimte, MapID: mapID, Basis: a.Basis, Niveau: p.Boom.Niveau(mapID), Berichten: a.Berichten != nil,
 		Besloten: p.Boom.Besloten(mapID), MaxMB: a.MaxGrootte >> 20, Soorten: documentsoorten, Redmine: a.Projecten}
 	v.Doorgang = v.Niveau < Lezen
 	if err := a.vulNavigatie(ctx, v, s); err != nil {
@@ -312,7 +339,9 @@ func (a *App) verkenner(ctx context.Context, s *Sessie, p *Plek, mapID int64) (*
 		return nil, err
 	}
 	v.BeslotenMappen = map[int64]bool{}
+	v.Niveaus = map[int64]int{}
 	for _, x := range inhoud {
+		v.Niveaus[x.ID] = p.Boom.Niveau(x.ID)
 		if x.Soort == "map" {
 			if p.Boom.Zichtbaar(x.ID) {
 				v.Inhoud = append(v.Inhoud, x)
@@ -342,15 +371,28 @@ func (a *App) toonMap(w http.ResponseWriter, r *http.Request, s *Sessie, p *Plek
 	if v.Map != nil {
 		v.Link, v.DeelNaam = a.Basis+v.Hier, v.Map.Naam
 	}
-	if strings.HasSuffix(r.URL.Path, "/toegang") && !v.Doorgang {
-		naam := p.Ruimte.Naam
-		if v.Map != nil {
-			naam = v.Map.Naam
-		}
+	if v.Map == nil {
+		v.Link, v.DeelNaam = a.Basis+v.Hier, p.Ruimte.Naam
+	}
+	naam := p.Ruimte.Naam
+	if v.Map != nil {
+		naam = v.Map.Naam
+	}
+	switch {
+	case strings.HasSuffix(r.URL.Path, "/toegang") && !v.Doorgang:
 		if err := a.vulToegang(r.Context(), v, p, mapID, naam, false); err != nil {
 			a.interneFout(w, r, s, err)
 			return
 		}
+	case strings.HasSuffix(r.URL.Path, "/info"):
+		v.Paneel = "info"
+		if v.Omvang, err = a.Reg.Omvang(r.Context(), p.Ruimte.ID, mapID, p.Boom); err != nil {
+			a.interneFout(w, r, s, err)
+			return
+		}
+		v.DavAdres = a.davAdres(p.Ruimte, s, v.Pad, "")
+	case strings.HasSuffix(r.URL.Path, "/delen"):
+		v.Paneel = "delen"
 	}
 	if err := a.deelKeuzes(r.Context(), v, p); err != nil {
 		a.interneFout(w, r, s, err)
@@ -381,7 +423,14 @@ func (a *App) toonDocument(w http.ResponseWriter, r *http.Request, s *Sessie, p 
 		a.interneFout(w, r, s, err)
 		return
 	}
-	v.Selectie, v.Paneel, v.SelNiveau = doc, "eigenschappen", p.Boom.Niveau(doc.ID)
+	v.Selectie, v.Paneel, v.SelNiveau = doc, "info", p.Boom.Niveau(doc.ID)
+	switch {
+	case strings.HasSuffix(r.URL.Path, "/versies"):
+		v.Paneel = "versies"
+	case strings.HasSuffix(r.URL.Path, "/delen"):
+		v.Paneel = "delen"
+	}
+	v.DavAdres = a.davAdres(p.Ruimte, s, v.Pad, doc.Naam)
 	v.DoelNiveau = v.SelNiveau
 	v.Bekijkbaar = bekijkbaar(doc.Mediatype)
 	v.Hier = fmt.Sprintf("/r/%s/d/%d", p.Ruimte.Sleutel, doc.ID)
@@ -402,6 +451,61 @@ func (a *App) toonDocument(w http.ResponseWriter, r *http.Request, s *Sessie, p 
 		return
 	}
 	a.toon(w, r, "verkenner", http.StatusOK, pagina{Titel: doc.Naam + " · " + p.Ruimte.Naam, Sessie: s, Data: v})
+}
+
+// Omvang: wat er in een map (of de ruimte, map 0) zit, met alles eronder dat
+// je mag zien.
+type Omvang struct {
+	Mappen, Documenten int
+	Grootte            int64
+}
+
+func (r *Register) Omvang(ctx context.Context, ruimteID, mapID int64, b *Boom) (*Omvang, error) {
+	rows, err := r.db.QueryContext(ctx, `
+		WITH RECURSIVE onder AS (
+			SELECT id, soort, huidige_versie FROM item
+			WHERE ruimte_id = $1 AND coalesce(ouder_id, 0) = $2 AND verwijderd_op IS NULL
+			UNION ALL
+			SELECT i.id, i.soort, i.huidige_versie FROM item i JOIN onder o ON i.ouder_id = o.id
+			WHERE i.verwijderd_op IS NULL)
+		SELECT o.id, o.soort = 'map', coalesce(v.grootte, 0) FROM onder o
+		LEFT JOIN versie v ON v.item_id = o.id AND v.nummer = o.huidige_versie`, ruimteID, mapID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	uit := &Omvang{}
+	for rows.Next() {
+		var id, g int64
+		var isMap bool
+		if err := rows.Scan(&id, &isMap, &g); err != nil {
+			return nil, err
+		}
+		switch {
+		case isMap && b.Zichtbaar(id):
+			uit.Mappen++
+		case !isMap && b.Niveau(id) >= Lezen:
+			uit.Documenten++
+			uit.Grootte += g
+		}
+	}
+	return uit, rows.Err()
+}
+
+// davAdres: waar dit staat op de netwerkschijf (WebDAV).
+func (a *App) davAdres(rm *Ruimte, s *Sessie, pad []*Item, naam string) string {
+	delen := []string{a.Basis + "/dav", url.PathEscape(rm.Sleutel)}
+	if isEigen(rm, s) {
+		delen[1] = url.PathEscape(mijnNaam)
+	}
+	for _, m := range pad {
+		delen = append(delen, url.PathEscape(m.Naam))
+	}
+	if naam != "" {
+		delen = append(delen, url.PathEscape(naam))
+		return strings.Join(delen, "/")
+	}
+	return strings.Join(delen, "/") + "/"
 }
 
 // bekijkbaar: in de browser te openen zonder risico.
