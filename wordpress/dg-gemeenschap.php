@@ -1106,3 +1106,105 @@ add_action(
 		exit;
 	}
 );
+
+// ---------------------------------------------------------------------------
+// De achterkant van WordPress (wp-admin) is dicht
+// ---------------------------------------------------------------------------
+// Inhoud, thema en instellingen komen uit GitHub; beheer gaat via de menu-opties
+// op je eigen profiel (Beheer, Ledenadministratie, Toezeggingen). Open blijven:
+// admin-ajax.php en admin-post.php (de formulieren op de site en het inloggen),
+// CiviCRM voor wie CiviCRM mag gebruiken, en Toezeggingen voor de kerngroep en
+// de beheerders. De rest gaat terug naar de site. In een noodgeval: zet
+// DG_WPADMIN_OPEN=1 in de omgeving van WordPress, of gebruik wp-cli.
+
+/** Mag deze gebruiker CiviCRM gebruiken? */
+function dg_civicrm_beheerder(): bool {
+	return is_user_logged_in() && ( current_user_can( 'manage_options' ) || current_user_can( 'access_civicrm' ) );
+}
+
+/** De pagina's in wp-admin die open blijven, als slug van admin.php?page=… */
+function dg_wpadmin_paginas(): array {
+	$open = array();
+	if ( dg_civicrm_beheerder() ) {
+		$open[] = 'CiviCRM';
+	}
+	if ( function_exists( 'dg_cf_beheerder' ) && dg_cf_beheerder() ) {
+		$open[] = 'dg-toezeggingen';
+	}
+	return $open;
+}
+
+/**
+ * Terug naar de site, tenzij de pagina open blijft. Aan admin_menu (vóór
+ * WordPress zelf "Je hebt geen toegang" geeft) en aan admin_init (ook voor
+ * pagina's zonder menu).
+ */
+function dg_wpadmin_dicht(): void {
+	global $pagenow;
+	if ( getenv( 'DG_WPADMIN_OPEN' ) || wp_doing_ajax() || wp_doing_cron() || ( defined( 'WP_CLI' ) && WP_CLI ) || 'admin-post.php' === $pagenow ) {
+		return;
+	}
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- alleen welke pagina, geen actie.
+	$pagina = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : '';
+	$open   = array_map( 'sanitize_key', dg_wpadmin_paginas() );
+	if ( 'admin.php' === $pagenow && '' !== $pagina && in_array( $pagina, $open, true ) ) {
+		return;
+	}
+	wp_safe_redirect( home_url( '/' ) );
+	exit;
+}
+add_action( 'admin_menu', 'dg_wpadmin_dicht', PHP_INT_MIN );
+add_action( 'admin_init', 'dg_wpadmin_dicht', 0 );
+
+// In wat open blijft: alleen die pagina's in het linkermenu.
+add_action(
+	'admin_menu',
+	static function () {
+		if ( getenv( 'DG_WPADMIN_OPEN' ) ) {
+			return;
+		}
+		global $menu;
+		$open = dg_wpadmin_paginas();
+		foreach ( (array) $menu as $punt ) {
+			if ( isset( $punt[2] ) && ! in_array( $punt[2], $open, true ) ) {
+				remove_menu_page( $punt[2] );
+			}
+		}
+	},
+	9999
+);
+
+// De zwarte WordPress-werkbalk nergens op de site.
+add_filter( 'show_admin_bar', '__return_false', 999 );
+
+// Menu-opties op je eigen profiel voor het beheer in wp-admin.
+add_action(
+	'bp_setup_nav',
+	static function () {
+		if ( ! is_user_logged_in() || ! function_exists( 'bp_core_new_nav_item' ) ) {
+			return;
+		}
+		$punten = array();
+		if ( dg_civicrm_beheerder() ) {
+			$punten[] = array( 'Ledenadministratie', 'ledenadministratie', 96, admin_url( 'admin.php?page=CiviCRM&q=civicrm/dashboard' ) );
+		}
+		if ( function_exists( 'dg_cf_beheerder' ) && dg_cf_beheerder() ) {
+			$punten[] = array( 'Toezeggingen', 'toezeggingen', 97, admin_url( 'admin.php?page=dg-toezeggingen' ) );
+		}
+		foreach ( $punten as [ $naam, $slug, $positie, $url ] ) {
+			bp_core_new_nav_item(
+				array(
+					'name'                    => $naam,
+					'slug'                    => $slug,
+					'position'                => $positie,
+					'show_for_displayed_user' => false,
+					'screen_function'         => static function () use ( $url ) {
+						wp_safe_redirect( $url );
+						exit;
+					},
+				)
+			);
+		}
+	},
+	20
+);

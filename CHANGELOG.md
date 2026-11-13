@@ -2,6 +2,8 @@
 
 ## Nog niet uitgebracht
 
+- **wp-admin dicht.** De zwarte WordPress-werkbalk staat voor iedereen uit. De achterkant van WordPress stuurt terug naar de site, behalve CiviCRM (voor wie CiviCRM mag gebruiken) en Toezeggingen (kerngroep en beheerders). Die staan als *Ledenadministratie* en *Toezeggingen* in het menu op je eigen profiel, naast *Beheer*. `admin-ajax.php` en `admin-post.php` blijven open. Noodknop: `DG_WPADMIN_OPEN=1`.
+
 ## 0.19.2 — 2026-11-13
 
 - Dashboard: *Samenwerkingen* (in de navigatie en het blok) verschijnt pas als de pagina Samenwerkingen gepubliceerd is. Zolang die een concept is, gaf de link een 404.

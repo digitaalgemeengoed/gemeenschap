@@ -368,6 +368,20 @@ beheerders van het platform (`/site/beheer`) en de kerngroep
   het beheer van de andere onderdelen.
 - **Logboek**: elke wijziging met naam en verplichte reden.
 
+**De achterkant van WordPress (wp-admin) is dicht.** Inhoud, thema en
+instellingen komen uit GitHub; de zwarte werkbalk staat voor iedereen uit.
+Wat nog in wp-admin moet, staat als menu-optie op je eigen profiel en is
+het enige wat daar open is:
+
+- *Ledenadministratie*: CiviCRM (contacten, nieuwsbrief, evenementen), voor
+  wie CiviCRM mag gebruiken;
+- *Toezeggingen*: de crowdfunding, voor de kerngroep en de beheerders.
+
+Al het andere in wp-admin stuurt terug naar de site. `admin-ajax.php` en
+`admin-post.php` blijven open (de formulieren op de site en het inloggen).
+In een noodgeval: `DG_WPADMIN_OPEN=1` in de omgeving van WordPress, of
+wp-cli op de server.
+
 De laatste beheerder blijft beheerder. Nog zonder tweede factor (MFA); zie
 `beheer/ONTWERP.md` voor de afwegingen, ook over de rechten van het service
 account in Keycloak.

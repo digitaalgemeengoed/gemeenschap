@@ -101,10 +101,8 @@ add_filter(
 	2
 );
 
-// De zwarte WordPress-werkbalk alleen voor wie pagina's of berichten bewerkt;
-// bezoekers en gewone leden hebben de kop van de site (BuddyPress toont hem
-// anders ook aan wie niet is ingelogd).
-add_filter( 'show_admin_bar', static fn( $tonen ) => $tonen && is_user_logged_in() && current_user_can( 'edit_posts' ), 99 );
+// De zwarte WordPress-werkbalk staat uit: zie wordpress/dg-gemeenschap.php
+// ("De achterkant van WordPress is dicht").
 
 // Een pagina die begint met een opening (::: held in inhoud/): geen titelbalk van
 // BuddyX met kruimelpad, want de opening heeft de titel al.

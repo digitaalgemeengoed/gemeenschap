@@ -107,8 +107,8 @@ tekenen. Dat kan alleen wie via het e-maildomein aan een gemeente gekoppeld
 is (de organisaties in Keycloak). Per gemeente is er één toezegging per
 campagne; een collega kan hem wijzigen of intrekken.
 
-Een intentie is niet bindend. De kerngroep zet hem in WordPress onder
-**Toezeggingen** op *bevestigd* zodra de samenwerkingsovereenkomst getekend
+Een intentie is niet bindend. De kerngroep zet hem onder **Toezeggingen**
+(menu-optie op je eigen profiel) op *bevestigd* zodra de samenwerkingsovereenkomst getekend
 is, met het kenmerk van de overeenkomst. De getekende overeenkomst zelf hoort
 in het archief, niet in WordPress.
 
