@@ -2,6 +2,8 @@
 
 ## Nog niet uitgebracht
 
+- Dashboard: *Samenwerkingen* (in de navigatie en het blok) verschijnt pas als de pagina Samenwerkingen gepubliceerd is. Zolang die een concept is, gaf de link een 404.
+
 ## 0.19.1 — 2026-11-13
 
 - Keycloak: *Instellingen* (je account bij Keycloak) gaf na het inloggen "Er is iets fout gegaan". keycloak-config-cli haalde bij elke uitrol de standaardrechten van de accountpagina weg, omdat die niet in `keycloak/realm/gemeenschap.json` stonden; nu wel.

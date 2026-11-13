@@ -170,13 +170,15 @@ function dg_db_navigatie( WP_User $gebruiker ): string {
 		array( 'document', 'Documenten', dg_documenten_url(), 0 ),
 		array( 'taken', 'Taken', function_exists( 'dg_pv_taken_url' ) ? dg_pv_taken_url() : home_url( '/' ), 0 ),
 		array( 'lagen', 'Projecten', home_url( '/projecten/' ), 0 ),
-		array( 'hand', 'Samenwerkingen', home_url( '/samenwerkingen/' ), 0 ),
+		array( 'hand', 'Samenwerkingen', dg_db_samenwerkingen_url(), 0 ),
 		array( 'kalender', 'Agenda', dg_db_evenementen_url(), 0 ),
 		array( 'mail', 'Berichten', $berichten, $ongelezen ),
 		array( 'chat', 'Chat', function_exists( 'dg_chat_url' ) ? dg_chat_url() : home_url( '/' ), 0 ),
 		array( 'instellingen', 'Instellingen', $keycloak, 0 ),
 	);
-	$html = '<nav class="dg-db-nav" aria-label="Dashboard"><ul>';
+	// Een punt zonder adres (een pagina die nog een concept is) laten we weg.
+	$punten = array_values( array_filter( $punten, static fn( $p ) => '' !== (string) $p[2] ) );
+	$html   = '<nav class="dg-db-nav" aria-label="Dashboard"><ul>';
 	foreach ( $punten as $nr => [ $icoon, $label, $url, $teller ] ) {
 		$html .= '<li' . ( 0 === $nr ? ' class="is-actief"' : '' ) . '><a href="' . esc_url( $url ) . '"><span class="dg-icoon dg-icoon-' . $icoon . '" aria-hidden="true"></span>' . esc_html( $label )
 			. ( $teller ? '<span class="dg-db-teller" aria-label="' . esc_attr( $teller . ' ongelezen' ) . '">' . (int) $teller . '</span>' : '' ) . '</a></li>';
@@ -304,6 +306,15 @@ function dg_db_discussies(): string {
 // Rechts: samenwerkingen, actieve leden, evenementen
 // ---------------------------------------------------------------------------
 
+/**
+ * De pagina Samenwerkingen, als die gepubliceerd is; anders ''. Zolang
+ * inhoud/paginas/samenwerkingen.md een concept is, gaf de link een 404.
+ */
+function dg_db_samenwerkingen_url(): string {
+	$pagina = get_page_by_path( 'samenwerkingen' );
+	return $pagina && 'publish' === $pagina->post_status ? (string) get_permalink( $pagina ) : '';
+}
+
 /** Uit inhoud/paginas/samenwerkingen.md (kopje "dashboard: samenwerkingen"), via wp dg inhoud. */
 function dg_db_samenwerkingen(): string {
 	$lijst = (array) get_option( 'dg_dashboard_samenwerkingen', array() );
@@ -317,7 +328,8 @@ function dg_db_samenwerkingen(): string {
 			. ( $status ? '<span class="dg-db-status dg-db-status-' . esc_attr( sanitize_title( $status ) ) . '">' . esc_html( $status ) . '</span>' : '' ) . '</li>';
 	}
 	$inhoud .= '</ul>';
-	return dg_db_blok( 'dg-db-samenwerkingen', 'hand', 'Samenwerkingen', 'Bekijk alles', home_url( '/samenwerkingen/' ), $inhoud );
+	$url = dg_db_samenwerkingen_url();
+	return $url ? dg_db_blok( 'dg-db-samenwerkingen', 'hand', 'Samenwerkingen', 'Bekijk alles', $url, $inhoud ) : '';
 }
 
 function dg_db_leden(): string {
