@@ -2,7 +2,11 @@
 
 ## Nog niet uitgebracht
 
+## 0.19.2 — 2026-11-13
+
 - Dashboard: *Samenwerkingen* (in de navigatie en het blok) verschijnt pas als de pagina Samenwerkingen gepubliceerd is. Zolang die een concept is, gaf de link een 404.
+- Op het dashboard komen alleen de kaarten uit het `::: kaarten`-vak van een pagina met `dashboard:`, niet andere `###`-koppen (zoals stappen).
+- Pagina Samenwerkingen (nog concept): uitleg waar de pagina voor is, wat de labels betekenen en hoe een samenwerking op de pagina komt.
 
 ## 0.19.1 — 2026-11-13
 

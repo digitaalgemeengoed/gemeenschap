@@ -817,8 +817,11 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
 					delete_option( 'dg_dashboard_' . $p['dashboard'] );
 					continue;
 				}
+				// Alleen de kaarten in een ::: kaarten-vak; andere ###-koppen
+				// (bijvoorbeeld in ::: stappen) horen niet op het dashboard.
+				$bron = preg_match_all( '/^:::\s*kaarten\s*$(.*?)^:::\s*$/ms', $p['tekst'], $vakken ) ? implode( "\n", $vakken[1] ) : $p['tekst'];
 				$kaarten = array();
-				foreach ( array_slice( preg_split( '/^###\s+/m', "\n" . $p['tekst'] ), 1 ) as $deel ) {
+				foreach ( array_slice( preg_split( '/^###\s+/m', "\n" . $bron ), 1 ) as $deel ) {
 					[ $kop, $rest ]     = array_pad( explode( "\n", $deel, 2 ), 2, '' );
 					[ $kenmerk, $rest ] = dg_inhoud_kenmerken( preg_replace( '/^\s*:::.*$/m', '', $rest ) );
 					$kaarten[]          = array(

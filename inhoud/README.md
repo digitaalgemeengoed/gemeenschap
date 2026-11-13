@@ -54,8 +54,9 @@ voor leden. Wie is ingelogd, ziet het dashboard en niet wat eronder staat;
 wie niet is ingelogd, ziet juist alleen wat eronder staat.
 
 Met `dashboard: samenwerkingen` in het kopje van een pagina komen de kaarten
-van die pagina (kop, label, icoon, eerste regel) ook op het dashboard, zodra
-de pagina gepubliceerd is.
+uit het `::: kaarten`-vak van die pagina (kop, label, icoon, eerste regel) ook
+op het dashboard, zodra de pagina gepubliceerd is. Andere `###`-koppen op de
+pagina, bijvoorbeeld in een `::: stappen`-vak, komen er niet op.
 
 ### Vakken
 
