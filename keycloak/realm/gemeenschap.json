@@ -768,6 +768,15 @@
     }
   },
   "clientScopeMappings": {
+    "account": [
+      {
+        "client": "account-console",
+        "roles": [
+          "manage-account",
+          "view-groups"
+        ]
+      }
+    ],
     "realm-management": [
       {
         "client": "redmine-sync",
