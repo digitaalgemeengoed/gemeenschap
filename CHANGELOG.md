@@ -2,6 +2,8 @@
 
 ## Nog niet uitgebracht
 
+## 0.19.1 — 2026-11-13
+
 - Keycloak: *Instellingen* (je account bij Keycloak) gaf na het inloggen "Er is iets fout gegaan". keycloak-config-cli haalde bij elke uitrol de standaardrechten van de accountpagina weg, omdat die niet in `keycloak/realm/gemeenschap.json` stonden; nu wel.
 - Thema: het huisje in het hoofdmenu staat op één hoogte met de tekst.
 
