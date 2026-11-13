@@ -2,6 +2,8 @@
 
 ## Nog niet uitgebracht
 
+## 0.21.0 — 2026-11-13
+
 - **Beheer op het dashboard.** *Beheer*, *Ledenadministratie* en *Toezeggingen* staan nu ook in het menu op het dashboard (de startpagina na inloggen), alleen voor wie ze mag gebruiken.
 - **Ledenadministratie** begint bij *Contacten zoeken* in plaats van het dashboard van CiviCRM (dat gaf `Class "Civi\Api4\ContributionPage" not found`). De instellingenpagina's van CiviCRM en CiviCRM Profile Sync zijn weer bereikbaar voor wie CiviCRM gebruikt.
 - **Naam en logo.** Nieuwe pagina *Colofon* (nog concept): naam en logo zijn van de stichting en vallen niet onder de EUPL. De voet zegt dat nu ook; README en `ontwerp/LICENTIES.md` zijn bijgewerkt.
