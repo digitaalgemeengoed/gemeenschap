@@ -428,3 +428,11 @@ terug te vinden in de geschiedenis van die pagina.
 ## Licentie
 
 EUPL 1.2, zie [LICENSE](LICENSE).
+
+**Behalve naam en logo.** De naam *Digitaal GemeenGoed* en het logo (de uil:
+`ontwerp/logo/`, `wordpress/thema/digitaalgemeengoed/assets/uil.png` en
+`icoon.png`, `keycloak/themes/digitaalgemeengoed/login/resources/img/uil.png`)
+zijn van Stichting Digitaal GemeenGoed en vallen niet onder de EUPL; de EUPL
+geeft ook geen recht op namen en merken van de licentiegever (artikel 5).
+Wie deze code hergebruikt, vervangt naam en logo door een eigen. Zie de
+pagina *Colofon* (`inhoud/paginas/colofon.md`) en `ontwerp/LICENTIES.md`.

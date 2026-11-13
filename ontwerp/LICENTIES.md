@@ -11,7 +11,7 @@ gebruikt hem niet zelf.
 
 | Bestand | Wat | Herkomst | Licentie en voorwaarden |
 |---|---|---|---|
-| `wordpress/thema/digitaalgemeengoed/assets/uil.png` | logo (de uil) in de kop en de voet | het logo van DGG, aangeleverd door Erik Hoekstra; origineel in `ontwerp/logo/dgg-logo.png` | rechten bij de rechthebbende van het logo [IN TE VULLEN: wie, en onder welke voorwaarden] |
+| `wordpress/thema/digitaalgemeengoed/assets/uil.png` | logo (de uil) in de kop en de voet | het logo van DGG, aangeleverd door Erik Hoekstra; origineel in `ontwerp/logo/dgg-logo.png` | Stichting Digitaal GemeenGoed; **niet** onder de EUPL. Gebruik door anderen alleen zoals de pagina *Colofon* beschrijft. [IN TE VULLEN: wie het logo heeft ontworpen, en of de rechten schriftelijk aan de stichting zijn overgedragen] |
 | `wordpress/thema/digitaalgemeengoed/assets/icoon.png` | sitepictogram (favicon) | uitsnede van het logo | als het logo |
 | `keycloak/themes/digitaalgemeengoed/login/resources/img/uil.png` | logo op het aanmeldscherm | kopie van het logo | als het logo |
 | `wordpress/thema/digitaalgemeengoed/assets/stad.svg`, `netwerk.svg` | stadsgezicht en netwerklijnen in de opening | eigen tekening, gemaakt voor deze repo | EUPL-1.2, zoals de repo |

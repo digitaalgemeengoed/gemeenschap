@@ -1122,6 +1122,27 @@ function dg_civicrm_beheerder(): bool {
 	return is_user_logged_in() && ( current_user_can( 'manage_options' ) || current_user_can( 'access_civicrm' ) );
 }
 
+/**
+ * De beheerpagina's waar deze gebruiker heen mag, voor de menu's op het profiel
+ * en het dashboard: [icoon, naam, slug, adres]. Ledenadministratie begint bij
+ * het zoeken van contacten (het dashboard van CiviCRM leunt op onderdelen die
+ * we niet gebruiken).
+ */
+function dg_beheer_menu(): array {
+	$punten  = array();
+	$groepen = (array) get_user_meta( get_current_user_id(), 'dg_groepen', true );
+	if ( is_user_logged_in() && array_intersect( $groepen, array( '/site/beheer', '/netwerk/kerngroep' ) ) ) {
+		$punten[] = array( 'schild', 'Beheer', 'beheer', 'https://beheer.' . wp_parse_url( home_url(), PHP_URL_HOST ) . '/' );
+	}
+	if ( dg_civicrm_beheerder() ) {
+		$punten[] = array( 'werkplek', 'Ledenadministratie', 'ledenadministratie', admin_url( 'admin.php?page=CiviCRM&q=civicrm/contact/search&reset=1' ) );
+	}
+	if ( function_exists( 'dg_cf_beheerder' ) && dg_cf_beheerder() ) {
+		$punten[] = array( 'plant', 'Toezeggingen', 'toezeggingen', admin_url( 'admin.php?page=dg-toezeggingen' ) );
+	}
+	return $punten;
+}
+
 /** De pagina's in wp-admin die open blijven, als slug van admin.php?page=… */
 function dg_wpadmin_paginas(): array {
 	$open = array();
@@ -1150,6 +1171,11 @@ function dg_wpadmin_dicht(): void {
 	if ( 'admin.php' === $pagenow && '' !== $pagina && in_array( $pagina, $open, true ) ) {
 		return;
 	}
+	// De eigen instellingenpagina's van CiviCRM en CiviCRM Profile Sync
+	// (cwps_…), die in het menu onder CiviCRM hangen.
+	if ( 'admin.php' === $pagenow && dg_civicrm_beheerder() && preg_match( '/^(civi|cwps)/', $pagina ) ) {
+		return;
+	}
 	wp_safe_redirect( home_url( '/' ) );
 	exit;
 }
@@ -1166,7 +1192,7 @@ add_action(
 		global $menu;
 		$open = dg_wpadmin_paginas();
 		foreach ( (array) $menu as $punt ) {
-			if ( isset( $punt[2] ) && ! in_array( $punt[2], $open, true ) ) {
+			if ( isset( $punt[2] ) && ! in_array( $punt[2], $open, true ) && ! ( dg_civicrm_beheerder() && preg_match( '/^(civi|cwps)/i', $punt[2] ) ) ) {
 				remove_menu_page( $punt[2] );
 			}
 		}
@@ -1184,14 +1210,12 @@ add_action(
 		if ( ! is_user_logged_in() || ! function_exists( 'bp_core_new_nav_item' ) ) {
 			return;
 		}
-		$punten = array();
-		if ( dg_civicrm_beheerder() ) {
-			$punten[] = array( 'Ledenadministratie', 'ledenadministratie', 96, admin_url( 'admin.php?page=CiviCRM&q=civicrm/dashboard' ) );
-		}
-		if ( function_exists( 'dg_cf_beheerder' ) && dg_cf_beheerder() ) {
-			$punten[] = array( 'Toezeggingen', 'toezeggingen', 97, admin_url( 'admin.php?page=dg-toezeggingen' ) );
-		}
-		foreach ( $punten as [ $naam, $slug, $positie, $url ] ) {
+		$positie = 96;
+		foreach ( dg_beheer_menu() as [ , $naam, $slug, $url ] ) {
+			if ( 'beheer' === $slug ) {
+				continue; // staat al op het profiel (zie hierboven)
+			}
+			++$positie;
 			bp_core_new_nav_item(
 				array(
 					'name'                    => $naam,

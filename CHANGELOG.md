@@ -2,6 +2,10 @@
 
 ## Nog niet uitgebracht
 
+- **Beheer op het dashboard.** *Beheer*, *Ledenadministratie* en *Toezeggingen* staan nu ook in het menu op het dashboard (de startpagina na inloggen), alleen voor wie ze mag gebruiken.
+- **Ledenadministratie** begint bij *Contacten zoeken* in plaats van het dashboard van CiviCRM (dat gaf `Class "Civi\Api4\ContributionPage" not found`). De instellingenpagina's van CiviCRM en CiviCRM Profile Sync zijn weer bereikbaar voor wie CiviCRM gebruikt.
+- **Naam en logo.** Nieuwe pagina *Colofon* (nog concept): naam en logo zijn van de stichting en vallen niet onder de EUPL. De voet zegt dat nu ook; README en `ontwerp/LICENTIES.md` zijn bijgewerkt.
+
 ## 0.20.0 — 2026-11-13
 
 - **wp-admin dicht.** De zwarte WordPress-werkbalk staat voor iedereen uit. De achterkant van WordPress stuurt terug naar de site, behalve CiviCRM (voor wie CiviCRM mag gebruiken) en Toezeggingen (kerngroep en beheerders). Die staan als *Ledenadministratie* en *Toezeggingen* in het menu op je eigen profiel, naast *Beheer*. `admin-ajax.php` en `admin-post.php` blijven open. Noodknop: `DG_WPADMIN_OPEN=1`.

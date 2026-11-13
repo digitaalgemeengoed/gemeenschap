@@ -176,6 +176,12 @@ function dg_db_navigatie( WP_User $gebruiker ): string {
 		array( 'chat', 'Chat', function_exists( 'dg_chat_url' ) ? dg_chat_url() : home_url( '/' ), 0 ),
 		array( 'instellingen', 'Instellingen', $keycloak, 0 ),
 	);
+	// Beheer, Ledenadministratie en Toezeggingen: alleen voor wie ze mag gebruiken.
+	if ( function_exists( 'dg_beheer_menu' ) ) {
+		foreach ( dg_beheer_menu() as [ $icoon, $naam, , $url ] ) {
+			$punten[] = array( $icoon, $naam, $url, 0 );
+		}
+	}
 	// Een punt zonder adres (een pagina die nog een concept is) laten we weg.
 	$punten = array_values( array_filter( $punten, static fn( $p ) => '' !== (string) $p[2] ) );
 	$html   = '<nav class="dg-db-nav" aria-label="Dashboard"><ul>';

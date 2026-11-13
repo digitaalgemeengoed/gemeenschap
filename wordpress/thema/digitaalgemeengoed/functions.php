@@ -80,7 +80,7 @@ function dg_voet(): string {
 		}
 		$html .= '<div class="dg-voet-kolom"><h3>' . esc_html( $kolom['titel'] ) . '</h3><ul>' . implode( '', array_map( static fn( $i ) => '<li>' . $link( $i ) . '</li>', $kolom['links'] ) ) . '</ul></div>';
 	}
-	$html .= '</div><div class="dg-voet-onder"><span>© ' . esc_html( wp_date( 'Y' ) ) . ' Stichting Digitaal GemeenGoed · in samenwerking met NL-Dit · open source onder de EUPL</span>'
+	$html .= '</div><div class="dg-voet-onder"><span>© ' . esc_html( wp_date( 'Y' ) ) . ' Stichting Digitaal GemeenGoed · in samenwerking met NL-Dit · software open source onder de EUPL; naam en logo zijn beschermd</span>'
 		. ( $onder ? '<span class="dg-voet-links">' . implode( '', array_map( $link, $onder ) ) . '</span>' : '' ) . '</div>';
 	return $html;
 }
